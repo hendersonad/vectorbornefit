@@ -38,8 +38,16 @@ load.data.multistart <- function(agestructure=NULL, add.nulls=0, startdate, Viru
     }else{
       date.vals.null=seq(startdate, startdate+((length(y.vals.null)-1)*7), 7)
     }
-    date.vals.add =seq(max(as.Date(timeser$date, origin="1970-01-01")), enddate, 7)
-    date_list=c(date.vals.null, as.Date(timeser$date,origin="1970-01-01")[pickdate], date.vals.add)
+    if(add.nulls==0){
+      date.vals.add=NULL
+    }else{
+      date.vals.add =seq(round(max(as.Date(timeser$date, origin="1970-01-01"))), round(enddate), 7)
+    }
+    ## adjust date vals by difference between new.start.time and original specified
+    date.vals <- as.Date(timeser$date)
+    adj <- length(y.vals.null) - (min(as.Date(timeser$date,origin="1970-01-01")) - startdate)/7
+    date.vals <- date.vals + (adj*7)
+    date_list=c(date.vals.null, date.vals[pickdate], date.vals.add)
     time.vals = as.numeric(date_list-min(date_list)) + (firstentry-1) * 7 # Shift by start date so both time series line up -- IMPORTANT FOR SEASONALITY
     time.vals = time.vals+time.vals[2]-time.vals[1]
     #time.vals = c(time.vals,seq(max(time.vals)+7,max(time.vals)+7*add.null.dates,7)) # Add extra onto end if needed
