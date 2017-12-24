@@ -21,7 +21,6 @@ MCMCloop_withtimevalsadj <- function(agestructure, sample.start.point=T, all.Pri
       cov_matrix_theta=epsilon0*cov_matrix_theta0
       cov_matrix_thetaA=epsilon0*cov_matrix_thetaAll
       cov_matrix_theta_init=epsilon0*cov_matrix_theta_initAll
-      if (sample.start.point==T){cov_matrix_thetaA['t0','t0'] <- epsilon0*10}
     }
     
     ## Resample global theta every X step
@@ -69,10 +68,10 @@ MCMCloop_withtimevalsadj <- function(agestructure, sample.start.point=T, all.Pri
         #Sample.StartTime <- (log(1.5))
         if(Sample.StartTime>0){
           #Sample.StartTime <- Sample.StartTime*-1
-          new.start.time <- startdate + (Sample.StartTime*30)
+          new.start.time <- startdate + (Sample.StartTime*365)
           data <- load.data.multistart(agestructure, add.nulls=0, new.start.time, virusTab[iiH], dataTab[iiH], serology.excel, init.conditions.excel)
         }else if(Sample.StartTime<0){
-          new.start.time <- startdate + (Sample.StartTime*30)
+          new.start.time <- startdate + (Sample.StartTime*365)
           #message(paste0("sample start <0  = ",  ((thetaA_star[['t0']]))))  
           #message(paste0("sample start <0  = ",  (log(thetaA_star[['t0']]))))  
           #message(paste0("sample start <0  = ", new.start.time))  
