@@ -45,3 +45,19 @@ ReportC<-function(cases, rep, repvol){
   mu01=sapply(mu00,function(x){max(x,0)})
   sapply(mu01,function(x){rnbinom(1, mu=rep*x,size=1/repvol)})
 }
+
+
+
+#' Cross immunity
+#' 
+#' Given a level of dengue infection, susceptible Zika hosts are depressed
+#' @param time
+#' @param immune 
+#' @param pop 
+#' @export
+
+CrossImmune <- function(time,date0=0,mask=1,base=0.2,grad=2,mid=0.3,wane=1){
+  imm <- mask*base/(1+exp(-10*grad*((time+date0)/365-mid))) 
+  wane <- (mask*base/(1+exp(-10*grad*((time+date0)/365-wane)))) 
+  return(list(imm=imm,wane=wane))
+}

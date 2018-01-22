@@ -20,7 +20,7 @@ plot_figure1_v4 <- function(agestructure, btsp, location=1, seroposdates, nplots
   
   for(iiH in location){ # NOTE CURRENTLY JUST 2013/14
     # Load time series dataset - need to initial timeser as global (from main model.R)
-      data <- load.data.multistart(agestructure, startdate, virusTab[iiH], dataTab[iiH], serology.excel, init.conditions.excel)
+      data <- load.data.multistart(agestructure, add.nulls = 0, startdate, virusTab[iiH], dataTab[iiH], serology.excel, init.conditions.excel)
         list2env(data,globalenv())
         tMax <- length(y.vals) 
     
@@ -79,23 +79,8 @@ plot_figure1_v4 <- function(agestructure, btsp, location=1, seroposdates, nplots
     y.vals.plot <- y.vals
     y.vals.plot[y.vals.plot==0] <- NA
     
-    dataframe.p1 <- data.frame(date.vals, y.vals.plot, medP, ciP1, ciP2, ciP150, ciP250, 
+    dataframe.p1 <- data.frame(date.vals=date.vals[1:length(y.vals.plot)], y.vals.plot, medP, ciP1, ciP2, ciP150, ciP250, 
                               medP_R, ciP1_R, ciP2_R)
-    
-    (pcases <- ggplot(dataframe.p1) + 
-        geom_ribbon(aes(x=date.vals, ymin=ciP1, ymax=ciP2),col=col1a, fill=col1a, alpha=0.2) +
-        geom_ribbon(aes(x=date.vals, ymin=ciP150, ymax=ciP250),col=col1a, fill=col1a, alpha=0.3) +
-        geom_line(aes(x=date.vals, y=medP), col=col1, alpha=1, linetype=1) +
-        geom_point(aes(x=date.vals, y=y.vals.plot), col=col2, alpha=0.4) +
-        labs(x = "Month (2016-2017)", y = "Confirmed cases", title = (LETTERS[labelN])) +
-        scale_x_date(date_breaks = "2 month", date_labels = "%b") +
-        theme_zika_fiji())
-    labelN=labelN+1
-    
-    grid.arrange(pcases, ncol=1)
-    
-    dev.copy(pdf,paste("post_plotsZ/fig1a_casefit",iiH,".pdf",sep=""),width=6,height=6)#,height=8)
-    dev.off()
     
     i=1; lci=NULL;uci=NULL;lci_A=NULL;uci_A=NULL;points=NULL;points_A=NULL; date=NULL
     if(agestructure==0){
@@ -122,7 +107,7 @@ plot_figure1_v4 <- function(agestructure, btsp, location=1, seroposdates, nplots
     dataframe.sero <- data.frame(points,lci,uci, lci_A, uci_A, points_A, seroposdates)
     }
 
-    dataframe.p2 <- data.frame(date.vals, y.vals.plot, med_Inf, ci_inf1, ci_inf2, ci_inf150, ci_inf250)
+    dataframe.p2 <- data.frame(date.vals=date.vals[1:length(y.vals.plot)], y.vals.plot, med_Inf, ci_inf1, ci_inf2, ci_inf150, ci_inf250)
     
     (p2 <- ggplot(dataframe.p2) + 
       geom_ribbon(aes(x=date.vals, ymin=ci_inf1, ymax=ci_inf2),col=col1a, fill=col1a, alpha=0.2) +
@@ -142,135 +127,82 @@ plot_figure1_v4 <- function(agestructure, btsp, location=1, seroposdates, nplots
       geom_linerange(data=dataframe.sero, aes(x=seroposdates, ymax=uci, ymin=lci),col=col2, size=0.6) +
       labs(x = "Year", y = "Proportion seropositive", title = (LETTERS[labelN])) +
       scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
-      scale_y_continuous(limits = c(0,0.5), breaks=seq(0,1,0.25)) +
+      scale_y_continuous(limits = c(0,0.75), breaks=seq(0,1,0.25)) +
       theme_zika_fiji())
     
     labelN=labelN+1
     
     grid.arrange(p2, p1, ncol=1)
     
-    dev.copy(pdf,paste("post_plotsZ/fig1a_modelfit",iiH,".pdf",sep=""),width=6,height=6)#,height=8)
+    dev.copy(pdf,paste("post_plotsZ/fig1a_modelfit",iiH,"_",run.name,".pdf",sep=""),width=6,height=6)#,height=8)
     dev.off()
     
     # PLOT seasonality function - forecasting forward
-      date_listSeason = date.vals
-      plotCosR0 = NULL; plotCosRR = NULL
-      btstrap = sample(picks,400,replace=T)
+    date_listSeason = date.vals
+    plotCosR0 = NULL; plotCosRR = NULL
+    btstrap = sample(picks,400,replace=T)
       
-      for(ii in 1:length(btstrap)){
-        b_ii = btstrap[ii]
-        
-        t.start = 0
-        time.V = (1:length(date_listSeason))*7 #time.vals + t.start
-        date0 = (startdate-date_listSeason[1]) %>% as.numeric() # Shift back as simulation starts from 2013-10-28
-        beta_ii = seasonal_f(time.V, date0, amp=thetatab[b_ii,'beta_v_amp'], mid=thetatab[b_ii,'beta_v_mid'])
-        
-          s_pick = s_trace_tab[b_ii,1:tMax]/thetatab$npop[b_ii] 
-          x_pick = x_trace_tab[b_ii,1:tMax] 
-          c_pick = c_trace_tab[b_ii,1:tMax]/thetatab$npop[b_ii] 
-          r_pick = r_trace_tab[b_ii,1:tMax]/thetatab$npop[b_ii] 
+    for(ii in 1:length(btstrap)){
+      b_ii = btstrap[ii]
       
-        output_rr = calculate_r0(th_in=thetatab[b_ii,],sus_c=s_pick,sus_a=0,sm_c=x_pick,sm_a=0,b_vary=beta_ii)
-        
-        r0_post = output_rr$r0_out
-        rr_post = output_rr$rr_out
-        
-        # DEBUG CHECK R0
-        plotCosR0=rbind(plotCosR0,  r0_post)
-        plotCosRR=rbind(plotCosRR,  rr_post)
-      }
-        c.nume<-function(x){
-          bp1=c(median(x),quantile(x,0.25),quantile(x,0.75))
-          as.numeric(bp1)}
-        plotCosMR0 = apply(plotCosR0,2,c.nume) ;         plotCosMRR = apply(plotCosRR,2,c.nume) 
+      t.start = 0
+      time.V = (1:length(date_listSeason))*7 #time.vals + t.start
+      date0 = (startdate-date_listSeason[1]) %>% as.numeric() # Shift back as simulation starts from 2013-10-28
+      beta_ii = seasonal_f(time.V, date0, amp=thetatab[b_ii,'beta_v_amp'], mid=thetatab[b_ii,'beta_v_mid'])
       
-      #R0 plot
-      dataframe.p3 <- data.frame(date.vals, 
-                                 medR0=plotCosMR0[1,], lciR0=plotCosMR0[2,], uciR0=plotCosMR0[3,],
-                                 medRR=plotCosMRR[1,], lciRR=plotCosMRR[2,], uciRR=plotCosMRR[3,])
-      (p3 <- ggplot(dataframe.p3) + 
-          geom_ribbon(aes(x=date.vals, ymin=lciR0, ymax=uciR0),col=col1a, fill=col1a) +
-          geom_line(aes(x=date.vals, y=medR0), col=col1, linetype=1) +
-          geom_line(aes(x=date.vals, y=1), col=1, linetype=2) +
-          labs(x = "Year", y = "R0", title = (LETTERS[labelN])) +
-          scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
-          theme_zika_fiji())
+        s_pick = s_trace_tab[b_ii,1:tMax]/thetatab$npop[b_ii] 
+        x_pick = x_trace_tab[b_ii,1:tMax] 
+        c_pick = c_trace_tab[b_ii,1:tMax]/thetatab$npop[b_ii] 
+        r_pick = r_trace_tab[b_ii,1:tMax]/thetatab$npop[b_ii] 
+    
+      output_rr = calculate_r0(th_in=thetatab[b_ii,],sus_c=s_pick,sus_a=0,sm_c=x_pick,sm_a=0,b_vary=beta_ii)
       
-      labelN=labelN+1
+      r0_post = output_rr$r0_out
+      rr_post = output_rr$rr_out
       
-      (p4 <- ggplot(dataframe.p3) + 
-          geom_ribbon(aes(x=date.vals, ymin=lciRR, ymax=uciRR),col=col2a, fill=col2a) +
-          geom_line(aes(x=date.vals, y=medRR), col=col2, linetype=1) +
-          geom_line(aes(x=date.vals, y=1), col=1, linetype=2) +
-          labs(x = "Year", y = "RR", title = (LETTERS[labelN])) +
-          scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
-          theme_zika_fiji())
-        
-      labelN=labelN+1
-  
-  grid.arrange(p4, p3, ncol=1)
+      # DEBUG CHECK R0
+      plotCosR0=rbind(plotCosR0,  r0_post)
+      plotCosRR=rbind(plotCosRR,  rr_post)
+    }
+      c.nume<-function(x){
+        bp1=c(mean(x),quantile(x,0.25),quantile(x,0.75))
+        as.numeric(bp1)}
+      plotCosMR0 = apply(plotCosR0,2,c.nume) ;         plotCosMRR = apply(plotCosRR,2,c.nume) 
+    
+    #R0 plot
+    dataframe.p3 <- data.frame(date.vals, 
+                               medR0=plotCosMR0[1,], lciR0=plotCosMR0[2,], uciR0=plotCosMR0[3,],
+                               medRR=plotCosMRR[1,], lciRR=plotCosMRR[2,], uciRR=plotCosMRR[3,])
+    (p3 <- ggplot(dataframe.p3) + 
+        geom_ribbon(aes(x=date.vals, ymin=lciR0, ymax=uciR0),col=col1a, fill=col1a) +
+        geom_line(aes(x=date.vals, y=medR0), col=col1, linetype=1) +
+        geom_line(aes(x=date.vals, y=1), col=1, linetype=2) +
+        labs(x = "Year", y = "R0", title = (LETTERS[labelN])) +
+        scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
+        theme_zika_fiji())
+    
+    labelN=labelN+1
+    
+    (p4 <- ggplot(dataframe.p3) + 
+        geom_ribbon(aes(x=date.vals, ymin=lciRR, ymax=uciRR),col=col2a, fill=col2a) +
+        geom_line(aes(x=date.vals, y=medRR), col=col2, linetype=1) +
+        geom_line(aes(x=date.vals, y=1), col=1, linetype=2) +
+        labs(x = "Year", y = "RR", title = (LETTERS[labelN])) +
+        scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
+        theme_zika_fiji())
       
-  dev.copy(pdf,paste("post_plotsZ/fig1b_repNo.pdf",sep=""),width=6,height=6)#,height=8)
+    labelN=labelN+1
+
+  grid.arrange(p3, p4, ncol=1)
+      
+  dev.copy(pdf,paste("post_plotsZ/fig1b_repNo",run.name,".pdf",sep=""),width=6,height=6)#,height=8)
   dev.off()
-  
-  extra_dates = seq(max(date.vals)+7, max(date.vals)+(4*365), 7)  
-  date.vals.extended = c(date.vals, extra_dates)
-  firstentry=1
-  time.vals.extended = as.numeric(date.vals.extended-min(date.vals.extended)) + (firstentry-1) * 7 # Shift by start date so both time series line up -- IMPORTANT FOR SEASONALITY
-  date.vals.extended = as.Date(time.vals.extended, origin = startdate) # NEW Oct 2017
-  
-  date_listSeason = date.vals.extended
-  plotCosR0 = NULL; plotCosRR = NULL
-  btstrap = sample(picks,100,replace=T)
-  
-  for(ii in 1:length(btstrap)){
-    b_ii = btstrap[ii]
-    
-    t.start = 0
-    time.V = (1:length(date_listSeason))*7 #time.vals + t.start
-    date0 = (startdate-date_listSeason[1]) %>% as.numeric() # Shift back as simulation starts from 2013-10-28
-    beta_ii = seasonal_f(time.V, date0, amp=thetatab[b_ii,'beta_v_amp'], mid=thetatab[b_ii,'beta_v_mid'])
-    
-    s_pick = c(s_trace_tab[b_ii,1:tMax],rep(s_trace_tab[b_ii,tMax],length(extra_dates))) /thetatab$npop[b_ii] 
-    x_pick = c(x_trace_tab[b_ii,1:tMax],rep(x_trace_tab[b_ii,tMax],length(extra_dates)))  
-    c_pick = c(c_trace_tab[b_ii,1:tMax],rep(c_trace_tab[b_ii,tMax],length(extra_dates))) /thetatab$npop[b_ii] 
-    r_pick = c(r_trace_tab[b_ii,1:tMax],rep(r_trace_tab[b_ii,tMax],length(extra_dates))) /thetatab$npop[b_ii] 
-    
-    output_rr = calculate_r0(th_in=thetatab[b_ii,],sus_c=s_pick,sus_a=0,sm_c=x_pick,sm_a=0,b_vary=beta_ii)
-    
-    r0_post = output_rr$r0_out
-    rr_post = output_rr$rr_out
-    
-    # DEBUG CHECK R0
-    plotCosR0=rbind(plotCosR0,  r0_post)
-    plotCosRR=rbind(plotCosRR,  rr_post)
-  }
-  c.nume<-function(x){
-    bp1=c(median(x),quantile(x,0.25),quantile(x,0.75))
-    as.numeric(bp1)}
-  plotCosMR0 = apply(plotCosR0,2,c.nume) ;         plotCosMRR = apply(plotCosRR,2,c.nume) 
-  
-  #R0 plot
-  dataframe.p4 <- data.frame(date.vals.extended, 
-                             medR0=plotCosMR0[1,], lciR0=plotCosMR0[2,], uciR0=plotCosMR0[3,],
-                             medRR=plotCosMRR[1,], lciRR=plotCosMRR[2,], uciRR=plotCosMRR[3,])
-  
-  
-  (p6 <- ggplot(dataframe.p4) + 
-      geom_ribbon(aes(x=date.vals.extended, ymin=lciRR, ymax=uciRR),col=col2a, fill=col2a) +
-      geom_line(aes(x=date.vals.extended, y=medRR), col=col2, linetype=1) +
-      geom_line(aes(x=date.vals.extended, y=1), col=1, linetype=2) +
-      labs(x = "Year", y = "RR", title = (LETTERS[labelN])) +
-      scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
-      theme_zika_fiji())
-  
-  labelN=labelN+1
-  
-  grid.arrange(p4, p3, ncol=1)
-  
-  dev.copy(pdf,paste("post_plotsZ/fig1b_repNo.pdf",sep=""),width=6,height=6)#,height=8)
-  dev.off()
-  
+
+#Quad plot
+grid.arrange(p2, p3, p1, p4, ncol=2)
+dev.copy(pdf,paste("post_plotsZ/fig1_",run.name,".pdf",sep=""),width=12,height=8)
+dev.off()
+
   }# end location loop
 }# end function
   

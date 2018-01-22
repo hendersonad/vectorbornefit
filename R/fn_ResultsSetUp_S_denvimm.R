@@ -6,7 +6,7 @@
 #' @param parameter_est_file Name of csv file with parameters to be estimated included
 #' @export
 
-results.set.up.S <- function(agestructure,iiH, parameter_est_file){
+results.set.up.S.denvimm <- function(agestructure,iiH, parameter_est_file){
 # Set up vectors for storing their values during MCMC loop
   thetaAll=data.frame(rep(NA,locnn))
   for (i in 1:(length(thetaR_IC_local$param)-1)){
@@ -19,6 +19,7 @@ results.set.up.S <- function(agestructure,iiH, parameter_est_file){
                    'sm_initC','em_initC','im_initC','sm_initA','em_initA','im_initA')   
   }else{
     compartments=c('s_init','e_init','i1_init','r_init',
+                   'sd_init','ed_init','id_init','rd_init',
                    'sm_init','em_init','im_init')   
   }
   
@@ -82,7 +83,7 @@ for(iiH in itertab){
       theta_initAll[iiH,"sm_initC"]=1-theta_initAll[iiH,"em_initC"]-theta_initAll[iiH,"im_initC"]
       
       theta_initAll[iiH,"s_initA"]=popsizeA-theta_initAll[iiH,"i1_initA"]-theta_initAll[iiH,"e_initA"]-theta_initAll[iiH,"r_initA"]
-      theta_initAll[iiH,"sm_initA"]=1-theta_initAll[iiH,"em_initA"]-theta_initAll[iiH,"im_initA"]
+      theta_initAll[iiH,"sm_initA"]=1-theta_initAll[iiH,"em_initA"]-theta_initAll[iiH,"im_initA"]    
   }else{
     theta_initAll[iiH,"r_init"]=0
       theta_initAll[iiH,"e_init"]=initial_inf; theta_initAll[iiH,"i1_init"]=initial_inf
@@ -90,6 +91,9 @@ for(iiH in itertab){
       
       theta_initAll[iiH,"s_init"]=popsizeTot-theta_initAll[iiH,"i1_init"]-theta_initAll[iiH,"e_init"]-theta_initAll[iiH,"r_init"]
       theta_initAll[iiH,"sm_init"]=1-theta_initAll[iiH,"em_init"]-theta_initAll[iiH,"im_init"]
+      
+      theta_initAll[iiH,"ed_init"]=0; theta_initAll[iiH,"id_init"]=1; theta_initAll[iiH,"rd_init"]=0
+      theta_initAll[iiH,"sd_init"]=popsizeTot-theta_initAll[iiH,"id_init"]-theta_initAll[iiH,"ed_init"]-theta_initAll[iiH,"rd_init"]
   }
 }
 
