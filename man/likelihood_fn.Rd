@@ -2,7 +2,6 @@
 % Please edit documentation in R/fn_ImmunityFit.R, R/fn_WeatherFit.R
 \name{likelihood_fn}
 \alias{likelihood_fn}
-\alias{likelihood_fn}
 \title{WeatherFit likelihood fn}
 \usage{
 likelihood_fn(amp, mid, time.vals = time.vals, beta = beta, data = data)

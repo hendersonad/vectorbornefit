@@ -2,16 +2,17 @@
 library("devtools")
 #devtools::install_github("klutometis/roxygen")
 library(roxygen2)
-getwd()
-setwd("../vectorbornefit")
+
+setwd("/Users/AHenderson/Documents/R")
 #create("vectorbornefit")
 
 # create documentation
+setwd("./vectorbornefit")
 document()
 
 # install
 setwd("..")
 install("vectorbornefit")
 
-?MCMCloop_withtimevalsadj
+?ComputePrior
 # install_github('vectorbornefit','a-henderson91')  

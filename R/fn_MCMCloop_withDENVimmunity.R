@@ -85,7 +85,7 @@ MCMCloop_withDENVimmunity <- function(agestructure, sample.start.point=T, all.Pr
       list2env(data, globalenv())
       
       # Run model simulation
-      output1 = Deterministic_modelR_final_DENVimmmunity(agestructure,c(theta_star,thetaA_star), theta_init_star, locationI=locationtab[iiH], seroposdates=seroposdates, episeason=episeason, include.count=include.count)
+      output1 = Deterministic_modelR_final_DENVimmmunity(agestructure,c(theta_star,thetaA_star,theta_denv), theta_init_star, locationI=locationtab[iiH], seroposdates=seroposdates, episeason=episeason, include.count=include.count)
       sim_marg_lik_star=sim_marg_lik_star+output1$lik
       
       #Store vales

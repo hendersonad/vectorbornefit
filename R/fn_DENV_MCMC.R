@@ -87,7 +87,7 @@ theta <- c(beta=0.27,
 )
 
 # Set initial conditions
-initial_inf <- 1
+initial_inf <- 50
 theta_init <- c(s_init=NA,e_init=0,i1_init=initial_inf,r_init=0)
 theta_init[["s_init"]] <- popsize-theta_init[["i1_init"]]
 
@@ -109,6 +109,16 @@ cov_matrix_thetaAll = diag(npc)
 ## thetaAlltab
 thetaAlltab=array(NA, dim=c(MCMC.runs+1,locnn,length(theta)),dimnames=list(NULL,NULL,names(theta)))
 thetaAlltab[1,1,]=theta
+
+# cov matrix theta_init
+npc=c(0,0,1,0)
+cov_matrix_thetainit = diag(npc)
+  colnames(cov_matrix_thetainit)=names(theta_init)
+  rownames(cov_matrix_thetainit)=names(theta_init)
+
+## thetaAlltab
+thetainitAlltab=array(NA, dim=c(MCMC.runs+1,locnn,length(theta_init)),dimnames=list(NULL,NULL,names(theta_init)))
+thetainitAlltab[1,1,]=theta_init
 
 ## c_trace_tab
 accepttab=rep(NA,(MCMC.runs))
@@ -135,34 +145,40 @@ for (m in 1:MCMC.runs){
     prior.star=1
     sim_marg_lik_star=0
     thetaAllstar=0*thetaAlltab[m,,]
+    thetaInitstar=0*thetainitAlltab[m,,]
     cTraceStar=0*c_trace_tab[m,,]
     #kk=1
     for(kk in itertab){ 
       iiH=kk
-      data <- load.data.multistart(agestructure, add.nulls = 0, startdate, virusTab[iiH], dataTab[iiH], serology.excel, init.conditions.excel)
+      data <- load.data.multistart(agestructure, add.nulls = 0, startdate=as.Date("2013-10-27"), virusTab[iiH], dataTab[iiH], serology.excel, init.conditions.excel)
         list2env(data,globalenv())
       
       if(m==1){ # Don't resample on 1st step - check the zeroes!
         theta_cand = theta
+        theta_init_cand = theta_init
       }else{
         theta_cand = as.numeric(exp(rmvnorm(1, log(thetaAlltab[m,iiH,]), cov_matrix_thetaA)))
         names(theta_cand) = names(theta)
         if(sum(names(theta_cand)=="rep")>0){ # check theta contains this vector
           theta_cand[["rep"]]=min(theta_cand[["rep"]],2-theta_cand[["rep"]]) # Ensure reporting between zero and 1
         }
+        theta_init_cand = as.numeric(exp(rmvnorm(1, log(thetainitAlltab[m,iiH,]), cov_matrix_thetainit)))
+        names(theta_init_cand) = names(theta_init)
       } 
       thetaA_star=theta_cand
+      thetaI_star=theta_init_cand
       
       # Adjust time and date series if start point is flexible
       
       # Run model simulation
-      output1 <- Run_simulation(dt=7,thetaA_star,theta_init,time.vals)
+      output1 <- Run_simulation(dt=7,thetaA_star,thetaI_star,time.vals)
         casecount <- output1$C1_trace
         likelihood <- sum(log(dnbinom(y.vals,mu=thetaA_star[["rep"]]*(casecount),size=1/thetaA_star[["repvol"]])))
         sim_marg_lik_star=likelihood
       
       #Store vales
       thetaAllstar[iiH,]=thetaA_star
+      thetaInitstar[iiH,]=thetaI_star
       cTraceStar[iiH,]=casecount 
     } 
     # leave priors for now
@@ -185,11 +201,13 @@ for (m in 1:MCMC.runs){
     # Update parameter values
     if(runif(1,0,1) < output_prob){
       thetaAlltab[m+1,,] = thetaAllstar
+      thetainitAlltab[m+1,,] = thetaInitstar
       c_trace_tab[m+1,,]=cTraceStar
       sim_liktab[m+1] = sim_marg_lik_star
       accepttab[m]=1
     }else{
       thetaAlltab[m+1,,] = thetaAlltab[m,,]
+      thetainitAlltab[m+1,,] = thetainitAlltab[m,,]
       c_trace_tab[m+1,,]= c_trace_tab[m,,]
       sim_liktab[m+1] = sim_liktab[m]
       accepttab[m]=0
@@ -207,5 +225,7 @@ for (m in 1:MCMC.runs){
   return(list(sim_liktab=sim_liktab,
                 accepttab=accepttab,
                 c_trace_tab=c_trace_tab,
-                thetaAlltab=thetaAlltab))
+                thetaAlltab=thetaAlltab,
+                thetainitAlltab=thetainitAlltab
+              ))
 }

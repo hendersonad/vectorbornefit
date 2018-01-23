@@ -18,11 +18,11 @@ simulate_deterministic_noage_DENVimm <- function(theta, init.state, time.vals.si
     alpha_h <-  theta[["Exp"]]
     gamma <-    theta[["Inf"]]
     chi <-    theta[["chi"]]
+    omega_d <- theta[['omega_d']]
     
     beta_d <- theta[['beta_d']]
     alpha_d <- theta[['alpha_d']]
     gamma_d <- theta[['gamma_d']]
-    omega_d <- theta[['omega_d']]
     
     ## extract initial states from theta_init
     S <- state[["s_init"]]

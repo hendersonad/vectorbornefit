@@ -92,7 +92,7 @@ for(iiH in itertab){
       theta_initAll[iiH,"s_init"]=popsizeTot-theta_initAll[iiH,"i1_init"]-theta_initAll[iiH,"e_init"]-theta_initAll[iiH,"r_init"]
       theta_initAll[iiH,"sm_init"]=1-theta_initAll[iiH,"em_init"]-theta_initAll[iiH,"im_init"]
       
-      theta_initAll[iiH,"ed_init"]=0; theta_initAll[iiH,"id_init"]=1; theta_initAll[iiH,"rd_init"]=0
+      theta_initAll[iiH,"ed_init"]=0; theta_initAll[iiH,"id_init"]=thetainit_denv[["i1_init"]]; theta_initAll[iiH,"rd_init"]=0
       theta_initAll[iiH,"sd_init"]=popsizeTot-theta_initAll[iiH,"id_init"]-theta_initAll[iiH,"ed_init"]-theta_initAll[iiH,"rd_init"]
   }
 }

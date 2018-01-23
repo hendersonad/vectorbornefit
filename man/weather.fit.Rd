@@ -2,7 +2,6 @@
 % Please edit documentation in R/fn_ImmunityFit.R, R/fn_WeatherFit.R
 \name{weather.fit}
 \alias{weather.fit}
-\alias{weather.fit}
 \title{WeatherFit}
 \usage{
 weather.fit(data, iter, tuning)
