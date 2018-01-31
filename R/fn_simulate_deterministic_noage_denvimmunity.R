@@ -8,6 +8,7 @@
 #theta=final_thetaAll; init.state=theta_init_star; time.vals.sim=time.vals
 
 simulate_deterministic_noage_DENVimm <- function(theta, init.state, time.vals.sim) {
+  #time=1;state=init1;
   SIR_ode <- function(time, state, theta) {
     ## extract parameters from theta
     beta_h1 <-  theta[["beta_h"]] * seasonal_f(time, date0=theta[["shift_date"]],amp=theta[["beta_v_amp"]],mid=theta[["beta_v_mid"]]) * decline_f(time,date0=theta[["shift_date"]],mask=theta[['beta_mask']],base=theta[['beta_base']],grad=theta[['beta_grad']],mid=theta[['beta_mid']]) 
@@ -20,9 +21,15 @@ simulate_deterministic_noage_DENVimm <- function(theta, init.state, time.vals.si
     chi <-    theta[["chi"]]
     omega_d <- theta[['omega_d']]
     
-    beta_d <- theta[['beta_d']]
-    alpha_d <- theta[['alpha_d']]
-    gamma_d <- theta[['gamma_d']]
+    if(time<theta[["denv_start"]]){
+      beta_d <- 0
+      alpha_d <- 0 
+      gamma_d <- 0
+    }else{
+      beta_d <- theta[['beta_d']]
+      alpha_d <- theta[['alpha_d']]
+      gamma_d <- theta[['gamma_d']]
+    }
     
     ## extract initial states from theta_init
     S <- state[["s_init"]]
@@ -60,7 +67,6 @@ simulate_deterministic_noage_DENVimm <- function(theta, init.state, time.vals.si
     
     return(list(c(dS,dE,dI,dR,dC,dSd,dEd,dId,dRd,dCd,dSM,dEM,dIM)))
   }
-  #Solve ODEs
   traj <- as.data.frame(ode(init.state, time.vals.sim, SIR_ode, theta, method = "ode45"))
   return(traj)
 }
