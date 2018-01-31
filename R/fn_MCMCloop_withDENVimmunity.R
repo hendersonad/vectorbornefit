@@ -83,11 +83,11 @@ MCMCloop_withDENVimmunity <- function(agestructure, sample.start.point=T, all.Pr
         data <- load.data.multistart(agestructure,add.nulls=0, startdate, virusTab[iiH], dataTab[iiH], serology.excel, init.conditions.excel)
       }
       list2env(data, globalenv())
-      
+
       # Run model simulation
       output1 = Deterministic_modelR_final_DENVimmmunity(agestructure,c(theta_star,thetaA_star,theta_denv), theta_init_star, locationI=locationtab[iiH], seroposdates=seroposdates, episeason=episeason, include.count=include.count)
       sim_marg_lik_star=sim_marg_lik_star+output1$lik
-      
+  
       #Store vales
       thetaAllstar[iiH,]=thetaA_star
       theta_initAllstar[iiH,]=theta_init_star
@@ -152,10 +152,11 @@ MCMCloop_withDENVimmunity <- function(agestructure, sample.start.point=T, all.Pr
     val = exp((sim_marg_lik_star-sim_liktab[m]))*(prior.star/prior[m])*(q_theta_given_theta_star/q_theta_star_given_theta) 
     
     if(is.na(val)){
-      output_prob=0
-    }else{
-      output_prob = min(val, 1)
-    }
+      output_prob=0}else if(is.nan(val)){
+        output_prob=0}else if(is.null(val)){
+          output_prob=0}else if(length(val)==0){
+            output_prob=0}else{
+              output_prob = min(val, 1)}
     
     # Update parameter values
     if(runif(1,0,1) < output_prob){
@@ -208,7 +209,8 @@ MCMCloop_withDENVimmunity <- function(agestructure, sample.start.point=T, all.Pr
     
   } # End MCMC loop
   
-  if(agestructure==1){
+  
+   if(agestructure==1){
     return(list(sim_liktab=sim_liktab,
                 prior=prior,
                 accepttab=accepttab,

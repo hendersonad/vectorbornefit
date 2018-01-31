@@ -20,7 +20,7 @@
 #locationI=locationtab[iiH]
 
 #Deterministic_modelR_final(agestructure=0,c(thetatab[1,],thetaAlltab[1,iiH,]), theta_initAlltab[1,iiH,], locationtab[iiH], seroposdates, episeason)
-#theta=c(theta_star,thetaA_star)
+#theta=c(theta_star,thetaA_star,theta_denv)
 #theta_init=theta_init_star
 #locationI=locationtab[iiH]
 
@@ -30,6 +30,19 @@ Deterministic_modelR_final_DENVimmmunity <- function(agestructure=NULL, theta, t
   time.vals.sim <-    seq(0,max(sim.vals),dt)
   
   if(agestructure==0){
+    #startdate=as.Date("2013-10-01")
+    #denv <- load.data.multistart(agestructure, startdate, add.nulls=0,  virusTab[iiH], dataTab[iiH], serology.excel, init.conditions.excel)
+    #  list2env(denv,globalenv())
+    
+    denv.intro <- as.Date("2013-11-01")
+    if(sum(date.vals<denv.intro+3.5 & date.vals>denv.intro-3.5)==0){
+      theta[["denv_start"]] <- 0
+    }else{
+      theta[["denv_start"]] <- time.vals[date.vals<denv.intro+3.5 & date.vals>denv.intro-3.5]
+    }
+    #theta[["denv_start"]]
+    #time.vals
+    #date.vals
     init1=c(
       s_init=theta_init[["s_init"]],e_init=theta_init[["i1_init"]],i_init=theta_init[["i1_init"]],r_init=theta_init[["r_init"]],c_init=0,
       sd_init=theta_init[["sd_init"]],ed_init=theta_init[["ed_init"]],id_init=theta_init[["id_init"]],rd_init=theta_init[["rd_init"]],cd_init=0,
@@ -46,7 +59,9 @@ Deterministic_modelR_final_DENVimmmunity <- function(agestructure=NULL, theta, t
     casesD <- output[match(time.vals.sim,output$time),"cd_init"]
     casecount <- cases1-c(0,cases1[1:(length(time.vals.sim)-1)])
     casecountD <- casesD-c(0,casesD[1:(length(time.vals.sim)-1)])
-    #casecount[casecount<0] <- 0
+    casecount[casecount<0] <- 0
+    #plot(casecount,type='l')
+    #plot(casecountD,type='l')
     
     # Calculate seropositivity at pre-specified dates and corresponding likelihood
     i=1; seroP=NULL; binom.lik=NULL
@@ -70,8 +85,18 @@ Deterministic_modelR_final_DENVimmmunity <- function(agestructure=NULL, theta, t
       likelihood <- sum(binom.lik)
     }
     
-    if(likelihood == -Inf){likelihood=-1e10}
+    likelihood=max(-1e10, likelihood)
+    if(is.null(likelihood)){likelihood=-1e10}
     if(is.nan(likelihood)){likelihood=-1e10}
+    if(is.na(likelihood)){likelihood=-1e10}
+    if(length(likelihood)==0){likelihood=-1e10}
+    if(likelihood == -Inf){likelihood=-1e10}
+    #if(is.na(likelihood)){
+    #  likelihood=0}else if(is.nan(likelihood)){
+    #    likelihood=0}else if(is.null(likelihood)){
+    #      likelihood=0}else if(length(likelihood)==0){
+    #        likelihood=0}else{
+    #          likelihood = min(likelihood, 1)}
     
     # Return results ##CHANGED
     output1=list(C_trace=casecount,CD_trace=casecountD,
@@ -121,9 +146,19 @@ Deterministic_modelR_final_DENVimmmunity <- function(agestructure=NULL, theta, t
     }else{
       likelihood <- sum(binom.lik)
     }
-    
-    if(likelihood == -Inf){likelihood=-1e10}
+  
+    likelihood=max(-1e10, likelihood)
+    if(is.null(likelihood)){likelihood=-1e10}
     if(is.nan(likelihood)){likelihood=-1e10}
+    if(is.na(likelihood)){likelihood=-1e10}
+    if(length(likelihood)==0){likelihood=-1e10}
+    if(likelihood == -Inf){likelihood=-1e10}
+    #if(is.na(likelihood)){
+    #  likelihood=0}else if(is.nan(likelihood)){
+    #    likelihood=0}else if(is.null(likelihood)){
+    #      likelihood=0}else if(length(likelihood)==0){
+    #        likelihood=0}else{
+    #          likelihood = min(likelihood, 1)}
     
     # Return results
    return(list(C_trace=casecount,C_traceC=casecountC,C_traceA=casecountA,

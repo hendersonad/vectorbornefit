@@ -151,11 +151,13 @@ MCMCloop_withtimevalsadj <- function(agestructure, sample.start.point=T, all.Pri
     
     val = exp((sim_marg_lik_star-sim_liktab[m]))*(prior.star/prior[m])*(q_theta_given_theta_star/q_theta_star_given_theta) 
     
-    if(is.na(val)){
-      output_prob=0
-    }else{
-      output_prob = min(val, 1)
-    }
+    if(is.nan(val)){
+      output_prob=0}else if(is.na(val)){
+        output_prob=0}else if(is.null(val)){
+          output_prob=0}else if(length(val)==0){
+            output_prob=0}else{
+              output_prob = min(val, 1)}
+    
     
     # Update parameter values
     if(runif(1,0,1) < output_prob){
