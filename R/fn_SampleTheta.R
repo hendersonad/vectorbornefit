@@ -34,7 +34,11 @@ SampleTheta<-function(theta_in, theta_init_in, covartheta, covartheta_init, ages
         theta_star[["beta_h_2"]]=min(theta_star[["beta_h_2"]],2-theta_star[["beta_h_2"]]) # Ensure beta is between zero and 1
         theta_star[["beta_h_3"]]=min(theta_star[["beta_h_3"]],2-theta_star[["beta_h_3"]]) # Ensure beta is between zero and 1
       }
-  
+      
+      if(sum(names(theta_star)=="t0")>0){ # check theta contains this vector
+        theta_star[["t0"]]=min(theta_star[["t0"]],2-theta_star[["t0"]]) # Ensure start time between zero and 1 (therefore log is negative)
+      }
+      
     ## Initial conditions
     mean_vector_theta_init = theta_init_in
     
