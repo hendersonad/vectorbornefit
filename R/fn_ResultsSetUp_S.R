@@ -5,7 +5,7 @@
 #' @param iiH PLace in locationtab of location being processed
 #' @param parameter_est_file Name of csv file with parameters to be estimated included
 #' @export
-
+#parameter_est_file="thetaR_IC_den2_17"
 results.set.up.S <- function(agestructure,iiH, parameter_est_file){
 # Set up vectors for storing their values during MCMC loop
   thetaAll=data.frame(rep(NA,locnn))

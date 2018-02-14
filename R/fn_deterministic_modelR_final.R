@@ -66,8 +66,12 @@ Deterministic_modelR_final<-function(agestructure=NULL,theta, theta_init, locati
       likelihood <- sum(binom.lik)
     }
     
-    if(likelihood == -Inf){likelihood=-1e10}
+    likelihood=max(-1e10, likelihood)
+    if(is.null(likelihood)){likelihood=-1e10}
     if(is.nan(likelihood)){likelihood=-1e10}
+    if(is.na(likelihood)){likelihood=-1e10}
+    if(length(likelihood)==0){likelihood=-1e10}
+    if(likelihood == -Inf){likelihood=-1e10}
     
     # Return results ##CHANGED
     output1=list(C_trace=casecount,
@@ -118,8 +122,12 @@ Deterministic_modelR_final<-function(agestructure=NULL,theta, theta_init, locati
       likelihood <- sum(binom.lik)
     }
     
-    if(likelihood == -Inf){likelihood=-1e10}
+    likelihood=max(-1e10, likelihood)
+    if(is.null(likelihood)){likelihood=-1e10}
     if(is.nan(likelihood)){likelihood=-1e10}
+    if(is.na(likelihood)){likelihood=-1e10}
+    if(length(likelihood)==0){likelihood=-1e10}
+    if(likelihood == -Inf){likelihood=-1e10}
     
     # Return results
    return(list(C_trace=casecount,C_traceC=casecountC,C_traceA=casecountA,

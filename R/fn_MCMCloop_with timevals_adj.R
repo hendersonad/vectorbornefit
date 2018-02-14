@@ -48,7 +48,7 @@ MCMCloop_withtimevalsadj <- function(agestructure, sample.start.point=T, all.Pri
     for(kk in itertab){ 
       iiH=kk
       data <- load.data.multistart(agestructure, add.nulls = 0, startdate, virusTab[iiH], dataTab[iiH], serology.excel, init.conditions.excel)
-      list2env(data,globalenv())
+        list2env(data,globalenv())
       
       if(m==1){ # Don't resample on 1st step - check the zeroes!
         output_H = SampleTheta(thetaAlltab[m,iiH,],theta_initAlltab[m,iiH,],0*cov_matrix_thetaA,0*cov_matrix_theta_init,agestructure,global=0)
@@ -86,7 +86,7 @@ MCMCloop_withtimevalsadj <- function(agestructure, sample.start.point=T, all.Pri
       
       # Run model simulation
       output1 = Deterministic_modelR_final(agestructure,c(theta_star,thetaA_star), theta_init_star, locationI=locationtab[iiH], seroposdates=seroposdates, episeason=episeason, include.count=include.count)
-      sim_marg_lik_star=sim_marg_lik_star+output1$lik
+        sim_marg_lik_star=sim_marg_lik_star+output1$lik
       
       #Store vales
       thetaAllstar[iiH,]=thetaA_star
