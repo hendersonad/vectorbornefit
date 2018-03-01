@@ -9,11 +9,13 @@
 simulate_deterministic_noage <- function(theta, init.state, time.vals.sim) {
   SIR_ode <- function(time, state, theta) {
     ## extract parameters from theta
-    beta_h1 <-  theta[["beta_h"]] * seasonal_f(time, date0=theta[["shift_date"]],amp=theta[["beta_v_amp"]],mid=theta[["beta_v_mid"]]) * decline_f(time,date0=theta[["shift_date"]],mask=theta[['beta_mask']],base=theta[['beta_base']],grad=theta[['beta_grad']],mid=theta[['beta_mid']]) 
+    #beta_h1 <-  theta[["beta_h"]] * seasonal_f(time, date0=theta[["shift_date"]],amp=theta[["beta_v_amp"]],mid=theta[["beta_v_mid"]]) * death_f_log(time,date0=theta[["shift_date"]],mask=theta[['beta_mask']],base=theta[['beta_base']],grad=theta[['beta_grad']],mid=theta[['beta_mid']])
+    beta_h1 <-  theta[["beta_h"]] * seasonal_f(time, date0=theta[["shift_date"]],amp=theta[["beta_v_amp"]],mid=theta[["beta_v_mid"]]) * death_f(time,base=theta[['beta_base']])
     beta_v1 <-  theta[["beta_v"]] * beta_h1 
     Nsize <-   theta[["npop"]]
-    delta_v  <- theta[["MuV"]] 
-    alpha_v <-  theta[["Vex"]]
+    nu_v  <- theta[["MuV"]] 
+    delta_v  <- theta[["MuV"]]  
+    alpha_v <-  theta[["Vex"]] 
     alpha_h <-  theta[["Exp"]]
     gamma <-    theta[["Inf"]]
     
@@ -35,7 +37,7 @@ simulate_deterministic_noage <- function(theta, init.state, time.vals.sim) {
     dC  = alpha_h*E 
     
     # Mosquito population
-    dSM = delta_v - SM*(beta_v1*I/Nsize) - delta_v*SM   
+    dSM = nu_v - SM*(beta_v1*I/Nsize) - delta_v*SM   
     dEM = SM*(beta_v1*I/Nsize) - (delta_v+alpha_v)*EM  
     dIM = alpha_v*EM-delta_v*IM
     
@@ -43,6 +45,6 @@ simulate_deterministic_noage <- function(theta, init.state, time.vals.sim) {
   }
   #Solve ODEs
   traj <- as.data.frame(ode(init.state, time.vals.sim, SIR_ode, theta, method = "ode45"))
+
   return(traj)
 }
-
