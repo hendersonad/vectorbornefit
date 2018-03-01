@@ -54,23 +54,31 @@ for(iiH in itertab){
   
   if(sum(names(thetaAll)=="Exp")>0){
     thetaAll[iiH,"Exp"] <- 1/thetaAll[iiH,"Exp"]
+  }else if(sum(names(theta)=="Exp")>0){
+    theta["Exp"] <- 1/theta["Exp"]
   }
   if(sum(names(thetaAll)=="Inf")>0){
     thetaAll[iiH,"Inf"] <- 1/thetaAll[iiH,"Inf"]
-  }
-  if(sum(names(thetaAll)=="Vex")>0){
-    thetaAll[iiH,"Vex"] <- 1/thetaAll[iiH,"Vex"]
+  }else if(sum(names(theta)=="Inf")>0){
+    theta["Inf"] <- 1/theta["Inf"]
   }
   if(sum(names(thetaAll)=="MuV")>0){
     thetaAll[iiH,"MuV"] <- 1/thetaAll[iiH,"MuV"]
+  }else if(sum(names(theta)=="MuV")>0){
+    theta["MuV"] <- 1/theta["MuV"]
   }
-  
+  if(sum(names(thetaAll)=="Vex")>0){
+    thetaAll[iiH,"Vex"] <- 1/thetaAll[iiH,"Vex"]
+  }else if(sum(names(theta)=="Vex")>0){
+    theta["Vex"] <- 1/theta["Vex"]
+  }
+
   ## Initial compartment conditions
   initial_inf=as.numeric(thetaAll[iiH,'inf0']) #*(popsizeTot/2))
   init_vec=as.numeric(thetaAll[iiH,'vec0']/2)
   
   # initial immune 
-  sero.datapoints <- length(nLUM[1,])
+  sero.datapoints <- year(seroposdates)==2015
   location.immune=nLUM[locationtab[iiH],sero.datapoints]/nPOP[locationtab[iiH],sero.datapoints]
   if(agestructure==1){
     theta_initAll[iiH,"r_initC"]=location.immune*popsizeC
@@ -86,11 +94,11 @@ for(iiH in itertab){
       theta_initAll[iiH,"s_initA"]=popsizeA-theta_initAll[iiH,"i1_initA"]-theta_initAll[iiH,"e_initA"]-theta_initAll[iiH,"r_initA"]
       theta_initAll[iiH,"sm_initA"]=1-theta_initAll[iiH,"em_initA"]-theta_initAll[iiH,"im_initA"]
   }else{
-    theta_initAll[iiH,"r_init"]=location.immune*popsizeTot
+    theta_initAll[iiH,"r_init"]=location.immune*popsize
       theta_initAll[iiH,"e_init"]=initial_inf; theta_initAll[iiH,"i1_init"]=initial_inf
       theta_initAll[iiH,"em_init"]=init_vec; theta_initAll[iiH,"im_init"]=init_vec
       
-      theta_initAll[iiH,"s_init"]=popsizeTot-theta_initAll[iiH,"i1_init"]-theta_initAll[iiH,"e_init"]-theta_initAll[iiH,"r_init"]
+      theta_initAll[iiH,"s_init"]=popsize-theta_initAll[iiH,"i1_init"]-theta_initAll[iiH,"e_init"]-theta_initAll[iiH,"r_init"]
       theta_initAll[iiH,"sm_init"]=1-theta_initAll[iiH,"em_init"]-theta_initAll[iiH,"im_init"]
   }
 }

@@ -13,7 +13,7 @@
 #agestructure = 0
 #startdate  = new.start.time
 #Virus  = virusTab[iiH] 
-#cases.file.name  = dataTab[iiH] 
+#cases.file.name  = dataTab
 #serology.file.name  = serology.excel 
 #init.values.file.name = init.conditions.excel 
 #add.nulls=0
@@ -106,9 +106,29 @@ load.data.multiloc.multistart <- function(agestructure=NULL, add.nulls=0, startd
   thetaR_IC_global <- read.csv(paste0("data_sets/",init.values.file.name,"_global.csv"),stringsAsFactors=FALSE)
   thetaR_IC_local <- read.csv(paste0("data_sets/",init.values.file.name,"_local.csv"),stringsAsFactors=FALSE)
   
-  ## Set prior distribution parameters 
+  ## Load vector control dates
+if(vector.control==T){ 
+  vector_control_dates <- read.csv(paste0("data_sets/", vec.control.excel, ".csv"), stringsAsFactors = F)
+  v.c.vals.df <- NULL
+  for(iiH in itertab){
+    colID=(names(vector_control_dates)==locationtab[iiH])
+    endwk=length(vector_control_dates[,1])
+    startdate=min(as.Date(vector_control_dates$date,origin="1970-01-01"), startdate)
+    enddate=max(as.Date(vector_control_dates$date,origin="1970-01-01")+add.nulls)
+    pickdate=(as.Date(vector_control_dates$date,origin="1970-01-01")>=startdate & as.Date(vector_control_dates$date,origin="1970-01-01")<=enddate)
+    v.c.vals.null <- rep(0, round((min(as.Date(vector_control_dates$date,origin="1970-01-01")) - startdate)/7))
+    v.c.vals.add <- rep(0, (add.nulls/7))
+    v.c.vals = c(v.c.vals.null, as.numeric(vector_control_dates[,colID])[pickdate], v.c.vals.add)
     
-  return(list(y.vals.df=y.vals.df, time.vals=time.vals, date.vals=date.vals, nLUM=nLUM, nPOP=nPOP, 
+    v.c.vals.df <- cbind(v.c.vals.df, v.c.vals)
+  }
+  colnames(v.c.vals.df) <- locationtab
+  rownames(v.c.vals.df) <- time.vals
+  }else{
+  v.c.vals.df <- data.frame(NULL)
+}
+  ## 
+  return(list(y.vals.df=y.vals.df, v.c.vals.df=v.c.vals.df, time.vals=time.vals, date.vals=date.vals, nLUM=nLUM, nPOP=nPOP, 
               thetaR_IC_global=thetaR_IC_global, thetaR_IC_local=thetaR_IC_local))
 }
 
