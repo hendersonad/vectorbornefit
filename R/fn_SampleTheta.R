@@ -12,13 +12,13 @@
 #' SampleTheta(thetaAlltab[m,iiH,],theta_initAlltab[m,iiH,],cov_matrix_thetaA,cov_matrix_theta_init,agestructure,global=0)
 #' SampleTheta(thetatab[m,],theta_initAlltab[1,1,],cov_matrix_theta,cov_matrix_theta_init,agestructure,global=1)
 
-#theta_in=thetaAlltab[m,iiH,]; theta_init_in=theta_initAlltab[m,iiH,]; covartheta=cov_matrix_thetaA; covartheta_init=cov_matrix_theta_init
+#theta_in=thetaAlltab[m,iiH,]; theta_init_in=theta_initAlltab[m,iiH,]; covartheta=cov_matrix_thetaA; covartheta_init=cov_matrix_theta_init; global=0
 
 SampleTheta<-function(theta_in, theta_init_in, covartheta, covartheta_init, agestructure=NULL, global=NULL){
   ## Parameters
     # sample new parameters from nearby: 
       mean_vector_theta = theta_in
-      mean_vector_theta0=mean_vector_theta
+      mean_vector_theta0 = mean_vector_theta
       theta_star = as.numeric(exp(rmvnorm(1,log(mean_vector_theta0), covartheta)))
       names(theta_star)=names(theta_in)
       
