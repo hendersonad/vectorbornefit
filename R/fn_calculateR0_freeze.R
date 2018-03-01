@@ -20,7 +20,7 @@ calculate_r0 <- function(th_in,sus_c=1,sus_a=1,sm_c=1,sm_a=1,b_vary=1){
   
   # Rate humans get infected -- FORMULATION WITH ONE MOSQUITO POP AND DIFFERENT BITING RATES
   b_cc_h = b_vary * th_in$beta_h    ;   b_aa_h = 0
-  b_ca_h = b_cc_h * th_in$beta_h_3  ;   b_ac_h=0
+  b_ca_h = b_cc_h * th_in$beta_h  ;   b_ac_h=0
   
   # Rate vectors get infected
   b_cc_v=b_cc_h * th_in$beta_v    ; b_aa_v=0

@@ -18,11 +18,12 @@ plot_figure1_v4 <- function(agestructure, btsp, location=1, seroposdates, nplots
   load_posterior_1 <- load.posteriors(agestructure=0, iiH, mcmc.burn=0.2)
     list2env(load_posterior_1,globalenv())
   
-  for(iiH in location){ # NOTE CURRENTLY JUST 2013/14
+  for(iiH in itertab){ # NOTE CURRENTLY JUST 2013/14
     # Load time series dataset - need to initial timeser as global (from main model.R)
-      data <- load.data.multistart(agestructure, add.nulls = 0, startdate, virusTab[iiH], dataTab[iiH], serology.excel, init.conditions.excel)
+      data <- load.data.multiloc.multistart(agestructure, add.nulls = 0, startdate, virusTab[iiH], dataTab[iiH], serology.excel, init.conditions.excel)
         list2env(data,globalenv())
-        tMax <- length(y.vals) 
+      y.vals <- y.vals.df[,iiH]
+      tMax <- length(y.vals) 
     
     cvector=matrix(NA,nrow=btsp,ncol=tMax)
     ivector=matrix(NA,nrow=btsp,ncol=tMax)
@@ -134,7 +135,7 @@ plot_figure1_v4 <- function(agestructure, btsp, location=1, seroposdates, nplots
     
     grid.arrange(p2, p1, ncol=1)
     
-    dev.copy(pdf,paste("post_plotsZ/fig1a_modelfit",iiH,"_",run.name,".pdf",sep=""),width=6,height=6)#,height=8)
+    dev.copy(pdf,paste("post_plotsZ/fig1a_modelfit",iiH,"_",run.name,"_",locationtab[iiH],".pdf",sep=""),width=6,height=6)#,height=8)
     dev.off()
     
     # PLOT seasonality function - forecasting forward
@@ -195,12 +196,12 @@ plot_figure1_v4 <- function(agestructure, btsp, location=1, seroposdates, nplots
 
   grid.arrange(p3, p4, ncol=1)
       
-  dev.copy(pdf,paste("post_plotsZ/fig1b_repNo",run.name,".pdf",sep=""),width=6,height=6)#,height=8)
+  dev.copy(pdf,paste("post_plotsZ/fig1b_repNo",run.name,"_",locationtab[iiH],".pdf",sep=""),width=6,height=6)#,height=8)
   dev.off()
 
 #Quad plot
 grid.arrange(p2, p3, p1, p4, ncol=2)
-dev.copy(pdf,paste("post_plotsZ/fig1_",run.name,".pdf",sep=""),width=12,height=8)
+dev.copy(pdf,paste("post_plotsZ/fig1_",run.name,"_",locationtab[iiH],".pdf",sep=""),width=12,height=8)
 dev.off()
 
   }# end location loop
