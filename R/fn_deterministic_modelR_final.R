@@ -35,6 +35,11 @@ Deterministic_modelR_final<-function(agestructure=NULL,theta, theta_init, locati
     
     # Output simulation data
     output <- simulate_deterministic_noage(theta, init1, time.vals.sim)
+    #plot(output$sm_init,type='l')
+    #plot(output$im_init,type='l')
+    #plot(time.vals.sim,output$c_init,type='l')
+    #par(new=T)
+    #plot(time.vals, time.interventions, axes=F, xlab="", ylab="")
     
     # Match compartment states at sim.vals time
     S_traj <- output[match(time.vals.sim,output$time),"s_init"]
@@ -42,7 +47,8 @@ Deterministic_modelR_final<-function(agestructure=NULL,theta, theta_init, locati
     R_traj <- output[match(time.vals.sim,output$time),"r_init"]
     cases1 <- output[match(time.vals.sim,output$time),"c_init"]
     casecount <- cases1-c(0,cases1[1:(length(time.vals.sim)-1)])
-    #casecount[casecount<0] <- 0
+    casecount[casecount<0] <- 0
+    #plot(casecount, type='l')
     
     # Calculate seropositivity at pre-specified dates and corresponding likelihood
     i=1; seroP=NULL; binom.lik=NULL
