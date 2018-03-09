@@ -33,13 +33,13 @@ decline_f <- function(time,date0=0,mask=0,base=1,grad=0.5,mid=0){
 }
 
 #'@export
-#death_f <- function(time,base=1){
-#  nearest.week <- max(1,min(which(time.vals>=time)))
-#  (1 - time.interventions[nearest.week]*base/(1+exp(-time/365)))  
-#}
 death_f <- function(time,base=1){
+  if(time>max(time.vals)){
+    0
+  }else{
   nearest.week <- max(1,min(which(time.vals>=time)))
-  (1 - tanh(time.interventions[nearest.week]*base))  
+  (1 + tanh(time.interventions[nearest.week]*base))
+  }
 }
 
 #' @export
