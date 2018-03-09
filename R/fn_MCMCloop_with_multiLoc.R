@@ -93,7 +93,7 @@ MCMCloop_with_multiLoc <- function(agestructure, sample.start.point=T, all.Prior
       y.vals <- y.vals.df[,locationtab[iiH]]
 
       # Run model simulation
-      output1 = Deterministic_modelR_final(agestructure,c(theta_star,thetaA_star), theta_init_star, locationI=locationtab[iiH], seroposdates=seroposdates, episeason=episeason, include.count=include.count)
+      output1 = Deterministic_modelR_mosqpop(agestructure,c(theta_star,thetaA_star), theta_init_star, locationI=locationtab[iiH], seroposdates=seroposdates, episeason=episeason, include.count=include.count)
         sim_marg_lik_star=sim_marg_lik_star+output1$lik
       
       #Store vales

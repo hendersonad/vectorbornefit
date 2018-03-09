@@ -12,7 +12,7 @@
 #' SampleTheta(thetaAlltab[m,iiH,],theta_initAlltab[m,iiH,],cov_matrix_thetaA,cov_matrix_theta_init,agestructure,global=0)
 #' SampleTheta(thetatab[m,],theta_initAlltab[1,1,],cov_matrix_theta,cov_matrix_theta_init,agestructure,global=1)
 
-#theta_in=thetaAlltab[m,iiH,]; theta_init_in=theta_initAlltab[m,iiH,]; covartheta=cov_matrix_thetaA; covartheta_init=cov_matrix_theta_init; global=0
+#theta_in=thetaAlltab[m,iiH,]; theta_init_in=theta_initAlltab[m,iiH,]; covartheta=cov_matrix_thetaA; covartheta_init=cov_matrix_theta_init; global=1
 
 SampleTheta<-function(theta_in, theta_init_in, covartheta, covartheta_init, agestructure=NULL, global=NULL){
   ## Parameters
@@ -69,9 +69,14 @@ SampleTheta<-function(theta_in, theta_init_in, covartheta, covartheta_init, ages
       theta_init_star=theta_init_star
       }else if(agestructure==0){
         # Mosquito init conditions: Sample I, fix between 0 and 1, set E=I, S is residual (1-E-I)
-        theta_init_star[["im_init"]] = min(theta_init_star[["im_init"]],1-theta_init_star[["im_init"]])
+        if(mosquitoes=="density"){
+          mosqpop=1
+        }else{
+          mosqpop=thetatab[m,"npop"]*thetatab[m,"mosq_ratio"]
+        }
+        theta_init_star[["im_init"]] = min(theta_init_star[["im_init"]],mosqpop-theta_init_star[["im_init"]])
         theta_init_star[["em_init"]] = theta_init_star[["im_init"]] 
-        theta_init_star[["sm_init"]] = 1-theta_init_star[["im_init"]]-theta_init_star[["em_init"]]
+        theta_init_star[["sm_init"]] = mosqpop-theta_init_star[["im_init"]]-theta_init_star[["em_init"]]
         
         # Human initial conditions: Sample I, set E equal to it and S is residual (Pop-E-I-R)
         theta_init_star[["r_init"]]= min(theta_init_star[["r_init"]], 2*thetatab[m,"npop"] - theta_init_star[["r_init"]]) # Bound at population size

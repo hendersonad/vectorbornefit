@@ -6,6 +6,7 @@
 #' @param parameter_est_file Name of csv file with parameters to be estimated included
 #' @export
 #parameter_est_file="thetaR_IC_den2_17"
+
 results.set.up.Multiloc <- function(agestructure,iiH, parameter_est_file){
 # Set up vectors for storing their values during MCMC loop
   thetaAll=data.frame(rep(NA,locnn))
@@ -46,6 +47,8 @@ for(iiH in itertab){
   popsizeA=theta["npopA"]
   popsizeTot=(popsizeC+popsizeA); names(popsizeTot)='npop'
   popsizeC=round(popsize* popsizeC/popsizeTot); popsizeA=round(popsize* popsizeA/popsizeTot)
+  mosqratio=theta["mosq_ratio"] ## "the reported mosquito densities ranged from 0.02-7.63 pupae/person, with most values falling between 0.5-1.5" https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4296492/
+  mosq_pop=mosqratio*popsize
   
   ## Local parameters
   for (i in thetaR_IC_local$param){
@@ -75,7 +78,7 @@ for(iiH in itertab){
 
   ## Initial compartment conditions
   initial_inf=as.numeric(thetaAll[iiH,'inf0']) #*(popsizeTot/2))
-  init_vec=as.numeric(thetaAll[iiH,'vec0']/2)
+  init_vec=as.numeric(thetaAll[iiH,'vec0']/2)*mosq_pop
   
   # initial immune 
   sero.datapoints <- year(seroposdates)==2015
@@ -99,7 +102,7 @@ for(iiH in itertab){
       theta_initAll[iiH,"em_init"]=init_vec; theta_initAll[iiH,"im_init"]=init_vec
       
       theta_initAll[iiH,"s_init"]=popsize-theta_initAll[iiH,"i1_init"]-theta_initAll[iiH,"e_init"]-theta_initAll[iiH,"r_init"]
-      theta_initAll[iiH,"sm_init"]=1-theta_initAll[iiH,"em_init"]-theta_initAll[iiH,"im_init"]
+      theta_initAll[iiH,"sm_init"]=mosq_pop-theta_initAll[iiH,"em_init"]-theta_initAll[iiH,"im_init"]
   }
 }
 
