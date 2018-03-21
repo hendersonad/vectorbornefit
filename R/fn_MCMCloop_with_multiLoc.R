@@ -7,7 +7,6 @@
 #' @param include.count True or False - whether to include count data in likelihood. Defaults to True
 #' @param startdate original start date in the data series
 ##' @export 
-
 MCMCloop_with_multiLoc <- function(agestructure, sample.start.point=T, all.Priors=F, include.count=T, startdate=as.Date("2013-10-28")){
   for (m in 1:MCMC.runs){
     # Scale COV matrices for resampling using error term epsilon

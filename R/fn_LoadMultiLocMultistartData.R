@@ -13,7 +13,7 @@
 #agestructure = 0
 #startdate  = new.start.time
 #Virus  = virusTab[iiH] 
-#cases.file.name  = dataTab
+#cases.file.name  = dataTab[iiH]
 #serology.file.name  = serology.excel 
 #init.values.file.name = init.conditions.excel 
 #add.nulls=0
