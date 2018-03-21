@@ -5,18 +5,18 @@
 \title{MCMC function for a single iteration using MH algorithm}
 \usage{
 MCMCloop_withDENVimmunity(agestructure, sample.start.point = T,
-  all.Priors = F, include.count = T, startdate = as.Date("2013-10-28"))
+  include.count = T, startdate = as.Date("2013-10-28"))
 }
 \arguments{
 \item{agestructure}{Binary indicator variable if model is age structured (1) or not (0) between children and adults. Defaults to NULL in which case no sampling happens}
 
 \item{sample.start.point}{Whether or not to sample start time}
 
-\item{all.Priors}{Whether to estimate all priors - only if running multistart!}
-
 \item{include.count}{True or False - whether to include count data in likelihood. Defaults to True}
 
 \item{startdate}{original start date in the data series}
+
+\item{all.Priors}{Whether to estimate all priors - only if running multistart!}
 }
 \description{
 MCMC function for a single iteration using MH algorithm
