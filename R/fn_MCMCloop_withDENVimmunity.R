@@ -8,7 +8,7 @@
 #' @param startdate original start date in the data series
 ##' @export 
 
-MCMCloop_withDENVimmunity <- function(agestructure, sample.start.point=T, all.Priors=F, include.count=T, startdate=as.Date("2013-10-28")){
+MCMCloop_withDENVimmunity <- function(agestructure, sample.start.point=T, include.count=T, startdate=as.Date("2013-10-28")){
   for (m in 1:MCMC.runs){
     # Scale COV matrices for resampling using error term epsilon
     if(m==1){
@@ -60,88 +60,74 @@ MCMCloop_withDENVimmunity <- function(agestructure, sample.start.point=T, all.Pr
       theta_init_star=output_H$theta_initS
       
       # Adjust time and date series if start point is flexible
-      #data <- fn_adjust_start_time(sample.start.point = sample.start.point, t0=thetaA_star[['t0']])
-      #  list2env(data,globalenv())
-      #fn_adjust_start_time <- function(sample.start.point=F, t0){
       if(sample.start.point==T){
         Sample.StartTime <- (log(thetaA_star[['t0']]))
-        #Sample.StartTime <- (log(1.5))
         if(Sample.StartTime>0){
-          #Sample.StartTime <- Sample.StartTime*-1
           new.start.time <- startdate + (Sample.StartTime*365)
           data <- load.data.multistart(agestructure, add.nulls=0, new.start.time, virusTab[iiH], dataTab[iiH], serology.excel, init.conditions.excel)
-        }else if(Sample.StartTime<0){
+        }else if(Sample.StartTime<=0){
           new.start.time <- startdate + (Sample.StartTime*365)
-          #message(paste0("sample start <0  = ",  ((thetaA_star[['t0']]))))  
-          #message(paste0("sample start <0  = ",  (log(thetaA_star[['t0']]))))  
-          #message(paste0("sample start <0  = ", new.start.time))  
           if(log(thetaA_star[['t0']])==-Inf){new.start.time=startdate}
           data <- load.data.multistart(agestructure, add.nulls=0, new.start.time, virusTab[iiH], dataTab[iiH], serology.excel, init.conditions.excel)
         }
       }else{
-        #message(paste0("no new start time = ", startdate))  
         data <- load.data.multistart(agestructure,add.nulls=0, startdate, virusTab[iiH], dataTab[iiH], serology.excel, init.conditions.excel)
       }
       list2env(data, globalenv())
 
       # Run model simulation
       output1 = Deterministic_modelR_final_DENVimmmunity(agestructure,c(theta_star,thetaA_star,theta_denv), theta_init_star, locationI=locationtab[iiH], seroposdates=seroposdates, episeason=episeason, include.count=include.count)
-      sim_marg_lik_star=sim_marg_lik_star+output1$lik
-  
+      sim_marg_lik_star=sim_marg_lik_star + output1$lik
+
+
       #Store vales
       thetaAllstar[iiH,]=thetaA_star
       theta_initAllstar[iiH,]=theta_init_star
   
       # choose selection region so results vector only stores from original STARTDATE onwards - so all results are the same length
       #if(sum(round(date.vals) <= startdate)==0){
-      if(length(cTraceStar[iiH,]) >= length(output1$C_trace)){
+      if(min(date.vals)>start.output.date){
         start.of.output1 <- 1
-        length.of.output1 <- length(output1$C_trace)
-        extra.vals <- length(cTraceStar[iiH,]) - length(output1$C_trace)
-        if(extra.vals<0){extra.vals=0}
-        
-        cTraceStar[iiH,]=c(output1$C_trace[(start.of.output1:length.of.output1)],rep(output1$C_trace[length.of.output1], extra.vals))
-        sTraceStar[iiH,]=c(output1$S_trace[(start.of.output1:length.of.output1)],rep(output1$S_trace[length.of.output1], extra.vals))
-        rTraceStar[iiH,]=c(output1$R_trace[(start.of.output1:length.of.output1)],rep(output1$R_trace[length.of.output1], extra.vals))
-        xTraceStar[iiH,]=c(output1$X_trace[(start.of.output1:length.of.output1)],rep(output1$X_trace[length.of.output1], extra.vals))
-        if(agestructure==1){
-          sTraceCStar[iiH,(1:length.of.results.storage)]=output1$S_traceC[(start.of.output1:length.of.output1)]
-          sTraceAStar[iiH,(1:length.of.results.storage)]=output1$S_traceA[(start.of.output1:length.of.output1)]
-          cTraceStar[iiH,(1:length.of.results.storage)]=output1$C_trace[(start.of.output1:length.of.output1)]
-          rTraceCStar[iiH,(1:length.of.results.storage)]=output1$R_traceC[(start.of.output1:length.of.output1)]
-          rTraceAStar[iiH,(1:length.of.results.storage)]=output1$R_traceA[(start.of.output1:length.of.output1)]
-          cTraceCStar[iiH,(1:length.of.results.storage)]=output1$C_traceC[(start.of.output1:length.of.output1)]
-          cTraceAStar[iiH,(1:length.of.results.storage)]=output1$C_traceA[(start.of.output1:length.of.output1)]
-          xTraceCStar[iiH,(1:length.of.results.storage)]=output1$X_traceC[(start.of.output1:length.of.output1)]
-          xTraceAStar[iiH,(1:length.of.results.storage)]=output1$X_traceA[(start.of.output1:length.of.output1)]
-        }
+        ##get end point of time series
+        length.of.output1 <- length(output1$C_trace) - max(0,length(output1$C_trace) - length(cTraceStar[iiH,]))
+        extra.vals <- max(0,length(cTraceStar[iiH,]) - length(output1$C_trace))
+        extra.zero <- rep(0,extra.vals)
+          cTraceStar[iiH,]=c(extra.zero,output1$C_trace[(start.of.output1:length.of.output1)])
+          sTraceStar[iiH,]=c(extra.zero,output1$S_trace[(start.of.output1:length.of.output1)])
+          rTraceStar[iiH,]=c(extra.zero,output1$R_trace[(start.of.output1:length.of.output1)])
+          xTraceStar[iiH,]=c(extra.zero,output1$X_trace[(start.of.output1:length.of.output1)])
+            if(agestructure==1){
+              sTraceCStar[iiH,]=c(extra.zero,output1$S_traceC[(start.of.output1:length.of.output1)])
+              sTraceAStar[iiH,]=c(extra.zero,output1$S_traceA[(start.of.output1:length.of.output1)])
+              cTraceStar[iiH,]=c(extra.zero,output1$C_trace[(start.of.output1:length.of.output1)])
+              rTraceCStar[iiH,]=c(extra.zero,output1$R_traceC[(start.of.output1:length.of.output1)])
+              rTraceAStar[iiH,]=c(extra.zero,output1$R_traceA[(start.of.output1:length.of.output1)])
+              cTraceCStar[iiH,]=c(extra.zero,output1$C_traceC[(start.of.output1:length.of.output1)])
+              cTraceAStar[iiH,]=c(extra.zero,output1$C_traceA[(start.of.output1:length.of.output1)])
+              xTraceCStar[iiH,]=c(extra.zero,output1$X_traceC[(start.of.output1:length.of.output1)])
+              xTraceAStar[iiH,]=c(extra.zero,output1$X_traceA[(start.of.output1:length.of.output1)])
+            }
       }else{
         start.of.output1 <- length(output1$C_trace) - length(cTraceStar[iiH,]) + 1  #max(which(date.vals <= startdate))+1 #inclusive so add 1
         length.of.output1 <- length(output1$C_trace)
-        cTraceStar[iiH,]=output1$C_trace[(start.of.output1:length.of.output1)]
-        sTraceStar[iiH,]=output1$S_trace[(start.of.output1:length.of.output1)]
-        rTraceStar[iiH,]=output1$R_trace[(start.of.output1:length.of.output1)]
-        xTraceStar[iiH,]=output1$X_trace[(start.of.output1:length.of.output1)]
-        if(agestructure==1){
-          sTraceCStar[iiH,(1:length.of.results.storage)]=output1$S_traceC[(start.of.output1:length.of.output1)]
-          sTraceAStar[iiH,(1:length.of.results.storage)]=output1$S_traceA[(start.of.output1:length.of.output1)]
-          cTraceStar[iiH,(1:length.of.results.storage)]=output1$C_trace[(start.of.output1:length.of.output1)]
-          rTraceCStar[iiH,(1:length.of.results.storage)]=output1$R_traceC[(start.of.output1:length.of.output1)]
-          rTraceAStar[iiH,(1:length.of.results.storage)]=output1$R_traceA[(start.of.output1:length.of.output1)]
-          cTraceCStar[iiH,(1:length.of.results.storage)]=output1$C_traceC[(start.of.output1:length.of.output1)]
-          cTraceAStar[iiH,(1:length.of.results.storage)]=output1$C_traceA[(start.of.output1:length.of.output1)]
-          xTraceCStar[iiH,(1:length.of.results.storage)]=output1$X_traceC[(start.of.output1:length.of.output1)]
-          xTraceAStar[iiH,(1:length.of.results.storage)]=output1$X_traceA[(start.of.output1:length.of.output1)]
-        }
+          cTraceStar[iiH,]=output1$C_trace[(start.of.output1:length.of.output1)]
+          sTraceStar[iiH,]=output1$S_trace[(start.of.output1:length.of.output1)]
+          rTraceStar[iiH,]=output1$R_trace[(start.of.output1:length.of.output1)]
+          xTraceStar[iiH,]=output1$X_trace[(start.of.output1:length.of.output1)]
+            if(agestructure==1){
+              sTraceCStar[iiH,]=output1$S_traceC[(start.of.output1:length.of.output1)]
+              sTraceAStar[iiH,]=output1$S_traceA[(start.of.output1:length.of.output1)]
+              cTraceStar[iiH,]=output1$C_trace[(start.of.output1:length.of.output1)]
+              rTraceCStar[iiH,]=output1$R_traceC[(start.of.output1:length.of.output1)]
+              rTraceAStar[iiH,]=output1$R_traceA[(start.of.output1:length.of.output1)]
+              cTraceCStar[iiH,]=output1$C_traceC[(start.of.output1:length.of.output1)]
+              cTraceAStar[iiH,]=output1$C_traceA[(start.of.output1:length.of.output1)]
+              xTraceCStar[iiH,]=output1$X_traceC[(start.of.output1:length.of.output1)]
+              xTraceAStar[iiH,]=output1$X_traceA[(start.of.output1:length.of.output1)]
+            }
       }
-      
       #message(paste0("T/F=",sum(date.vals <= startdate)==0," ln dataframe=",length(cTraceStar[iiH,])," // ln y.vals=",length(y.vals)," // start out=",start.of.output1, " len= ", length.of.output1, " = ", length.of.output1-start.of.output1))
-      
-      if(all.Priors==F){
-        prior.theta <- ComputePrior(iiH, thetaAlltab[m,,],thetaAllstar)
-      }else{
-        prior.theta <- ComputePrior_special(iiH, thetaAlltab[m,,],thetaAllstar, "parameters_est")
-      }
+      prior.theta <- ComputePrior(iiH, c(thetatab[m,],thetaAlltab[m,iiH,]), c(theta_star,thetaA_star))
       prior.star <- prior.theta$prior.star*prior.star
     } # end loop over regions
     
