@@ -85,7 +85,9 @@ for(iiH in itertab){
       theta_initAll[iiH,"s_initA"]=popsizeA-theta_initAll[iiH,"i1_initA"]-theta_initAll[iiH,"e_initA"]-theta_initAll[iiH,"r_initA"]
       theta_initAll[iiH,"sm_initA"]=1-theta_initAll[iiH,"em_initA"]-theta_initAll[iiH,"im_initA"]    
   }else{
-    theta_initAll[iiH,"r_init"]=0
+    if(baselineSero==T){
+      theta_initAll[iiH,"r_init"]=(nLUM[1]/nPOP[1])*popsizeTot
+    }else{theta_initAll[iiH,"r_init"]=0}
       theta_initAll[iiH,"e_init"]=initial_inf; theta_initAll[iiH,"i1_init"]=initial_inf
       theta_initAll[iiH,"em_init"]=init_vec; theta_initAll[iiH,"im_init"]=init_vec
       
@@ -96,10 +98,11 @@ for(iiH in itertab){
       theta_initAll[iiH,"sd_init"]=popsizeTot-theta_initAll[iiH,"id_init"]-theta_initAll[iiH,"ed_init"]-theta_initAll[iiH,"rd_init"]
   }
 }
-
+theta_initAll[1,]
 ## Covariance matrices 
 parameters_est <- read.csv(paste0("data_sets/",parameter_est_file,".csv"), stringsAsFactors = F) 
 parms_to_est <- parameters_est$parameters_est
+if(sample.start.point==T){parms_to_est <- c(parms_to_est, "t0")}
 compartments_to_est <- parameters_est$compartments_est
 
 #theta - global
@@ -140,7 +143,10 @@ theta_initAlltab[1,,]=as.matrix(theta_initAll)
 prior=rep(1,(MCMC.runs+1))
 sim_liktab=rep(-Inf,(MCMC.runs+1))
 accepttab=rep(NA,(MCMC.runs))
-max.length = length(time.vals)
+
+full.series = seq(start.output.date,end.output.date,7)
+max.length = length(full.series)
+
 #total pop
 #c
 c_trace_tab=array(NA, dim=c(MCMC.runs+1,locnn,max.length)) 
