@@ -60,23 +60,25 @@ Deterministic_modelR_final_DENVimmmunity <- function(agestructure=NULL, theta, t
     casecount <- cases1-c(0,cases1[1:(length(time.vals.sim)-1)])
     casecountD <- casesD-c(0,casesD[1:(length(time.vals.sim)-1)])
     casecount[casecount<0] <- 0
-    #plot(casecount,type='l')
     #plot(casecountD,type='l')
+    #lines(casecount,type='l',col=2)
     
     # Calculate seropositivity at pre-specified dates and corresponding likelihood
     i=1; seroP=NULL; binom.lik=NULL
+    sero.years <- format(as.Date(seroposdates, format="%d/%m/%Y"),"%Y")
+    sero.y <- substr(sero.years,3,4)
+    lum.y <- c("13","15","17")
     for(date in seroposdates){
-      if(date <= max(date.vals) & date >= min(date.vals)){
-        seroP[i] <- min(R_traj[date.vals<date+3.5 & date.vals>date-3.5])/theta[["npop"]]
-        binom.lik[i] <- (dbinom(nLUM[i], size=nPOP[i], prob=seroP[i], log = T))
+      if(date < min(date.vals)){
+        seroP[i] <- nLUM[lum.y==sero.y[i]]/nPOP[lum.y==sero.y[i]] #0.06550218 # 1/theta[["npop"]]   #1e-10
+        binom.lik[i] <- (dbinom(nLUM[lum.y==sero.y[i]], size=nPOP[lum.y==sero.y[i]], prob=seroP[i], log = T))
+        }else{
+          seroP[i] <-  min(R_traj[date.vals<date+3.5 & date.vals>date-3.5])/theta[["npop"]]
+          binom.lik[i] <- (dbinom(nLUM[lum.y==sero.y[i]], size=nPOP[lum.y==sero.y[i]], prob=seroP[i], log = T))
+          }
         i <- i+1
       }
-    } 
     
-    # Calculate the likelihood 
-    #likelihood <- sum(binom.lik) + sum(log(dnbinom(y.vals[date.vals>=episeason[1] & date.vals<=episeason[2]],
-    #                                                mu=theta[["rep"]]*(casecount[date.vals>=episeason[1] & date.vals<=episeason[2]]),
-    #                                                size=1/theta[["repvol"]])))
     if(include.count==T){
       likelihood <- sum(binom.lik) + sum(log(dnbinom(y.vals,
                                                      mu=theta[["rep"]]*(casecount),
