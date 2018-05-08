@@ -65,6 +65,9 @@ for(iiH in itertab){
   if(sum(names(thetaAll)=="MuV")>0){
     thetaAll[iiH,"MuV"] <- 1/thetaAll[iiH,"MuV"]
   }
+  if(sum(names(thetaAll)=="rho")>0){
+    thetaAll[iiH,"rho"] <- 1/thetaAll[iiH,"rho"]
+  }
   
   ## Initial compartment conditions
   initial_inf=as.numeric(thetaAll[iiH,'inf0']) #*(popsizeTot/2))

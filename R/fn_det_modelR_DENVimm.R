@@ -47,7 +47,7 @@ Deterministic_modelR_final_DENVimmmunity <- function(agestructure=NULL, theta, t
       s_init=theta_init[["s_init"]],e_init=theta_init[["i1_init"]],i_init=theta_init[["i1_init"]],r_init=theta_init[["r_init"]],c_init=0,
       sd_init=theta_init[["sd_init"]],ed_init=theta_init[["ed_init"]],id_init=theta_init[["id_init"]],rd_init=theta_init[["rd_init"]],cd_init=0,
       sm_init=theta_init[["sm_init"]],em_init=theta_init[["em_init"]],im_init=theta_init[["im_init"]])
-    
+    theta[["rho"]] <- 0
     # Output simulation data
     output <- simulate_deterministic_noage_DENVimm(theta, init1, time.vals.sim)
     
@@ -62,6 +62,7 @@ Deterministic_modelR_final_DENVimmmunity <- function(agestructure=NULL, theta, t
     casecount[casecount<0] <- 0
     #plot(casecountD,type='l')
     #lines(casecount,type='l',col=2)
+    #plot(casecount, type='l')
     
     # Calculate seropositivity at pre-specified dates and corresponding likelihood
     i=1; seroP=NULL; binom.lik=NULL

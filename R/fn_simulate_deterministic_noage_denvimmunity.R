@@ -20,6 +20,7 @@ simulate_deterministic_noage_DENVimm <- function(theta, init.state, time.vals.si
     gamma <-    theta[["Inf"]]
     chi <-    theta[["chi"]]
     omega_d <- theta[['omega_d']]
+    rho <-    theta[["rho"]]
     
     if(time<theta[["denv_start"]]){
       beta_d <- 0
@@ -47,7 +48,7 @@ simulate_deterministic_noage_DENVimm <- function(theta, init.state, time.vals.si
     IM <- state[["im_init"]]
     
     # Human population
-    dS  =  - S*(beta_h1*IM) - chi*Sd*(beta_d*Id/Nsize) + chi*omega_d*Rd
+    dS  =  - S*(beta_h1*IM) - chi*rho*Sd*(beta_d*Id/Nsize) + (chi*rho*omega_d*Rd)
     dE  =  S*(beta_h1*IM) - alpha_h*E  
     dI  = alpha_h*E  - gamma*I
     dR  = gamma*I
