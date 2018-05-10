@@ -3,7 +3,7 @@ library("devtools")
 #devtools::install_github("klutometis/roxygen")
 library(roxygen2)
 
-setwd("~/Documents/R")
+setwd("/Users/AHenderson/Documents/R")
 #create("vectorbornefit")
 
 # create documentation
