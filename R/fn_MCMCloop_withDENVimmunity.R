@@ -16,6 +16,18 @@ MCMCloop_withDENVimmunity <- function(agestructure, sample.start.point=T, includ
       cov_matrix_theta=epsilon0*cov_matrix_theta0
       cov_matrix_thetaA=epsilon0*cov_matrix_thetaAll
       cov_matrix_theta_init=epsilon0*cov_matrix_theta_initAll
+        # set current values for vectors to be updated in MH algroithm 
+        thetatab_current = thetatab[m,]
+        thetaAlltab_current = thetaAlltab[m,,]
+        theta_initAlltab_current = theta_initAlltab[m,,]
+        c_trace_tab_current = c_trace_tab[m,,]
+        s_trace_tab_current = s_trace_tab[m,,]
+        r_trace_tab_current = r_trace_tab[m,,]
+        x_trace_tab_current =  x_trace_tab[m,,]
+        sim_liktab_current = sim_liktab[m]
+        prior_current = prior[m]
+        # initialise counter for storing results (m/thining parameter)
+        j=1
     }else{
       epsilon0 = max(min(0.1,exp(log(epsilon0)+(accept_rate-0.234)*0.999^m)),1e-6) # Stop epsilon getting too big or small
       cov_matrix_theta=epsilon0*cov_matrix_theta0
@@ -25,25 +37,25 @@ MCMCloop_withDENVimmunity <- function(agestructure, sample.start.point=T, includ
     
     ## Resample global theta every X step
     if(m %% 2==0){
-      output_theta = SampleTheta(thetatab[m,],theta_initAlltab[1,1,],cov_matrix_theta,cov_matrix_theta_init,agestructure,global=1)
+      output_theta = SampleTheta(thetatab_current,theta_initAlltab_current[iiH,],cov_matrix_theta,cov_matrix_theta_init,agestructure,global=1)
       theta_star=output_theta$thetaS
     }else{
-      theta_star=thetatab[m,]
+      theta_star=thetatab_current
     }
     
     ## Resample local parameters every step
     prior.star=1
     sim_marg_lik_star=0
-    thetaAllstar=0*thetaAlltab[m,,]
-    theta_initAllstar=0*theta_initAlltab[m,,]
-    cTraceStar=0*c_trace_tab[m,,]
-    sTraceStar=0*s_trace_tab[m,,]
-    rTraceStar=0*r_trace_tab[m,,]
-    xTraceStar=0*x_trace_tab[m,,]
-    sTraceCStar=0*c_trace_tabC[m,,]; cTraceAStar=0*c_trace_tabA[m,,]
-    sTraceCStar=0*s_trace_tabC[m,,]; sTraceAStar=0*s_trace_tabA[m,,]
-    rTraceCStar=0*r_trace_tabC[m,,]; rTraceAStar=0*r_trace_tabA[m,,]
-    xTraceCStar=0*x_trace_tabC[m,,]; xTraceAStar=0*x_trace_tabA[m,,]
+    thetaAllstar=0*thetaAlltab_current
+    theta_initAllstar=0*theta_initAlltab_current
+    cTraceStar=0*c_trace_tab_current
+    sTraceStar=0*s_trace_tab_current
+    rTraceStar=0*r_trace_tab_current
+    xTraceStar=0*x_trace_tab_current
+    sTraceCStar=0*c_trace_tab_current; cTraceAStar=0*c_trace_tab_current
+    sTraceCStar=0*s_trace_tab_current; sTraceAStar=0*s_trace_tab_current
+    rTraceCStar=0*r_trace_tab_current; rTraceAStar=0*r_trace_tab_current
+    xTraceCStar=0*x_trace_tab_current; xTraceAStar=0*x_trace_tab_current
     #kk=1
     for(kk in itertab){ 
       iiH=kk
@@ -51,9 +63,9 @@ MCMCloop_withDENVimmunity <- function(agestructure, sample.start.point=T, includ
         list2env(data,globalenv())
       
       if(m==1){ # Don't resample on 1st step - check the zeroes!
-        output_H = SampleTheta(thetaAlltab[m,iiH,],theta_initAlltab[m,iiH,],0*cov_matrix_thetaA,0*cov_matrix_theta_init,agestructure,global=0)
+        output_H = SampleTheta(thetaAlltab_current[iiH,],theta_initAlltab_current[iiH,],0*cov_matrix_thetaA,0*cov_matrix_theta_init,agestructure,global=0)
       }else{
-        output_H = SampleTheta(thetaAlltab[m,iiH,],theta_initAlltab[m,iiH,],cov_matrix_thetaA,cov_matrix_theta_init,agestructure,global=0)
+        output_H = SampleTheta(thetaAlltab_current[iiH,],theta_initAlltab_current[iiH,],cov_matrix_thetaA,cov_matrix_theta_init,agestructure,global=0)
         #output_H$thetaS[['t0']]; log(output_H$thetaS[['t0']])
       } 
       thetaA_star=output_H$thetaS
@@ -127,7 +139,7 @@ MCMCloop_withDENVimmunity <- function(agestructure, sample.start.point=T, includ
             }
       }
       #message(paste0("T/F=",sum(date.vals <= startdate)==0," ln dataframe=",length(cTraceStar[iiH,])," // ln y.vals=",length(y.vals)," // start out=",start.of.output1, " len= ", length.of.output1, " = ", length.of.output1-start.of.output1))
-      prior.theta <- ComputePrior(iiH, c(thetatab[m,],thetaAlltab[m,iiH,]), c(theta_star,thetaA_star))
+      prior.theta <- ComputePrior(iiH, c(thetatab_current,thetaAlltab_current[iiH,]), c(theta_star,thetaA_star))
       prior.star <- prior.theta$prior.star*prior.star
     } # end loop over regions
     
@@ -135,8 +147,11 @@ MCMCloop_withDENVimmunity <- function(agestructure, sample.start.point=T, includ
     q_theta_given_theta_star = 1
     q_theta_star_given_theta = 1
     
-    val = exp((sim_marg_lik_star-sim_liktab[m]))*(prior.star/prior[m])*(q_theta_given_theta_star/q_theta_star_given_theta) 
+    if(m == 1){
+      prior.star = 1 
+    }
     
+    val = exp((sim_marg_lik_star-sim_liktab_current))*(prior.star/prior_current)*(q_theta_given_theta_star/q_theta_star_given_theta) 
     if(is.na(val)){
       output_prob=0}else if(is.nan(val)){
         output_prob=0}else if(is.null(val)){
@@ -145,53 +160,62 @@ MCMCloop_withDENVimmunity <- function(agestructure, sample.start.point=T, includ
               output_prob = min(val, 1)}
     
     # Update parameter values
-    if(runif(1,0,1) < output_prob){
-      thetatab[m+1,] = theta_star
-      thetaAlltab[m+1,,] = thetaAllstar
-      theta_initAlltab[m+1,,] = theta_initAllstar
-      c_trace_tab[m+1,,]=cTraceStar
-      s_trace_tab[m+1,,]=sTraceStar
-      r_trace_tab[m+1,,]=rTraceStar
-      x_trace_tab[m+1,,]=xTraceStar
-      sim_liktab[m+1] = sim_marg_lik_star
-      accepttab[m]=1
-      prior[m+1] = prior.star
-      if(agestructure==1){
-        s_trace_tabC[m+1,,]=sTraceCStar; s_trace_tabA[m+1,,]=sTraceAStar
-        r_trace_tabC[m+1,,]=rTraceCStar; r_trace_tabA[m+1,,]=rTraceAStar
-        c_trace_tabC[m+1,,]=cTraceCStar; c_trace_tabA[m+1,,]=cTraceAStar
-        x_trace_tabC[m+1,,]=xTraceCStar; x_trace_tabA[m+1,,]=xTraceAStar
+    MH_random_unif <- runif(1,0,1)
+    if(m %% thinning.parameter == 0){
+      if(MH_random_unif < output_prob){
+        thetatab[j+1,] = theta_star
+        thetaAlltab[j+1,,] = thetaAllstar
+        theta_initAlltab[j+1,,] = theta_initAllstar
+        c_trace_tab[j+1,,]=cTraceStar
+        s_trace_tab[j+1,,]=sTraceStar
+        r_trace_tab[j+1,,]=rTraceStar
+        x_trace_tab[j+1,,]=xTraceStar
+        sim_liktab[j+1] = sim_marg_lik_star
+        accepttab[j]=1
+        prior[j+1] = prior.star
+        #if(agestructure==1){
+        #  s_trace_tabC[m+1,,]=sTraceCStar; s_trace_tabA[m+1,,]=sTraceAStar
+        #  r_trace_tabC[m+1,,]=rTraceCStar; r_trace_tabA[m+1,,]=rTraceAStar
+        #  c_trace_tabC[m+1,,]=cTraceCStar; c_trace_tabA[m+1,,]=cTraceAStar
+        #  x_trace_tabC[m+1,,]=xTraceCStar; x_trace_tabA[m+1,,]=xTraceAStar
+        #}
+      }else{
+        thetatab[j+1,] = thetatab[j,]
+        thetaAlltab[j+1,,] = thetaAlltab[j,,]
+        theta_initAlltab[j+1,,] = theta_initAlltab[j,,]
+        c_trace_tab[j+1,,]=c_trace_tab[j,,]
+        s_trace_tab[j+1,,]=s_trace_tab[j,,]
+        r_trace_tab[j+1,,]=r_trace_tab[j,,]
+        x_trace_tab[j+1,,]=x_trace_tab[j,,]
+        sim_liktab[j+1] = sim_liktab[j]
+        accepttab[j]=0
+        prior[j+1] = prior[j] 
+        #if(agestructure==1){
+        #  s_trace_tabC[m+1,,]=s_trace_tabC[m,,]; s_trace_tabA[m+1,,]=s_trace_tabA[m,,]
+        #  r_trace_tabC[m+1,,]=r_trace_tabC[m,,]; r_trace_tabA[m+1,,]=r_trace_tabA[m,,]
+        #  c_trace_tabC[m+1,,]=c_trace_tabC[m,,]; c_trace_tabA[m+1,,]=c_trace_tabA[m,,]
+        #  x_trace_tabC[m+1,,]=x_trace_tabC[m,,]; x_trace_tabA[m+1,,]=x_trace_tabA[m,,]
+        #}
       }
-    }else{
-      thetatab[m+1,] = thetatab[m,]
-      thetaAlltab[m+1,,] = thetaAlltab[m,,]
-      theta_initAlltab[m+1,,] = theta_initAlltab[m,,]
-      c_trace_tab[m+1,,]=c_trace_tab[m,,]
-      s_trace_tab[m+1,,]=s_trace_tab[m,,]
-      r_trace_tab[m+1,,]=r_trace_tab[m,,]
-      x_trace_tab[m+1,,]=x_trace_tab[m,,]
-      sim_liktab[m+1] = sim_liktab[m]
-      accepttab[m]=0
-      prior[m+1] = prior[m] 
-      if(agestructure==1){
-        s_trace_tabC[m+1,,]=s_trace_tabC[m,,]; s_trace_tabA[m+1,,]=s_trace_tabA[m,,]
-        r_trace_tabC[m+1,,]=r_trace_tabC[m,,]; r_trace_tabA[m+1,,]=r_trace_tabA[m,,]
-        c_trace_tabC[m+1,,]=c_trace_tabC[m,,]; c_trace_tabA[m+1,,]=c_trace_tabA[m,,]
-        x_trace_tabC[m+1,,]=x_trace_tabC[m,,]; x_trace_tabA[m+1,,]=x_trace_tabA[m,,]
-      }
+      accept_rate=sum(accepttab[1:j])/j
+      j <- j+1
     }
+      if(MH_random_unif < output_prob){
+        thetatab_current = theta_star
+        thetaAlltab_current = thetaAllstar
+        theta_initAlltab_current = theta_initAllstar
+        c_trace_tab_current = cTraceStar
+        s_trace_tab_current = sTraceStar
+        r_trace_tab_current = rTraceStar
+        x_trace_tab_current = xTraceStar
+        sim_liktab_current = sim_marg_lik_star
+        prior_current = prior.star
+      }
     
     if(m<20){
       accept_rate=0.234
-    }else{
-      accept_rate=sum(accepttab[1:m])/m
     }
-    
-    #message(paste0("lik=",sim_liktab[m+1]," start out=",start.of.output1, "len=", length.of.output1, "=", length.of.output1-length.of.output1))
-    if(m %% min(MCMC.runs,100) == 0){
-      message(paste0(m,accept_rate,sim_liktab[m],as.Date(startdate+log(thetaAlltab[m+1,1,'t0']),origin="1970-01-01"),r_trace_tab[m+1,1,length(r_trace_tab[1,1,])]/thetatab[1,'npop']))
-      #  save(sim_liktab,prior,accepttab,s_trace_tab,c_trace_tab,r_trace_tab,x_trace_tab,thetatab,thetaAlltab,theta_initAlltab,file=paste("posterior_outputZ/outputR_",run.name,".RData",sep=""))
-    }
+    #print(c(m, j, val, prior.star,accept_rate))
     
   } # End MCMC loop
   

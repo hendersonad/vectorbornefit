@@ -130,45 +130,47 @@ cov_matrix_theta_initAll = diag(npcInit)
   rownames(cov_matrix_theta_initAll)=names(theta_initAll[1,])
 
 ## Set up empty frames to store results
-thetatab=matrix(NA,nrow=(MCMC.runs+1),ncol=length(theta))
+length.of.results.frames <- round(MCMC.runs/thinning.parameter,0)+1
+#
+thetatab=matrix(NA,nrow=(length.of.results.frames+1),ncol=length(theta))
 colnames(thetatab)=names(theta)
 thetatab[1,]=theta
 
-thetaAlltab=array(NA, dim=c(MCMC.runs+1,locnn,length(thetaAll[1,])),dimnames=list(NULL,NULL,names(thetaAll)))
+thetaAlltab=array(NA, dim=c(length.of.results.frames+1,locnn,length(thetaAll[1,])),dimnames=list(NULL,NULL,names(thetaAll)))
 thetaAlltab[1,,]=as.matrix(thetaAll)
 
-theta_initAlltab=array(NA, dim=c(MCMC.runs+1,locnn,length(theta_initAll[1,])),dimnames=list(NULL,NULL,names(theta_initAll)))
+theta_initAlltab=array(NA, dim=c(length.of.results.frames+1,locnn,length(theta_initAll[1,])),dimnames=list(NULL,NULL,names(theta_initAll)))
 theta_initAlltab[1,,]=as.matrix(theta_initAll)
 
-prior=rep(1,(MCMC.runs+1))
-sim_liktab=rep(-Inf,(MCMC.runs+1))
-accepttab=rep(NA,(MCMC.runs))
+prior=rep(1,(length.of.results.frames+1))
+sim_liktab=rep(-Inf,(length.of.results.frames+1))
+accepttab=rep(NA,(length.of.results.frames))
 
 full.series = seq(start.output.date,end.output.date,7)
 max.length = length(full.series)
 
 #total pop
 #c
-c_trace_tab=array(NA, dim=c(MCMC.runs+1,locnn,max.length)) 
+c_trace_tab=array(NA, dim=c(length.of.results.frames+1,locnn,max.length)) 
 #s
-s_trace_tab=array(NA, dim=c(MCMC.runs+1,locnn,max.length)) 
+s_trace_tab=array(NA, dim=c(length.of.results.frames+1,locnn,max.length)) 
 #r
-r_trace_tab=array(NA, dim=c(MCMC.runs+1,locnn,max.length)) 
+r_trace_tab=array(NA, dim=c(length.of.results.frames+1,locnn,max.length)) 
 #x
-x_trace_tab=array(NA, dim=c(MCMC.runs+1,locnn,max.length)) 
+x_trace_tab=array(NA, dim=c(length.of.results.frames+1,locnn,max.length)) 
 #age split
 #c
-c_trace_tabC=array(NA, dim=c(MCMC.runs+1,locnn,max.length))
-c_trace_tabA=array(NA, dim=c(MCMC.runs+1,locnn,max.length))
+c_trace_tabC=array(NA, dim=c(length.of.results.frames+1,locnn,max.length))
+c_trace_tabA=array(NA, dim=c(length.of.results.frames+1,locnn,max.length))
 #s
-s_trace_tabC=array(NA, dim=c(MCMC.runs+1,locnn,max.length))
-s_trace_tabA=array(NA, dim=c(MCMC.runs+1,locnn,max.length))
+s_trace_tabC=array(NA, dim=c(length.of.results.frames+1,locnn,max.length))
+s_trace_tabA=array(NA, dim=c(length.of.results.frames+1,locnn,max.length))
 #r
-r_trace_tabC=array(NA, dim=c(MCMC.runs+1,locnn,max.length))
-r_trace_tabA=array(NA, dim=c(MCMC.runs+1,locnn,max.length))
+r_trace_tabC=array(NA, dim=c(length.of.results.frames+1,locnn,max.length))
+r_trace_tabA=array(NA, dim=c(length.of.results.frames+1,locnn,max.length))
 #x
-x_trace_tabC=array(NA, dim=c(MCMC.runs+1,locnn,max.length))
-x_trace_tabA=array(NA, dim=c(MCMC.runs+1,locnn,max.length))
+x_trace_tabC=array(NA, dim=c(length.of.results.frames+1,locnn,max.length))
+x_trace_tabA=array(NA, dim=c(length.of.results.frames+1,locnn,max.length))
 
 return(list(prior=prior,
             sim_liktab=sim_liktab,

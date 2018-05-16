@@ -9,6 +9,9 @@
 #thetaAllstar=thetaAllstar
 #thetaAlltab=c(thetatab[m,],thetaAlltab[m,iiH,])
 #thetaAllstar=c(theta_star,thetaA_star)
+#thetaAlltab= c(thetatab_current,thetaAlltab_current[iiH,])
+#thetaAllstar=c(theta_star,thetaA_star)
+
 ComputePrior <- function(iiH, thetaAlltab, thetaAllstar){
 
 p_theta_star = priorInf(1/thetaAllstar["Inf"])*priorExp(1/thetaAllstar["Exp"])*

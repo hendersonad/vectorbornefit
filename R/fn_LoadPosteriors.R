@@ -6,6 +6,9 @@
 #' @param mcmc.burn Between 0 and 1. Proportion of iterations to discard.
 ##' @export 
 ##' 
+# iiM=1
+# mcmc.burn=0.2
+
 load.posteriors <- function(agestructure, iiH, mcmc.burn){
 m.tot=length(list.files(path = paste("posterior_output","Z",sep="")))
 thetatabA=NULL
