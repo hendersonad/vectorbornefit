@@ -18,7 +18,8 @@ p_theta_star = priorInf(1/thetaAllstar["Inf"])*priorExp(1/thetaAllstar["Exp"])*
                 priorVEx(1/thetaAllstar["Exp"])*priorMuV(1/thetaAllstar["MuV"])*
                 priorBeta_amp(thetaAllstar["beta_v_amp"])*priorBeta_mid(thetaAllstar["beta_v_mid"])*
                 priorchi(thetaAllstar["chi"])*
-                priort0(thetaAllstar["t0"])
+                priort0(thetaAllstar["t0"])*
+                priorepsilon(thetaAllstar["epsilon"])
 if(vector.control==T){
   p_theta_star <- p_theta_star*priorBeta_base(thetaAllstar["beta_base"])
 }
@@ -26,7 +27,8 @@ p_theta = priorInf(1/thetaAlltab["Inf"])*priorExp(1/thetaAlltab["Exp"])*
             priorVEx(1/thetaAlltab["Exp"])*priorMuV(1/thetaAlltab["MuV"])*
             priorBeta_amp(thetaAlltab["beta_v_amp"])*priorBeta_mid(thetaAlltab["beta_v_mid"])*
             priorchi(thetaAlltab["chi"])*
-            priort0(thetaAlltab["t0"])
+            priort0(thetaAlltab["t0"])*
+            priorepsilon(thetaAlltab["epsilon"])
 if(vector.control==T){
   p_theta <- p_theta*priorBeta_base(thetaAlltab["beta_base"])
 }

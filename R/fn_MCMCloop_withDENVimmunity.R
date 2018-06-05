@@ -26,6 +26,8 @@ MCMCloop_withDENVimmunity <- function(agestructure, sample.start.point=T, includ
         x_trace_tab_current =  x_trace_tab[m,,]
         sim_liktab_current = sim_liktab[m]
         prior_current = prior[m]
+        #prior.theta <- ComputePrior(iiH, c(thetatab_current,thetaAlltab_current[iiH,]), c(thetatab_current,thetaAlltab_current[iiH,]))
+        #prior_current <- prior.theta$prior.star
         # initialise counter for storing results (m/thining parameter)
         j=1
     }else{
@@ -45,6 +47,7 @@ MCMCloop_withDENVimmunity <- function(agestructure, sample.start.point=T, includ
     
     ## Resample local parameters every step
     prior.star=1
+    prior.current=1
     sim_marg_lik_star=0
     thetaAllstar=0*thetaAlltab_current
     theta_initAllstar=0*theta_initAlltab_current
@@ -90,7 +93,6 @@ MCMCloop_withDENVimmunity <- function(agestructure, sample.start.point=T, includ
       # Run model simulation
       output1 = Deterministic_modelR_final_DENVimmmunity(agestructure,c(theta_star,thetaA_star,theta_denv), theta_init_star, locationI=locationtab[iiH], seroposdates=seroposdates, episeason=episeason, include.count=include.count)
       sim_marg_lik_star=sim_marg_lik_star + output1$lik
-
 
       #Store vales
       thetaAllstar[iiH,]=thetaA_star
@@ -141,6 +143,7 @@ MCMCloop_withDENVimmunity <- function(agestructure, sample.start.point=T, includ
       #message(paste0("T/F=",sum(date.vals <= startdate)==0," ln dataframe=",length(cTraceStar[iiH,])," // ln y.vals=",length(y.vals)," // start out=",start.of.output1, " len= ", length.of.output1, " = ", length.of.output1-start.of.output1))
       prior.theta <- ComputePrior(iiH, c(thetatab_current,thetaAlltab_current[iiH,]), c(theta_star,thetaA_star))
       prior.star <- prior.theta$prior.star*prior.star
+      prior.current <- prior.theta$prior*prior.current
     } # end loop over regions
     
     # Calculate probability function - MH algorithm
@@ -151,13 +154,15 @@ MCMCloop_withDENVimmunity <- function(agestructure, sample.start.point=T, includ
       prior.star = 1 
     }
     
-    val = exp((sim_marg_lik_star-sim_liktab_current))*(prior.star/prior_current)*(q_theta_given_theta_star/q_theta_star_given_theta) 
+    val = exp((sim_marg_lik_star-sim_liktab_current))*(prior.star/prior.current)*(q_theta_given_theta_star/q_theta_star_given_theta) 
     if(is.na(val)){
       output_prob=0}else if(is.nan(val)){
         output_prob=0}else if(is.null(val)){
           output_prob=0}else if(length(val)==0){
             output_prob=0}else{
               output_prob = min(val, 1)}
+    
+    #print(c(thetaAlltab_current[iiH,'epsilon'],output1$lik,prior.star,output_prob))
     
     # Update parameter values
     MH_random_unif <- runif(1,0,1)
