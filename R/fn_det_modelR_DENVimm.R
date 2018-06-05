@@ -55,6 +55,7 @@ Deterministic_modelR_final_DENVimmmunity <- function(agestructure=NULL, theta, t
     S_traj <- output[match(time.vals.sim,output$time),"s_init"]
     X_traj <- output[match(time.vals.sim,output$time),"sm_init"]
     R_traj <- output[match(time.vals.sim,output$time),"r_init"]
+    I_traj <- output[match(time.vals.sim,output$time),"i_init"]
     cases1 <- output[match(time.vals.sim,output$time),"c_init"]
     casesD <- output[match(time.vals.sim,output$time),"cd_init"]
     casecount <- cases1-c(0,cases1[1:(length(time.vals.sim)-1)])
@@ -70,10 +71,10 @@ Deterministic_modelR_final_DENVimmmunity <- function(agestructure=NULL, theta, t
     lum.y <- c("13","15","17")
     for(date in seroposdates){
       if(date < min(date.vals)){
-        seroP[i] <- nLUM[lum.y==sero.y[i]]/nPOP[lum.y==sero.y[i]] #0.06550218 # 1/theta[["npop"]]   #1e-10
+        seroP[i] <- nLUM[lum.y==sero.y[i]]/nPOP[lum.y==sero.y[i]] + theta[['epsilon']]
         binom.lik[i] <- (dbinom(nLUM[lum.y==sero.y[i]], size=nPOP[lum.y==sero.y[i]], prob=seroP[i], log = T))
         }else{
-          seroP[i] <-  min(R_traj[date.vals<date+3.5 & date.vals>date-3.5])/theta[["npop"]]
+          seroP[i] <-  min(R_traj[date.vals<date+3.5 & date.vals>date-3.5])/theta[["npop"]] + theta[['epsilon']]
           binom.lik[i] <- (dbinom(nLUM[lum.y==sero.y[i]], size=nPOP[lum.y==sero.y[i]], prob=seroP[i], log = T))
           }
         i <- i+1
