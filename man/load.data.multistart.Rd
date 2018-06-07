@@ -4,12 +4,10 @@
 \alias{load.data.multistart}
 \title{Load data for model fitting}
 \usage{
-load.data.multistart(agestructure = NULL, add.nulls = 0, startdate, Virus,
-  cases.file.name, serology.file.name, init.values.file.name)
+load.data.multistart(add.nulls = 0, startdate, Virus, cases.file.name,
+  serology.file.name, init.values.file.name)
 }
 \arguments{
-\item{agestructure}{Binary indicator variable if model is age structured (1) or not (0) between children and adults. Defaults to NULL in which case no sampling happens}
-
 \item{add.nulls}{Number of time series values to add to end (default is 0)}
 
 \item{startdate}{Start month of time series}
@@ -25,3 +23,4 @@ load.data.multistart(agestructure = NULL, add.nulls = 0, startdate, Virus,
 \description{
 This function loads surveillance cases, serology results and initial parameter values for vector-borne model fitting
 }
+\keyword{import}

@@ -1,26 +1,21 @@
-#' Setup results vectors and dataframes and load initial values
+#' Setup results vectors and dataframes and load initial values. Totally susceptible initially
 #' 
-#' Setup results vectors and dataframes and load initial values
-#' @param agestructure Binary indicator variable if model is age structured (1) or not (0) between children and adults. Defaults to NULL in which case no sampling happens 
+#' Setup results vectors and dataframes and load initial values. Totally susceptible initially
 #' @param iiH PLace in locationtab of location being processed
 #' @param parameter_est_file Name of csv file with parameters to be estimated included
 #' @export
 
-results.set.up <- function(agestructure,iiH, parameter_est_file){
-# Set up vectors for storing their values during MCMC loop
+results_set_up <- function(iiH, parameter_est_file){
+  # Set up vectors for storing their values during MCMC loop
   thetaAll=data.frame(rep(NA,locnn))
   for (i in 1:(length(thetaR_IC_local$param)-1)){
     thetaAll <- cbind(thetaAll, rep(NA,locnn))  
   }
   names(thetaAll) <- thetaR_IC_local$param
 
-  if(agestructure==1){
-    compartments=c('s_initC','e_initC','i1_initC','r_initC','s_initA','e_initA','i1_initA','r_initA',
-                   'sm_initC','em_initC','im_initC','sm_initA','em_initA','im_initA')   
-  }else{
-    compartments=c('s_init','e_init','i1_init','r_init',
-                   'sm_init','em_init','im_init')   
-  }
+  compartments=c('s_init','e_init','i1_init','r_init',
+                 'sd_init','ed_init','id_init','rd_init',
+                 'sm_init','em_init','im_init')   
   
   theta_initAll=data.frame(rep(NA,locnn))
   for (i in 1:(length(compartments)-1)){
@@ -66,36 +61,24 @@ for(iiH in itertab){
   }
   
   ## Initial compartment conditions
-  initial_inf=as.numeric(thetaAll[iiH,'inf0']) #*(popsizeTot/2))
+  initial_inf=as.numeric(thetaAll[iiH,'inf0'])
   init_vec=as.numeric(thetaAll[iiH,'vec0']/2)
   
-  # initial recovered 
-  if(agestructure==1){
-    theta_initAll[iiH,"r_initC"]=popsizeC*(nLUM[1]/nPOP[1]) # NOTE HARD CODED (pIgG_75/nIgG_75) #
-    theta_initAll[iiH,"r_initA"]=popsizeA*(nLUM[(length(nLUM)/2)+1]/nPOP[(length(nLUM)/2)+1]) # NOTE HARD CODED (pIgG_75/nIgG_75) #
-      theta_initAll[iiH,"e_initC"]=initial_inf; theta_initAll[iiH,"i1_initC"]=initial_inf
-      theta_initAll[iiH,"em_initC"]=init_vec; theta_initAll[iiH,"im_initC"]=init_vec
-      theta_initAll[iiH,"e_initA"]=initial_inf; theta_initAll[iiH,"i1_initA"]=initial_inf
-      theta_initAll[iiH,"em_initA"]=init_vec; theta_initAll[iiH,"im_initA"]=init_vec
-      
-      theta_initAll[iiH,"s_initC"]=popsizeC-theta_initAll[iiH,"i1_initC"]-theta_initAll[iiH,"e_initC"]-theta_initAll[iiH,"r_initC"]
-      theta_initAll[iiH,"sm_initC"]=1-theta_initAll[iiH,"em_initC"]-theta_initAll[iiH,"im_initC"]
-      
-      theta_initAll[iiH,"s_initA"]=popsizeA-theta_initAll[iiH,"i1_initA"]-theta_initAll[iiH,"e_initA"]-theta_initAll[iiH,"r_initA"]
-      theta_initAll[iiH,"sm_initA"]=1-theta_initAll[iiH,"em_initA"]-theta_initAll[iiH,"im_initA"]
-  }else{
-    theta_initAll[iiH,"r_init"]=popsizeTot*(nLUM[1]/nPOP[1]) 
-      theta_initAll[iiH,"e_init"]=initial_inf; theta_initAll[iiH,"i1_init"]=initial_inf
-      theta_initAll[iiH,"em_init"]=init_vec; theta_initAll[iiH,"im_init"]=init_vec
-      
-      theta_initAll[iiH,"s_init"]=popsizeTot-theta_initAll[iiH,"i1_init"]-theta_initAll[iiH,"e_init"]-theta_initAll[iiH,"r_init"]
-      theta_initAll[iiH,"sm_init"]=1-theta_initAll[iiH,"em_init"]-theta_initAll[iiH,"im_init"]
+  theta_initAll[iiH,"r_init"]=0
+  theta_initAll[iiH,"e_init"]=initial_inf; theta_initAll[iiH,"i1_init"]=initial_inf
+  theta_initAll[iiH,"em_init"]=init_vec; theta_initAll[iiH,"im_init"]=init_vec
+  
+  theta_initAll[iiH,"s_init"]=popsizeTot-theta_initAll[iiH,"i1_init"]-theta_initAll[iiH,"e_init"]-theta_initAll[iiH,"r_init"]
+  theta_initAll[iiH,"sm_init"]=1-theta_initAll[iiH,"em_init"]-theta_initAll[iiH,"im_init"]
+  
+  theta_initAll[iiH,"ed_init"]=0; theta_initAll[iiH,"id_init"]=thetainit_denv[["i1_init"]]; theta_initAll[iiH,"rd_init"]=0
+  theta_initAll[iiH,"sd_init"]=popsizeTot-theta_initAll[iiH,"id_init"]-theta_initAll[iiH,"ed_init"]-theta_initAll[iiH,"rd_init"]
   }
-}
 
 ## Covariance matrices 
 parameters_est <- read.csv(paste0("data_sets/",parameter_est_file,".csv"), stringsAsFactors = F) 
 parms_to_est <- parameters_est$parameters_est
+if(sample.start.point==T){parms_to_est <- c(parms_to_est, "t0")}
 compartments_to_est <- parameters_est$compartments_est
 
 #theta - global
@@ -123,42 +106,34 @@ cov_matrix_theta_initAll = diag(npcInit)
   rownames(cov_matrix_theta_initAll)=names(theta_initAll[1,])
 
 ## Set up empty frames to store results
-thetatab=matrix(NA,nrow=(MCMC.runs+1),ncol=length(theta))
+length.of.results.frames <- round(MCMC.runs/thinning.parameter,0)+1
+
+thetatab=matrix(NA,nrow=(length.of.results.frames+1),ncol=length(theta))
 colnames(thetatab)=names(theta)
 thetatab[1,]=theta
 
-thetaAlltab=array(NA, dim=c(MCMC.runs+1,locnn,length(thetaAll[1,])),dimnames=list(NULL,NULL,names(thetaAll)))
+thetaAlltab=array(NA, dim=c(length.of.results.frames+1,locnn,length(thetaAll[1,])),dimnames=list(NULL,NULL,names(thetaAll)))
 thetaAlltab[1,,]=as.matrix(thetaAll)
 
-theta_initAlltab=array(NA, dim=c(MCMC.runs+1,locnn,length(theta_initAll[1,])),dimnames=list(NULL,NULL,names(theta_initAll)))
+theta_initAlltab=array(NA, dim=c(length.of.results.frames+1,locnn,length(theta_initAll[1,])),dimnames=list(NULL,NULL,names(theta_initAll)))
 theta_initAlltab[1,,]=as.matrix(theta_initAll)
 
-prior=rep(1,(MCMC.runs+1))
-sim_liktab=rep(-Inf,(MCMC.runs+1))
-accepttab=rep(NA,(MCMC.runs))
-max.length = length(time.vals)
+prior=rep(1,(length.of.results.frames+1))
+sim_liktab=rep(-Inf,(length.of.results.frames+1))
+accepttab=rep(NA,(length.of.results.frames))
+
+full.series = seq(start.output.date,end.output.date,7)
+max.length = length(full.series)
+
 #total pop
 #c
-c_trace_tab=array(NA, dim=c(MCMC.runs+1,locnn,max.length)) 
+c_trace_tab=array(NA, dim=c(length.of.results.frames+1,locnn,max.length)) 
 #s
-s_trace_tab=array(NA, dim=c(MCMC.runs+1,locnn,max.length)) 
+s_trace_tab=array(NA, dim=c(length.of.results.frames+1,locnn,max.length)) 
 #r
-r_trace_tab=array(NA, dim=c(MCMC.runs+1,locnn,max.length)) 
+r_trace_tab=array(NA, dim=c(length.of.results.frames+1,locnn,max.length)) 
 #x
-x_trace_tab=array(NA, dim=c(MCMC.runs+1,locnn,max.length)) 
-#age split
-#c
-c_trace_tabC=array(NA, dim=c(MCMC.runs+1,locnn,max.length))
-c_trace_tabA=array(NA, dim=c(MCMC.runs+1,locnn,max.length))
-#s
-s_trace_tabC=array(NA, dim=c(MCMC.runs+1,locnn,max.length))
-s_trace_tabA=array(NA, dim=c(MCMC.runs+1,locnn,max.length))
-#r
-r_trace_tabC=array(NA, dim=c(MCMC.runs+1,locnn,max.length))
-r_trace_tabA=array(NA, dim=c(MCMC.runs+1,locnn,max.length))
-#x
-x_trace_tabC=array(NA, dim=c(MCMC.runs+1,locnn,max.length))
-x_trace_tabA=array(NA, dim=c(MCMC.runs+1,locnn,max.length))
+x_trace_tab=array(NA, dim=c(length.of.results.frames+1,locnn,max.length)) 
 
 return(list(prior=prior,
             sim_liktab=sim_liktab,
@@ -168,14 +143,6 @@ return(list(prior=prior,
             s_trace_tab=s_trace_tab,
             r_trace_tab=r_trace_tab,
             x_trace_tab=x_trace_tab,
-            c_trace_tabC=c_trace_tabC,
-            c_trace_tabA=c_trace_tabA,
-            s_trace_tabC=s_trace_tabC,
-            s_trace_tabA=s_trace_tabA,
-            r_trace_tabC=r_trace_tabC,
-            r_trace_tabA=r_trace_tabA,
-            x_trace_tabC=x_trace_tabC,
-            x_trace_tabA=x_trace_tabA,
             thetatab=thetatab,
             thetaAlltab=thetaAlltab,
             theta_initAlltab=theta_initAlltab,

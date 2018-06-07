@@ -6,6 +6,11 @@
 \usage{
 theme_zika_fiji(base_size = 11, base_family = "")
 }
+\arguments{
+\item{base_size}{default = 11}
+
+\item{base_family}{default = ""}
+}
 \description{
-Background theme for ggplots for Zika paper
+Background ggplot theme for all plots for Zika paper
 }
