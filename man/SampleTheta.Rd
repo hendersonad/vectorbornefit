@@ -5,7 +5,7 @@
 \title{Sample the vector of parameters from a multivariate normal distribution}
 \usage{
 SampleTheta(theta_in, theta_init_in, covartheta, covartheta_init,
-  global = NULL)
+  agestructure = NULL, global = NULL)
 }
 \arguments{
 \item{theta_in}{Vector of previous values of parameters}
@@ -16,8 +16,14 @@ SampleTheta(theta_in, theta_init_in, covartheta, covartheta_init,
 
 \item{covartheta_init}{Covariance matrix for initial conditions. Must be same width as length of theta_init_in}
 
+\item{agestructure}{Binary indicator variable if model is age structured (1) or not (0) between children and adults. Defaults to NULL in which case no sampling happens}
+
 \item{global}{Binary indicator variable if sampling global (1) or local (0) parameters. Defaults to NULL in which case no sampling happens}
 }
 \description{
 Sample a new vector of parameters (either global or local) and initial conditions using a multivariate normal dist
+}
+\examples{
+SampleTheta(thetaAlltab[m,iiH,],theta_initAlltab[m,iiH,],cov_matrix_thetaA,cov_matrix_theta_init,agestructure,global=0)
+SampleTheta(thetatab[m,],theta_initAlltab[1,1,],cov_matrix_theta,cov_matrix_theta_init,agestructure,global=1)
 }
