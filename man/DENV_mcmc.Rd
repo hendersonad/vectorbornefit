@@ -2,7 +2,7 @@
 % Please edit documentation in R/fn_DENV_MCMC.R
 \name{DENV_mcmc}
 \alias{DENV_mcmc}
-\title{R Code for SEIR DENV epidemic in a single population}
+\title{R Code for SIR epidemic in a single populations}
 \usage{
 DENV_mcmc(y.vals, time.vals, MCMC.runs)
 }
@@ -14,5 +14,5 @@ DENV_mcmc(y.vals, time.vals, MCMC.runs)
 \item{MCMC.runs}{number of iterations for MCMC loop}
 }
 \description{
-Single SEIR epidemic
+Single SIR epidemic
 }

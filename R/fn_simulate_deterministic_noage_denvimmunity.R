@@ -1,4 +1,4 @@
-#' ODEs for SEIR-SEI with cross immunity from denv infection
+#' ODEs for SEIR-SEI with noage structure
 #' 
 #' This function solves an SEIR-SEI vector borne disease model.
 #' @param theta Vector of parameters for model
@@ -21,8 +21,7 @@ simulate_deterministic_noage_DENVimm <- function(theta, init.state, time.vals.si
     chi <-    theta[["chi"]]
     omega_d <- theta[['omega_d']]
     
-    # No DENV outbreak until denv_start parameter reached in time.vals
-    if(time<theta[["denv_start"]]){ 
+    if(time<theta[["denv_start"]]){
       beta_d <- 0
       alpha_d <- 0 
       gamma_d <- 0

@@ -7,11 +7,11 @@
 ComputePrior(iiH, thetaAlltab, thetaAllstar)
 }
 \arguments{
-\item{iiH}{Numeric indicator of location given by location vector "locationtab[]"}
+\item{iiH}{Location}
 
-\item{thetaAlltab}{Current values of parameter set theta}
+\item{thetaAlltab}{Current values of theta}
 
-\item{thetaAllstar}{Proposed values of parameter set theta}
+\item{thetaAllstar}{Proposed values of theta}
 }
 \description{
 Compute prior

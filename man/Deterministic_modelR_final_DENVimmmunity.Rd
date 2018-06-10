@@ -4,10 +4,12 @@
 \alias{Deterministic_modelR_final_DENVimmmunity}
 \title{Deterministic SEIR-SEI function with no age structure}
 \usage{
-Deterministic_modelR_final_DENVimmmunity(theta, theta_init, locationI,
-  seroposdates, episeason, include.count = T)
+Deterministic_modelR_final_DENVimmmunity(agestructure = NULL, theta,
+  theta_init, locationI, seroposdates, episeason, include.count = T)
 }
 \arguments{
+\item{agestructure}{Binary indicator variable if model is age structured (1) or not (0) between children and adults. Defaults to NULL in which case no sampling happens}
+
 \item{theta}{Vector of parameters for model}
 
 \item{theta_init}{Vector of initial conditions for model}
@@ -22,5 +24,8 @@ Deterministic_modelR_final_DENVimmmunity(theta, theta_init, locationI,
 }
 \description{
 This function solves an SEIR-SEI vector borne disease model.
+}
+\examples{
+Deterministic_modelR(c(thetatab[1,],thetaAlltab[1,iiH,]), theta_initAlltab[1,iiH,],locationI=locationtab[iiH],seroposdates= c(as.Date("2013-11-25"), as.Date("2015-11-02")), episeason=c(as.Date("2016-02-22"), as.Date("2016-06-06")))
 }
 \keyword{deterministic}

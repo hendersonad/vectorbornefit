@@ -16,5 +16,5 @@ Run_simulation(dt, theta, theta_init, time.vals)
 \item{time.vals}{Time series to estimate over}
 }
 \description{
-Simulate function for SIR - called as part of denv_MCMC
+Simulate function for SIR
 }
