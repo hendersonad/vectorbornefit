@@ -1,5 +1,8 @@
 #' Background theme for ggplots for Zika paper
 #'
+#' Background ggplot theme for all plots for Zika paper
+#' @param base_size default = 11
+#' @param base_family default = ""
 #' @export
 
 theme_zika_fiji <- function (base_size = 11, base_family = ""){
