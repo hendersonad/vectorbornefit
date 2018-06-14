@@ -2,7 +2,7 @@
 % Please edit documentation in R/fn_simulate_deterministic_noage_denvimmunity.R
 \name{simulate_deterministic_noage_DENVimm}
 \alias{simulate_deterministic_noage_DENVimm}
-\title{ODEs for SEIR-SEI with noage structure}
+\title{ODEs for SEIR-SEI with cross immunity from denv infection}
 \usage{
 simulate_deterministic_noage_DENVimm(theta, init.state, time.vals.sim)
 }

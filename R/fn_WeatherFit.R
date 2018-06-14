@@ -8,7 +8,8 @@
 #' @param data Data values
 #' @keywords Seasonality
 #' @export
-#amp=0.3;mid=pi
+
+## likelihood function when fitting model to climate data - called in weather.fit
 likelihood_fn <- function(amp, mid, time.vals=time.vals, beta=beta, data=data){
   j=1; sincurve=NULL
   for(i in time.vals){
@@ -20,12 +21,6 @@ likelihood_fn <- function(amp, mid, time.vals=time.vals, beta=beta, data=data){
   if(lik==-Inf){lik=0}
   return(lik)
 }
-#amp=amp.mean;mid=mid.mean
-#plot(tail(weather.data$rel_humidity,length(sincurve)), type='l', col=4)
-#lines(sincurve, type='l')
-#lik
-
-
 
 #' WeatherFit 
 #' 
@@ -37,7 +32,6 @@ likelihood_fn <- function(amp, mid, time.vals=time.vals, beta=beta, data=data){
 #' @param tuning Tuning param for proposal distributions
 #' @keywords Seasonality
 #' @export
-#data=data.series;iter=500;tuning=1
 
 weather.fit <- function(data, iter, tuning){
   time.vals <- seq(1,length(data),1)
@@ -66,7 +60,8 @@ weather.fit <- function(data, iter, tuning){
   epsilon0.mid=0.1
   accept.rate.amp=0.234
   accept.rate.mid=0.234
-  # LOOP FOR AMP
+  
+  # mcmc loop for AMP
   for(i in 2:iter){
     
     epsilon0.amp = max(min(0.1,exp(log(epsilon0.amp)+(accept.rate.amp-0.234)*0.999^i)),1e-6) # Stop epsilon getting too big or small
@@ -84,9 +79,9 @@ weather.fit <- function(data, iter, tuning){
     
     #MH number
     MH.alg <- (amp.prior.prop/amp.prior.cur)*           ## prior
-              exp(lik.prop.amp-lik.cur.amp)*               ## lik
+              exp(lik.prop.amp-lik.cur.amp)*            ## lik
               (dunif(amp.prop,0,1)/dunif(amp.cur,0,1))  ##q ratio
-  #print(c("pt1",Sys.time()))
+    
     #selection decision
     if(runif(1) < min(1, MH.alg)){
       lik.cur.amp <- lik.prop.amp
@@ -106,7 +101,6 @@ weather.fit <- function(data, iter, tuning){
       lik[1,i] <- lik.cur.amp
     }
     
- # print(c("pt2",Sys.time()))
     # repeat for MID
     mid.prop <- rnorm(1, mean=mid.cur, sd=epsilon0.mid)
     if(mid.prop>0){
@@ -117,10 +111,9 @@ weather.fit <- function(data, iter, tuning){
       mid.prior.prop <- priorBeta_mid(mid.prop)
       
       #MH number
-      MH.alg <- (mid.prior.prop/mid.prior.cur)*           ## prior
+      MH.alg <- (mid.prior.prop/mid.prior.cur)*              ## prior
                 exp(lik.prop.mid-lik.cur.mid)*               ## lik
                 1 #(dunif(mid.prop,0,1)/dunif(mid.cur,0,1))  ##q ratio      
- # print(c("pt3",Sys.time()))
       #selection decision
       if(runif(1) < min(1, MH.alg)){
         lik.cur.mid <- lik.prop.mid
@@ -147,8 +140,5 @@ weather.fit <- function(data, iter, tuning){
     accept.rate.mid=sum(accept.tab[2,1:i],na.rm=T)/i
   }
   }
-
   return(list(amp=amp , mid=mid, accept=accept.tab, lik=lik))
-  
 } # end Function
-

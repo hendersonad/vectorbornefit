@@ -5,19 +5,12 @@
 #' @param theta_init_in Vector of previous values of initial conditions
 #' @param covartheta Covariance matrix for parameters. Must be same width as length of theta_in
 #' @param covartheta_init Covariance matrix for initial conditions. Must be same width as length of theta_init_in
-#' @param agestructure Binary indicator variable if model is age structured (1) or not (0) between children and adults. Defaults to NULL in which case no sampling happens
 #' @param global Binary indicator variable if sampling global (1) or local (0) parameters. Defaults to NULL in which case no sampling happens
 #' @export
-#' @examples
-#' SampleTheta(thetaAlltab[m,iiH,],theta_initAlltab[m,iiH,],cov_matrix_thetaA,cov_matrix_theta_init,agestructure,global=0)
-#' SampleTheta(thetatab[m,],theta_initAlltab[1,1,],cov_matrix_theta,cov_matrix_theta_init,agestructure,global=1)
-
-#theta_in=thetaAlltab[m,iiH,]; theta_init_in=theta_initAlltab[m,iiH,]; covartheta=cov_matrix_thetaA; covartheta_init=cov_matrix_theta_init; global=1
-#theta_in=thetaAlltab[1,1,]; theta_init_in=theta_initAlltab[1,1,]; covartheta=cov_matrix_thetaAll; covartheta_init=cov_matrix_theta_initAll; global=0
  
-SampleTheta<-function(theta_in, theta_init_in, covartheta, covartheta_init, agestructure=NULL, global=NULL){
+SampleTheta<-function(theta_in, theta_init_in, covartheta, covartheta_init, global=NULL){
   ## Parameters
-    # sample new parameters from nearby: 
+    # sample new parameters from nearby using multivariate normal distribution: 
       mean_vector_theta = theta_in
       mean_vector_theta0 = mean_vector_theta
       theta_star = as.numeric(exp(rmvnorm(1,log(mean_vector_theta0), covartheta)))
@@ -40,14 +33,15 @@ SampleTheta<-function(theta_in, theta_init_in, covartheta, covartheta_init, ages
         theta_star[["t0"]]=min(theta_star[["t0"]],2-theta_star[["t0"]]) # Ensure start time between zero and 1 (therefore log is negative)
       }
       
-    ## Initial conditions
-    theta_init_star = theta_init_in
+  ## Initial conditions
+  theta_init_star = theta_init_in
     
-  initial_inf=as.numeric(theta_star['inf0']) #*(popsizeTot/2))
+  initial_inf=as.numeric(theta_star['inf0'])
   init_vec=as.numeric(theta_star['vec0']/2)
   
   popsizeTot=theta_init_star["s_init"]+theta_init_star["e_init"]+theta_init_star["i1_init"]+theta_init_star["r_init"]
 
+<<<<<<< HEAD
   # initial recovered 
   if(agestructure==1){
     theta_init_star["r_initC"]=0
@@ -122,5 +116,17 @@ SampleTheta<-function(theta_in, theta_init_in, covartheta, covartheta_init, ages
 #    }else if(global==1){
 #      theta_init_star=theta_init_in
 #    }
+=======
+  theta_init_star["r_init"]=0
+  theta_init_star["e_init"]=initial_inf; theta_init_star["i1_init"]=initial_inf
+  theta_init_star["em_init"]=init_vec; theta_init_star["im_init"]=init_vec
+  
+  theta_init_star["s_init"]=popsizeTot-theta_init_star["i1_init"]-theta_init_star["e_init"]-theta_init_star["r_init"]
+  theta_init_star["sm_init"]=1-theta_init_star["em_init"]-theta_init_star["im_init"]
+  
+  theta_init_star["ed_init"]=0; theta_init_star["id_init"]=thetainit_denv[["i1_init"]]; theta_init_star["rd_init"]=0
+  theta_init_star["sd_init"]=popsizeTot-theta_init_star["id_init"]-theta_init_star["ed_init"]-theta_init_star["rd_init"]
+  
+>>>>>>> parent of 0675b3e... Revert "Revert "Revert "Vectorbornefit package tidy and clean code"""
   return(list(thetaS=theta_star,theta_initS=theta_init_star))
 }
