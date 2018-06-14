@@ -36,13 +36,13 @@ Deterministic_modelR_mosqpop<-function(agestructure=NULL,theta, theta_init, loca
     # Output simulation data
     theta["beta_base"]=0.9
     output <- simulate_deterministic_mosqPop(theta, init1, time.vals.sim)
-    plot(output$sm_init,type='l',ylim=c(0,max(output$sm_init*1.1)))
-    plot(output$em_init,type='l',ylim=c(0,max(output$em_init*1.1)))
-    plot(output$im_init,type='l',ylim=c(0,max(output$im_init*1.1)))
-    plot(output$sm_init + output$em_init + output$im_init,type='l')
-    plot(time.vals.sim,output$c_init,type='l')
+    #plot(output$sm_init,type='l',ylim=c(0,max(output$sm_init*1.1)))
+    #plot(output$em_init,type='l',ylim=c(0,max(output$em_init*1.1)))
+    #plot(output$im_init,type='l',ylim=c(0,max(output$im_init*1.1)))
+    #plot(output$sm_init + output$em_init + output$im_init,type='l')
+    #plot(time.vals.sim,output$c_init,type='l')
     par(new=T)
-    plot(time.vals, time.interventions, axes=F, xlab="", ylab="")
+    #plot(time.vals, time.interventions, axes=F, xlab="", ylab="")
     
     # Match compartment states at sim.vals time
     S_traj <- output[match(time.vals.sim,output$time),"s_init"]

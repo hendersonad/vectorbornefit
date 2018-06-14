@@ -9,13 +9,13 @@
 simulate_deterministic_mosqPop <- function(theta, init.state, time.vals.sim) {
   SIR_ode <- function(time, state, theta) {
     ## extract parameters from theta
-    beta_h1 <-  theta[["beta_h"]] * seasonal_f(time, date0=theta[["shift_date"]],amp=theta[["beta_v_amp"]],mid=theta[["beta_v_mid"]]) 
+    beta_h1 <-  theta[["beta_h"]] * seasonal_f(time, date0=theta[["shift_date"]],amp=theta[["beta_v_amp"]],mid=theta[["beta_v_mid"]]) * decline_f(time, date0=theta[['shift_date']], mask = theta[["beta_mask"]], base=theta[["beta_base"]], grad=theta[['beta_grad']], mid=theta[['beta_mid']])
     #beta_h1 <-  theta[["beta_h"]] 
     beta_v1 <-  theta[["beta_v"]] * beta_h1 
     Nsize   <-  theta[["npop"]]
     nu_v    <-  theta[["MuV"]] 
     delta_v <-  0 #theta[["MuV"]] # * death_f(time,base=theta[['beta_base']])
-    iota_v  <-  theta[["MuV"]] * death_f(time,base=theta[['beta_base']]) # the iota (i) stands for intervention
+    iota_v  <-  theta[["MuV"]] #* death_f(time,base=theta[['beta_base']]) # the iota (i) stands for intervention
     alpha_v <-  theta[["Vex"]] 
     alpha_h <-  theta[["Exp"]]
     gamma   <-  theta[["Inf"]]

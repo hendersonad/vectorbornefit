@@ -109,7 +109,7 @@ load.data.multiloc.multistart <- function(agestructure=NULL, add.nulls=0, startd
   ## Load vector control dates
 if(vector.control==T){ 
   vector_control_dates <- read.csv(paste0("data_sets/", vec.control.excel, ".csv"), stringsAsFactors = F)
-  v.c.vals.df <- NULL
+  v.c.vals.df <- matrix(time.vals, nrow=length(time.vals), ncol=1)
   for(iiH in itertab){
     colID=(names(vector_control_dates)==locationtab[iiH])
     endwk=length(vector_control_dates[,1])
@@ -122,8 +122,7 @@ if(vector.control==T){
     
     v.c.vals.df <- cbind(v.c.vals.df, v.c.vals)
   }
-  colnames(v.c.vals.df) <- locationtab
-  rownames(v.c.vals.df) <- time.vals
+  colnames(v.c.vals.df) <- c('time.vals', locationtab)
   }else{
   v.c.vals.df <- data.frame(NULL)
 }

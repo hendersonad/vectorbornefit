@@ -97,7 +97,7 @@ MCMCloop_with_multiLoc <- function(agestructure, sample.start.point=T, all.Prior
       
       #Store vales
       thetaAllstar[iiH,]=thetaA_star
-      theta_initAllstar[iiH,]=theta_init_star
+      theta_initAllstar[iiH,]=theta_init_star[1:7]
       
       # choose selection region so results vector only stores from original STARTDATE onwards - so all results are the same length
       #if(sum(round(date.vals) <= startdate)==0){
@@ -144,11 +144,7 @@ MCMCloop_with_multiLoc <- function(agestructure, sample.start.point=T, all.Prior
       
       #message(paste0("T/F=",sum(date.vals <= startdate)==0," ln dataframe=",length(cTraceStar[iiH,])," // ln y.vals=",length(y.vals)," // start out=",start.of.output1, " len= ", length.of.output1, " = ", length.of.output1-start.of.output1))
       
-      if(all.Priors==F){
-        prior.theta <- ComputePrior(iiH, c(thetatab[m,],thetaAlltab[m,iiH,]),c(theta_star,thetaA_star))
-      }else{
-        prior.theta <- ComputePrior_special(iiH, thetaAlltab[m,,],thetaAllstar, "parameters_est")
-      }
+      prior.theta <- ComputePrior_D2(iiH, c(thetatab[m,],thetaAlltab[m,iiH,]),c(theta_star,thetaA_star))
       prior.star <- prior.theta$prior.star*prior.star
     } # end loop over regions
     
