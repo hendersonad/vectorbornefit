@@ -5,7 +5,8 @@
 #' @param startdate Original start date in the data series
 ##' @export 
 
-MCMCloop_withDENVimmunity <- function(sample.start.point=T, startdate=as.Date("2013-10-28")){
+AdaptMCMCloop_withDENVimmunity <- function(sample.start.point=T, startdate=as.Date("2013-10-28"), 
+                                      adapt.shape.start=MCMC.runs/10){
   for (m in 1:MCMC.runs){
     # Scale COV matrices for resampling using error term epsilon
     if(m==1){
@@ -23,10 +24,20 @@ MCMCloop_withDENVimmunity <- function(sample.start.point=T, startdate=as.Date("2
         x_trace_tab_current =  x_trace_tab[m,,]
         sim_liktab_current = sim_liktab[m]
         prior_current = prior[m]
+          covmat.empirical <- cov_matrix_thetaA
+          theta.mean <- thetaAlltab_current[1,]
+          adapting.shape <- 0
         # initialise counter for storing results (m/thining parameter)
         j=1
     }else{
       epsilon0 = max(min(0.1,exp(log(epsilon0)+(accept_rate-0.234)*0.999^m)),1e-6) # Stop epsilon getting too big or small
+      
+    if (!is.null(adapt.shape.start) && accept_rate*m >= adapt.shape.start) {
+            adapting.shape <- m
+        scaling.sd <- 2.38/sqrt(length(thetaAlltab_current[1,]))
+        cov_matrix_thetaA <- scaling.sd^2 * covmat.empirical
+    }
+
       cov_matrix_theta=epsilon0*cov_matrix_theta0
       cov_matrix_thetaA=epsilon0*cov_matrix_thetaAll
       cov_matrix_theta_init=epsilon0*cov_matrix_theta_initAll
@@ -175,6 +186,18 @@ MCMCloop_withDENVimmunity <- function(sample.start.point=T, startdate=as.Date("2
     
     if(m<20){
       accept_rate=0.234
+    }
+    
+    # Empirical covariance matrix
+    if (adapting.shape >= 0) {
+          covmat_thetaAll <- cov_matrix_thetaA[names(thetaA_star), names(thetaA_star)]
+          theta.mean2 <- theta.mean[names(thetaA_star)]
+          residual <- as.vector(thetaAlltab[j,1,] - theta.mean)
+          covmat_thetaAll <- (covmat_thetaAll * (i - 1) + (i - 1)/i * residual %*% t(residual))/i
+          theta.mean <- theta.mean + residual/i
+          tmp <- (list(covmat_thetaAll = covmat_thetaAll, theta.mean = theta.mean))
+                  covmat.empirical <- tmp$covmat_thetaAll
+                  theta.mean <- tmp$theta.mean
     }
     
   } # End MCMC loop
