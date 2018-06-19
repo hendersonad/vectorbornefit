@@ -9,7 +9,6 @@
 #' @param include.count True or False - whether to include count data in likelihood. Defaults to True
 #' @keywords deterministic 
 #' @export
-#' @examples 
 
 Deterministic_modelR_final_DENVimmmunity <- function(theta, theta_init, locationI, seroposdates, episeason, include.count=T){
   # These values tell how to match states of compartment with data points
@@ -28,7 +27,7 @@ Deterministic_modelR_final_DENVimmmunity <- function(theta, theta_init, location
     # set initial conditions
     init1=c(
       s_init=theta_init[["s_init"]],e_init=theta_init[["i1_init"]],i_init=theta_init[["i1_init"]],r_init=theta_init[["r_init"]],c_init=0,
-      sd_init=theta_init[["sd_init"]],ed_init=theta_init[["ed_init"]],id_init=theta_init[["id_init"]],rd_init=theta_init[["rd_init"]],cd_init=0,
+      sd_init=theta_init[["sd_init"]],ed_init=theta_init[["ed_init"]],id_init=theta_init[["id_init"]],t1d_init=theta_init[["t1d_init"]],t2d_init=theta_init[["t2d_init"]],cd_init=0,
       sm_init=theta_init[["sm_init"]],em_init=theta_init[["em_init"]],im_init=theta_init[["im_init"]])
     
     # Output simulation data

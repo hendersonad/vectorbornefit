@@ -41,14 +41,15 @@ simulate_deterministic_noage_DENVimm <- function(theta, init.state, time.vals.si
     Sd <- state[["sd_init"]]
     Ed <- state[["ed_init"]]
     Id <- state[["id_init"]]
-    Rd <- state[["rd_init"]]
+    T1d <- state[["t1d_init"]]
+    T2d <- state[["t2d_init"]]
     Cd <- state[["cd_init"]]
     SM <- state[["sm_init"]]
     EM <- state[["em_init"]]
     IM <- state[["im_init"]]
     
     # Human population
-    dS  =  - S*(beta_h1*IM) - chi*Sd*(beta_d*Id/Nsize) + chi*omega_d*Rd
+    dS  =  - S*(beta_h1*IM) - chi*Sd*(beta_d*Id/Nsize) + chi*(2*omega_d*T2d)
     dE  =  S*(beta_h1*IM) - alpha_h*E  
     dI  = alpha_h*E  - gamma*I
     dR  = gamma*I
@@ -58,7 +59,8 @@ simulate_deterministic_noage_DENVimm <- function(theta, init.state, time.vals.si
     dSd = -Sd*(beta_d*Id/Nsize)
     dEd = Sd*(beta_d*Id/Nsize) - alpha_d*Ed 
     dId = alpha_d*Ed - gamma_d*Id  
-    dRd = gamma_d*Id - omega_d*Rd
+    dT1d = gamma_d*Id - 2*omega_d*T1d
+    dT2d = 2*omega_d*T1d - 2*omega_d*T2d
     dCd = alpha_d*Ed
     
     # Mosquito population
@@ -66,7 +68,7 @@ simulate_deterministic_noage_DENVimm <- function(theta, init.state, time.vals.si
     dEM = SM*(beta_v1*I/Nsize) - (delta_v+alpha_v)*EM  
     dIM = alpha_v*EM-delta_v*IM
     
-    return(list(c(dS,dE,dI,dR,dC,dSd,dEd,dId,dRd,dCd,dSM,dEM,dIM)))
+    return(list(c(dS,dE,dI,dR,dC,dSd,dEd,dId,dT1d,dT2d,dCd,dSM,dEM,dIM)))
   }
   traj <- as.data.frame(ode(init.state, time.vals.sim, SIR_ode, theta, method = "ode45"))
   return(traj)
