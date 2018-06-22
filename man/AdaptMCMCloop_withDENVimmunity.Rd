@@ -8,9 +8,9 @@ AdaptMCMCloop_withDENVimmunity(sample.start.point = T,
   startdate = as.Date("2013-10-28"), adapt.shape.start = MCMC.runs/10)
 }
 \arguments{
-\item{sample.start.point}{Whether or not to sample start time}
-
 \item{startdate}{Original start date in the data series}
+
+\item{sammple.start.point}{Whether or not to sample start time}
 }
 \description{
 MCMC function for fitting Zika model using MH algorithm

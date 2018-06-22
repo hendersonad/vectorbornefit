@@ -9,6 +9,7 @@
 #' @param include.count True or False - whether to include count data in likelihood. Defaults to True
 #' @keywords deterministic 
 #' @export
+# theta=c(theta_star,thetaA_star,theta_denv); theta_init =theta_init_star; locationI=locationtab[iiH];
 
 Deterministic_modelR_final_DENVimmmunity <- function(theta, theta_init, locationI, seroposdates, episeason, include.count=T){
   # These values tell how to match states of compartment with data points

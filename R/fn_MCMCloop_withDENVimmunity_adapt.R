@@ -1,7 +1,7 @@
 ##' MCMC function for fitting Zika model using MH algorithm
 ##' 
 ##' MCMC function for fitting Zika model using MH algorithm
-#' @param sample.start.point Whether or not to sample start time 
+#' @param sammple.start.point Whether or not to sample start time 
 #' @param startdate Original start date in the data series
 ##' @export 
 
@@ -63,6 +63,7 @@ AdaptMCMCloop_withDENVimmunity <- function(sample.start.point=T, startdate=as.Da
     xTraceStar=0*x_trace_tab_current
     for(kk in itertab){ 
       iiH=kk
+      #iiH=1
       data <- load.data.multistart(add.nulls = 0, startdate, virusTab[iiH], dataTab[iiH], serology.excel, init.conditions.excel)
         list2env(data,globalenv())
       
@@ -199,7 +200,7 @@ AdaptMCMCloop_withDENVimmunity <- function(sample.start.point=T, startdate=as.Da
                   covmat.empirical <- tmp$covmat_thetaAll
                   theta.mean <- tmp$theta.mean
     }
-    
+  
   } # End MCMC loop
   return(list(sim_liktab=sim_liktab,
               prior=prior,

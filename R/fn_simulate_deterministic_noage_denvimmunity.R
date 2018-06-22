@@ -19,7 +19,7 @@ simulate_deterministic_noage_DENVimm <- function(theta, init.state, time.vals.si
     alpha_h <-  theta[["Exp"]]
     gamma <-    theta[["Inf"]]
     chi <-    theta[["chi"]]
-    omega_d <- theta[['omega_d']]
+    omega_d <- 1/theta[['omega_d']]
     
     # No DENV outbreak until denv_start parameter reached in time.vals
     if(time<theta[["denv_start"]]){ 
