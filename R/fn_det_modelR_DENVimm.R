@@ -64,7 +64,7 @@ Deterministic_modelR_final_DENVimmmunity <- function(theta, theta_init, location
       }
     
       likelihood <- sum(binom.lik) + sum(log(dnbinom(y.vals,
-                                                     mu=theta[["rep"]]*(casecount),
+                                                      mu=theta[["rep"]]*(casecount),
                                                      size=1/theta[["repvol"]])))
     likelihood=max(-1e10, likelihood)
       if(is.null(likelihood)){likelihood=-1e10}

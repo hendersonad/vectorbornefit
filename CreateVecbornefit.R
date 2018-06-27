@@ -14,5 +14,5 @@ document()
 setwd("..")
 install("vectorbornefit")
 
-?ComputePrior
+?Deterministic_modelR_final_DENVimmmunity
 # install_github('vectorbornefit','a-henderson91')  

@@ -66,6 +66,7 @@ MCMCloop_withDENVimmunity <- function(sample.start.point=T, startdate=as.Date("2
       
       # Adjust time and date series if start point is flexible
       if(sample.start.point==T){
+        thetaA_star[['t0']] <- max(thetaA_star[['t0']],0)
         Sample.StartTime <- (log(thetaA_star[['t0']]))
         if(Sample.StartTime>0){
           new.start.time <- startdate + (Sample.StartTime*365)
@@ -82,8 +83,8 @@ MCMCloop_withDENVimmunity <- function(sample.start.point=T, startdate=as.Date("2
 
       # Run model simulation
       output1 = Deterministic_modelR_final_DENVimmmunity(theta=c(theta_star,thetaA_star,theta_denv), theta_init_star, locationI=locationtab[iiH], seroposdates=seroposdates, episeason=episeason, include.count=include.count)
-      sim_marg_lik_star=sim_marg_lik_star + output1$lik 
-
+        sim_marg_lik_star=sim_marg_lik_star + output1$lik 
+      
       #Store vales
       thetaAllstar[iiH,]=thetaA_star
       theta_initAllstar[iiH,]=theta_init_star
@@ -123,7 +124,6 @@ MCMCloop_withDENVimmunity <- function(sample.start.point=T, startdate=as.Date("2
     }
     
     val = exp((sim_marg_lik_star-sim_liktab_current))*(prior.star/prior.current)*(q_theta_given_theta_star/q_theta_star_given_theta) 
-    
     if(is.na(val)){
       output_prob=0}else if(is.nan(val)){
         output_prob=0}else if(is.null(val)){
