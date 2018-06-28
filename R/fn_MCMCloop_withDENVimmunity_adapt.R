@@ -78,24 +78,30 @@ AdaptMCMCloop_withDENVimmunity <- function(sample.start.point=T, startdate=as.Da
       
       # Adjust time and date series if start point is flexible
       if(sample.start.point==T){
+        thetaA_star[['t0']] <- max(thetaA_star[['t0']],0)
         Sample.StartTime <- (log(thetaA_star[['t0']]))
         if(Sample.StartTime>0){
-          new.start.time <- startdate + (Sample.StartTime*365)
-          data <- load.data.multistart(add.nulls=0, new.start.time, virusTab[iiH], dataTab[iiH], serology.excel, init.conditions.excel)
+          #new.start.time <- startdate + (Sample.StartTime*365)
+          thetaA_star[["model_st"]] <- startdate + (Sample.StartTime*365)
+          # data <- load.data.multistart(add.nulls=0, new.start.time, virusTab[iiH], dataTab[iiH], serology.excel, init.conditions.excel)
         }else if(Sample.StartTime<=0){
-          new.start.time <- startdate + (Sample.StartTime*365)
-          if(log(thetaA_star[['t0']])==-Inf){new.start.time=startdate}
-          data <- load.data.multistart(add.nulls=0, new.start.time, virusTab[iiH], dataTab[iiH], serology.excel, init.conditions.excel)
+          #new.start.time <- startdate + (Sample.StartTime*365)
+          thetaA_star[["model_st"]] <- startdate + (Sample.StartTime*365)
+          if(log(thetaA_star[['t0']])==-Inf){thetaA_star[["model_st"]]=startdate}
+          #data <- load.data.multistart(add.nulls=0, new.start.time, virusTab[iiH], dataTab[iiH], serology.excel, init.conditions.excel)
         }
       }else{
         data <- load.data.multistart(add.nulls=0, startdate, virusTab[iiH], dataTab[iiH], serology.excel, init.conditions.excel)
+        list2env(data, globalenv())
       }
-      list2env(data, globalenv())
-
+      
       # Run model simulation
       output1 = Deterministic_modelR_final_DENVimmmunity(theta=c(theta_star,thetaA_star,theta_denv), theta_init_star, locationI=locationtab[iiH], seroposdates=seroposdates, episeason=episeason, include.count=include.count)
       sim_marg_lik_star=sim_marg_lik_star + output1$lik 
-
+      
+      # drop model_st parameter
+      thetaA_star <- thetaA_star[names(thetaA_star)!="model_st"]
+      
       #Store vales
       thetaAllstar[iiH,]=thetaA_star
       theta_initAllstar[iiH,]=theta_init_star

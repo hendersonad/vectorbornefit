@@ -12,18 +12,31 @@
 # theta=c(theta_star,thetaA_star,theta_denv); theta_init =theta_init_star; locationI=locationtab[iiH];
 
 Deterministic_modelR_final_DENVimmmunity <- function(theta, theta_init, locationI, seroposdates, episeason, include.count=T){
-  # These values tell how to match states of compartment with data points
-  sim.vals <- seq(0,max(time.vals)-min(time.vals),7) + 7 
-  time.vals.sim <-    seq(0,max(sim.vals),dt)
-  
+    model.start.date <- as.Date(theta[["model_st"]],origin="1970-01-01") 
+    
     # DENV epidemic has fixed start date
     denv.intro <- as.Date("2013-11-01") 
     # Set indicator on when DENV epidemic begins in context of Zika timeline
-    if(sum(date.vals<denv.intro+3.5 & date.vals>denv.intro-3.5)==0){
+    #if(sum(date.vals<denv.intro+3.5 & date.vals>denv.intro-3.5)==0){
+    if(model.start.date>=denv.intro){
       theta[["denv_start"]] <- 0
+        if(model.start.date<min(date.vals)){
+          theta[["zika_start"]] <- 0
+        }else{
+          theta[["zika_start"]] <- time.vals[date.vals<model.start.date+3.5 & date.vals>model.start.date-3.5]
+        }
     }else{
-      theta[["denv_start"]] <- time.vals[date.vals<denv.intro+3.5 & date.vals>denv.intro-3.5]
+      theta[["zika_start"]] <- 0
+        if(denv.intro<min(date.vals)){
+          theta[["denv_start"]] <- 0
+        }else{
+          theta[["denv_start"]] <- time.vals[date.vals<=denv.intro+3.5 & date.vals>=denv.intro-3.5]
+        }
     }
+    
+    # These values tell how to match states of compartment with data points
+    sim.vals <- seq(0,max(time.vals)-min(time.vals),7) + 7 
+    time.vals.sim <- seq(0,max(sim.vals),dt)
     
     # set initial conditions
     init1=c(
@@ -44,8 +57,8 @@ Deterministic_modelR_final_DENVimmmunity <- function(theta, theta_init, location
     casecount <- cases1-c(0,cases1[1:(length(time.vals.sim)-1)])
     casecountD <- casesD-c(0,casesD[1:(length(time.vals.sim)-1)])
     casecount[casecount<0] <- 0
-      #plot(casecountD,type='l')
-      #lines(casecount,type='l',col=2)
+      #plot(date.vals[1:length(casecount)],casecountD,type='l')
+      #lines(date.vals[1:length(casecount)],casecount,type='l',col=2)
     
     # Calculate seropositivity at pre-specified dates and corresponding likelihood
     i=1; seroP=NULL; binom.lik=NULL
@@ -54,10 +67,11 @@ Deterministic_modelR_final_DENVimmmunity <- function(theta, theta_init, location
     lum.y <- c("13","15","17")
     for(date in seroposdates){
       if(date < min(date.vals)){ # if seroprevalence date is before Zika timeline { seroprevalence = Luminex data + epislon}
-        seroP[i] <- nLUM[lum.y==sero.y[i]]/nPOP[lum.y==sero.y[i]] + theta[['epsilon']]
+        seroP[i] <- theta[['epsilon']]
         binom.lik[i] <- (dbinom(nLUM[lum.y==sero.y[i]], size=nPOP[lum.y==sero.y[i]], prob=seroP[i], log = T))
-        }else{ # else { seroprevalence = model predicted recovered as a proportion of pop + epsilon }
-          seroP[i] <-  min(R_traj[date.vals<date+3.5 & date.vals>date-3.5])/theta[["npop"]] + theta[['epsilon']]
+      }else{ # else { seroprevalence = model predicted recovered as a proportion of pop + epsilon }
+          seroP[i] <-  (min(R_traj[date.vals<date+3.5 & date.vals>date-3.5])/theta[["npop"]]) + 
+                        (1 - min(R_traj[date.vals<date+3.5 & date.vals>date-3.5])/theta[["npop"]])*theta[['epsilon']]
           binom.lik[i] <- (dbinom(nLUM[lum.y==sero.y[i]], size=nPOP[lum.y==sero.y[i]], prob=seroP[i], log = T))
           }
         i <- i+1

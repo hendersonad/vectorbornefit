@@ -5,14 +5,14 @@
 #' @param init.state List of initial values
 #' @param time.vals.sim List of time values to simulate over
 #' @export
-#theta=final_thetaAll; init.state=theta_init_star; time.vals.sim=time.vals
+#theta=theta; init.state=init1; time.vals.sim=time.vals
 
 simulate_deterministic_noage_DENVimm <- function(theta, init.state, time.vals.sim) {
   #time=1;state=init1;
   SIR_ode <- function(time, state, theta) {
     ## extract parameters from theta
-    beta_h1 <-  theta[["beta_h"]] * seasonal_f(time, date0=theta[["shift_date"]],amp=theta[["beta_v_amp"]],mid=theta[["beta_v_mid"]]) * decline_f(time,date0=theta[["shift_date"]],mask=theta[['beta_mask']],base=theta[['beta_base']],grad=theta[['beta_grad']],mid=theta[['beta_mid']]) 
-    beta_v1 <-  theta[["beta_v"]] * beta_h1 
+    #beta_h1 <-  theta[["beta_h"]] * seasonal_f(time, date0=theta[["shift_date"]],amp=theta[["beta_v_amp"]],mid=theta[["beta_v_mid"]]) * decline_f(time,date0=theta[["shift_date"]],mask=theta[['beta_mask']],base=theta[['beta_base']],grad=theta[['beta_grad']],mid=theta[['beta_mid']]) 
+    #beta_v1 <-  theta[["beta_v"]] * beta_h1 
     Nsize <-   theta[["npop"]]
     delta_v  <- theta[["MuV"]] 
     alpha_v <-  theta[["Vex"]]
@@ -31,7 +31,15 @@ simulate_deterministic_noage_DENVimm <- function(theta, init.state, time.vals.si
       alpha_d <- theta[['alpha_d']]
       gamma_d <- theta[['gamma_d']]
     }
-    
+    # OR no ZIKV outbreak until zikv_start reached in time.vals
+    if(time<theta[["zika_start"]]){ 
+      beta_h1 <- 0
+      beta_v1 <- 0
+    }else{
+      beta_h1 <- theta[['beta_h']] * seasonal_f(time, date0=theta[["shift_date"]],amp=theta[["beta_v_amp"]],mid=theta[["beta_v_mid"]]) * decline_f(time,date0=theta[["shift_date"]],mask=theta[['beta_mask']],base=theta[['beta_base']],grad=theta[['beta_grad']],mid=theta[['beta_mid']]) 
+      beta_v1 <- theta[['beta_v']] * beta_h1 
+    }
+
     ## extract initial states from theta_init
     S <- state[["s_init"]]
     E <- state[["e_init"]]
