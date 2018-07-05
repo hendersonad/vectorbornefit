@@ -13,7 +13,7 @@
 
 Deterministic_modelR_final_DENVimmmunity <- function(theta, theta_init, locationI, seroposdates, episeason, include.count=T){
     model.start.date <- as.Date(theta[["model_st"]],origin="1970-01-01") 
-    
+    model.start.date <- as.Date("2014-09-21")
     # DENV epidemic has fixed start date
     denv.intro <- as.Date("2013-11-01") 
     # Set indicator on when DENV epidemic begins in context of Zika timeline
@@ -59,6 +59,11 @@ Deterministic_modelR_final_DENVimmmunity <- function(theta, theta_init, location
     casecount[casecount<0] <- 0
       #plot(date.vals[1:length(casecount)],casecountD,type='l')
       #lines(date.vals[1:length(casecount)],casecount,type='l',col=2)
+      ##
+      #plot(date.vals[1:length(casecount)],casecount,type='l',col=2)
+      #par(new=T)
+      #plot(date.vals[1:length(casecount)],R_traj/theta[["npop"]],type='l',col=4,yaxt='n',xaxt='n',ylim=c(0,1))
+      #axis(side=4)
       
     # Calculate seropositivity at pre-specified dates and corresponding likelihood
     i=1; seroP=NULL; binom.lik=NULL

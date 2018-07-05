@@ -60,11 +60,11 @@ simulate_deterministic_noage_DENVimm <- function(theta, init.state, time.vals.si
     
     ## extinction if not at least 1 infected
     Ipos = extinct(I,1) # Need at least one infective
-    IMpos = extinct(IM,1) # Need at least one infective
+    #IMpos = extinct(IM,0.0005) # Need at least one infective
     
     # Human population
-    dS  =  - S*(beta_h1*IM) - chi*Sd*(beta_d*Id/Nsize) + chi*(2*omega_d*T2d)
-    dE  =  S*(beta_h1*IM) - alpha_h*E  
+    dS  =  - S*(beta_h1*IM)*Ipos - chi*Sd*(beta_d*Id/Nsize) + chi*(2*omega_d*T2d)
+    dE  =  S*(beta_h1*IM)*Ipos - alpha_h*E  
     dI  = alpha_h*E  - gamma*I
     dR  = gamma*I
     dC  = alpha_h*E 
@@ -78,8 +78,8 @@ simulate_deterministic_noage_DENVimm <- function(theta, init.state, time.vals.si
     dCd = alpha_d*Ed
     
     # Mosquito population
-    dSM = delta_v - SM*(beta_v1*I/Nsize) - delta_v*SM   
-    dEM = SM*(beta_v1*I/Nsize) - (delta_v+alpha_v)*EM  
+    dSM = delta_v - SM*(beta_v1*I/Nsize)*Ipos - delta_v*SM   
+    dEM = SM*(beta_v1*I/Nsize)*Ipos - (delta_v+alpha_v)*EM  
     dIM = alpha_v*EM-delta_v*IM
     
     return(list(c(dS,dE,dI,dR,dC,dSd,dEd,dId,dT1d,dT2d,dCd,dSM,dEM,dIM)))
