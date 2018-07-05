@@ -37,7 +37,6 @@ AdaptMCMCloop_withDENVimmunity <- function(sample.start.point=T, startdate=as.Da
         scaling.sd <- 2.38/sqrt(length(thetaAlltab_current[1,]))
         cov_matrix_thetaA <- scaling.sd^2 * covmat.empirical
     }
-
       cov_matrix_theta=epsilon0*cov_matrix_theta0
       cov_matrix_thetaA=epsilon0*cov_matrix_thetaAll
       cov_matrix_theta_init=epsilon0*cov_matrix_theta_initAll
@@ -216,7 +215,7 @@ AdaptMCMCloop_withDENVimmunity <- function(sample.start.point=T, startdate=as.Da
                   theta.mean <- tmp$theta.mean
     }
     
-    if(m %% 100==0){
+    if(m %% 1000==0){
       print(c(m, accept_rate, sim_liktab_current, thetaAlltab_current[1,'chi'],
             thetaAlltab_current[1,'omega_d'],
             thetaAlltab_current[1,'epsilon'],

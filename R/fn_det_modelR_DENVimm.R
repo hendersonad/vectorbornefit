@@ -10,14 +10,14 @@
 #' @keywords deterministic 
 #' @export
 # theta=c(theta_star,thetaA_star,theta_denv); theta_init =theta_init_star; locationI=locationtab[iiH];
+# theta=c(thetaMed,theta_star,thetaA_star,theta_denv); theta_init =theta_init_star; locationI=locationtab[iiH];
 
 Deterministic_modelR_final_DENVimmmunity <- function(theta, theta_init, locationI, seroposdates, episeason, include.count=T){
     model.start.date <- as.Date(theta[["model_st"]],origin="1970-01-01") 
-    model.start.date <- as.Date("2014-09-21")
     # DENV epidemic has fixed start date
     denv.intro <- as.Date("2013-11-01") 
+    
     # Set indicator on when DENV epidemic begins in context of Zika timeline
-    #if(sum(date.vals<denv.intro+3.5 & date.vals>denv.intro-3.5)==0){
     if(model.start.date>=denv.intro){
       theta[["denv_start"]] <- 0
         if(model.start.date<min(date.vals)){
@@ -27,6 +27,8 @@ Deterministic_modelR_final_DENVimmmunity <- function(theta, theta_init, location
         }
     }else{
       theta[["zika_start"]] <- 0
+      data <- load.data.multistart(add.nulls = 0, startdate=model.start.date, virusTab[iiH], dataTab[iiH], serology.excel, init.conditions.excel)
+        list2env(data,globalenv())
         if(denv.intro<min(date.vals)){
           theta[["denv_start"]] <- 0
         }else{
@@ -95,5 +97,5 @@ Deterministic_modelR_final_DENVimmmunity <- function(theta, theta_init, location
     # Return results
     output1=list(C_trace=casecount,CD_trace=casecountD,I_trace=I_traj,
                  S_trace=S_traj,R_trace=R_traj,X_trace=X_traj,
-                 lik=likelihood)
+                 lik=likelihood, newDates=date.vals)
 }  
