@@ -11,13 +11,7 @@ simulate_deterministic_noage_DENVimm <- function(theta, init.state, time.vals.si
   #time=1;state=init1;
   SIR_ode <- function(time, state, theta) {
     ## extract parameters from theta
-    #beta_h1 <-  theta[["beta_h"]] * seasonal_f(time, date0=theta[["shift_date"]],amp=theta[["beta_v_amp"]],mid=theta[["beta_v_mid"]]) * decline_f(time,date0=theta[["shift_date"]],mask=theta[['beta_mask']],base=theta[['beta_base']],grad=theta[['beta_grad']],mid=theta[['beta_mid']]) 
-    #beta_v1 <-  theta[["beta_v"]] * beta_h1 
     Nsize <-   theta[["npop"]]
-    delta_v  <- theta[["MuV"]] 
-    alpha_v <-  theta[["Vex"]]
-    alpha_h <-  theta[["Exp"]]
-    gamma <-    theta[["Inf"]]
     chi <-    theta[["chi"]]
     omega_d <- 1/theta[['omega_d']]
     
@@ -35,9 +29,17 @@ simulate_deterministic_noage_DENVimm <- function(theta, init.state, time.vals.si
     if(time<theta[["zika_start"]]){ 
       beta_h1 <- 0
       beta_v1 <- 0
+      delta_v <- 0
+      alpha_v <- 0
+      alpha_h <- 0
+      gamma <- 0
     }else{
       beta_h1 <- theta[['beta_h']] * seasonal_f(time, date0=theta[["shift_date"]],amp=theta[["beta_v_amp"]],mid=theta[["beta_v_mid"]]) * decline_f(time,date0=theta[["shift_date"]],mask=theta[['beta_mask']],base=theta[['beta_base']],grad=theta[['beta_grad']],mid=theta[['beta_mid']]) 
       beta_v1 <- theta[['beta_v']] * beta_h1 
+      delta_v  <- theta[["MuV"]] 
+      alpha_v <-  theta[["Vex"]]
+      alpha_h <-  theta[["Exp"]]
+      gamma <-    theta[["Inf"]]
     }
 
     ## extract initial states from theta_init
@@ -55,6 +57,10 @@ simulate_deterministic_noage_DENVimm <- function(theta, init.state, time.vals.si
     SM <- state[["sm_init"]]
     EM <- state[["em_init"]]
     IM <- state[["im_init"]]
+    
+    ## extinction if not at least 1 infected
+    Ipos = extinct(I,1) # Need at least one infective
+    IMpos = extinct(IM,1) # Need at least one infective
     
     # Human population
     dS  =  - S*(beta_h1*IM) - chi*Sd*(beta_d*Id/Nsize) + chi*(2*omega_d*T2d)

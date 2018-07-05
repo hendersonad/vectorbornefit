@@ -59,7 +59,7 @@ Deterministic_modelR_final_DENVimmmunity <- function(theta, theta_init, location
     casecount[casecount<0] <- 0
       #plot(date.vals[1:length(casecount)],casecountD,type='l')
       #lines(date.vals[1:length(casecount)],casecount,type='l',col=2)
-    
+      
     # Calculate seropositivity at pre-specified dates and corresponding likelihood
     i=1; seroP=NULL; binom.lik=NULL
     sero.years <- format(as.Date(seroposdates, format="%d/%m/%Y"),"%Y")
@@ -88,7 +88,7 @@ Deterministic_modelR_final_DENVimmmunity <- function(theta, theta_init, location
       if(likelihood == -Inf){likelihood=-1e10}
     
     # Return results
-    output1=list(C_trace=casecount,CD_trace=casecountD,
+    output1=list(C_trace=casecount,CD_trace=casecountD,I_trace=I_traj,
                  S_trace=S_traj,R_trace=R_traj,X_trace=X_traj,
                  lik=likelihood)
 }  

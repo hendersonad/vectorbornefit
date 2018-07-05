@@ -30,7 +30,7 @@ SampleTheta<-function(theta_in, theta_init_in, covartheta, covartheta_init, glob
       }
       
       if(sum(names(theta_star)=="t0")>0){ # check theta contains this vector
-        theta_star[["t0"]]=min(theta_star[["t0"]],2-theta_star[["t0"]]) # Ensure start time between zero and 1 (therefore log is negative)
+        theta_star[["t0"]]=max(0,theta_star[["t0"]]) 
       }
       
   ## Initial conditions

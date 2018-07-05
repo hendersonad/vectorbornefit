@@ -45,3 +45,12 @@ ReportC<-function(cases, rep, repvol){
   mu01=sapply(mu00,function(x){max(x,0)})
   sapply(mu01,function(x){rnbinom(1, mu=rep*x,size=1/repvol)})
 }
+
+#' Reporting cases function
+#' 
+#' Given a number of infected hosts, this function estimates the resulting number of cases
+#' @param x number to test
+#' @param x0 value to be greater than
+#' @export
+
+extinct <- function(x,x0){as.numeric(x>=x0)} 
