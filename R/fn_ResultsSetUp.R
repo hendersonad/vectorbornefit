@@ -39,7 +39,7 @@ for(iiH in itertab){
   popsize=theta["npop"]
   popsizeC=theta["npopC"]
   popsizeA=theta["npopA"]
-  popsizeTot=(popsizeC+popsizeA); names(popsizeTot)='npop'
+  popsizeTot=popsize#(popsizeC+popsizeA); names(popsizeTot)='npop'
   popsizeC=round(popsize* popsizeC/popsizeTot); popsizeA=round(popsize* popsizeA/popsizeTot)
   
   ## Local parameters
