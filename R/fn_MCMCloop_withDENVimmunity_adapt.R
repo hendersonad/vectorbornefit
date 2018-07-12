@@ -92,6 +92,7 @@ AdaptMCMCloop_withDENVimmunity <- function(sample.start.point=T, startdate=as.Da
       }else{
         data <- load.data.multistart(add.nulls=0, startdate, virusTab[iiH], dataTab[iiH], serology.excel, init.conditions.excel)
         list2env(data, globalenv())
+        thetaA_star[["model_st"]] <- startdate
       }
       
       # Run model simulation
@@ -150,6 +151,7 @@ AdaptMCMCloop_withDENVimmunity <- function(sample.start.point=T, startdate=as.Da
     
     # Update parameter values every k step
     MH_random_unif <- runif(1,0,1)
+    
     if(m %% thinning.parameter == 0){
       if(MH_random_unif < output_prob){
         thetatab[j+1,] = theta_star
@@ -210,7 +212,7 @@ AdaptMCMCloop_withDENVimmunity <- function(sample.start.point=T, startdate=as.Da
       print(c(m, accept_rate, sim_liktab_current, thetaAlltab_current[1,'chi'],
             thetaAlltab_current[1,'omega_d'],
             thetaAlltab_current[1,'epsilon'],
-            startdate+log(thetaAlltab_current[1,'t0']*365)))
+            thetaAlltab_current[1,'psi']))
     }  
     
   } # End MCMC loop

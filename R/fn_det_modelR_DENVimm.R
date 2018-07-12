@@ -47,6 +47,11 @@ Deterministic_modelR_final_DENVimmmunity <- function(theta, theta_init, location
       sm_init=theta_init[["sm_init"]],em_init=theta_init[["em_init"]],im_init=theta_init[["im_init"]])
     
     # Output simulation data
+    #init1[["e_init"]]=1;init1[["i_init"]]=0
+    #theta[["psi"]] <- 0.001
+    #theta[["chi"]] <- 0.5
+    #theta[["beta_h"]] <- 0.08
+    
     output <- simulate_deterministic_noage_DENVimm(theta, init1, time.vals.sim)
     
     # Match compartment states at sim.vals time
@@ -66,7 +71,7 @@ Deterministic_modelR_final_DENVimmmunity <- function(theta, theta_init, location
       #par(new=T)
       #plot(date.vals[1:length(casecount)],R_traj/theta[["npop"]],type='l',col=4,yaxt='n',xaxt='n',ylim=c(0,1))
       #axis(side=4)
-      
+      #
     # Calculate seropositivity at pre-specified dates and corresponding likelihood
     i=1; seroP=NULL; binom.lik=NULL
     sero.years <- format(as.Date(seroposdates, format="%d/%m/%Y"),"%Y")

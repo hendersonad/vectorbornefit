@@ -15,6 +15,14 @@ simulate_deterministic_noage_DENVimm <- function(theta, init.state, time.vals.si
     chi <-    theta[["chi"]]
     omega_d <- 1/theta[['omega_d']]
     
+    # No of ZIKA FP introductions
+    if(time<=(18*7)){
+      Ct <- Ctreg(time) #no of zika infections
+    }else{
+      Ct=0  
+    }
+    psi <- theta[["psi"]]
+    
     # No DENV outbreak until denv_start parameter reached in time.vals
     if(time<theta[["denv_start"]]){ 
       beta_d <- 0
@@ -64,7 +72,7 @@ simulate_deterministic_noage_DENVimm <- function(theta, init.state, time.vals.si
     # Human population
     dS  =  - S*(beta_h1*IM)*Ipos - chi*Sd*(beta_d*Id/Nsize) + chi*(2*omega_d*T2d)
     dE  =  S*(beta_h1*IM)*Ipos - alpha_h*E  
-    dI  = alpha_h*E  - gamma*I
+    dI  = alpha_h*E  - gamma*I + (psi*Ct)
     dR  = gamma*I
     dC  = alpha_h*E 
     
@@ -86,3 +94,4 @@ simulate_deterministic_noage_DENVimm <- function(theta, init.state, time.vals.si
   traj <- as.data.frame(ode(init.state, time.vals.sim, SIR_ode, theta, method = "ode45"))
   return(traj)
 }
+

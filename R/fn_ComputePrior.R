@@ -12,7 +12,7 @@ ComputePrior <- function(iiH, thetaAlltab, thetaAllstar){
                   priorVEx(1/thetaAllstar["Vex"])*
                   priorMuV(1/thetaAllstar["MuV"])*
                   priorchi(thetaAllstar["chi"])*
-                  priort0(thetaAllstar["t0"])*
+                  #priort0(thetaAllstar["t0"])*
                   priorepsilon(thetaAllstar["epsilon"])*
                   priorOmega(thetaAllstar["omega_d"])
   
@@ -32,10 +32,8 @@ ComputePrior <- function(iiH, thetaAlltab, thetaAllstar){
             priorExp(1/thetaAlltab["Exp"])*
             priorVEx(1/thetaAlltab["Vex"])*
             priorMuV(1/thetaAlltab["MuV"])*
-            priorBeta_amp(thetaAlltab["beta_v_amp"])*
-            priorBeta_mid(thetaAlltab["beta_v_mid"])*
             priorchi(thetaAlltab["chi"])*
-            priort0(thetaAlltab["t0"])*
+            #priort0(thetaAlltab["t0"])*
             priorepsilon(thetaAlltab["epsilon"])*
             priorOmega(thetaAlltab["omega_d"])
   
@@ -46,7 +44,7 @@ ComputePrior <- function(iiH, thetaAlltab, thetaAllstar){
   }
   # If seasonal transmission is estimated, include in prior
   if(seasonal.transmission==T){
-    p_theta_star <- p_theta_star*                  
+    p_theta <- p_theta*                  
       priorBeta_amp(thetaAlltab["beta_v_amp"])*
       priorBeta_mid(thetaAlltab["beta_v_mid"])
   }
