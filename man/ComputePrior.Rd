@@ -4,7 +4,7 @@
 \alias{ComputePrior}
 \title{Compute prior}
 \usage{
-ComputePrior(iiH, thetaAlltab, thetaAllstar)
+ComputePrior(iiH, thetaAlltab, thetaAllstar, covartheta)
 }
 \arguments{
 \item{iiH}{Numeric indicator of location given by location vector "locationtab[]"}
