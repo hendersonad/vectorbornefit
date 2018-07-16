@@ -11,12 +11,9 @@ ComputePrior <- function(iiH, thetaAlltab, thetaAllstar, covartheta){
                   priorExp(1/thetaAllstar["Exp"])*
                   priorVEx(1/thetaAllstar["Vex"])*
                   priorMuV(1/thetaAllstar["MuV"])*
-                  #priorchi(thetaAllstar["chi"])*
-                  priorepsilon(thetaAllstar["epsilon"])*
-                  priorOmega(thetaAllstar["omega_d"])*
-                  (dbeta(thetaAllstar[["chi"]],1,0.5))*
-                  (dexp(thetaAllstar[["psi"]],thetaAlltab[["psi"]]))
+                  priorOmega(thetaAllstar["omega_d"])
   
+
   # If vector control is included in the model - include prior density of proposed 
   #   strength of control measure
   if(vector.control==T){
@@ -28,16 +25,13 @@ ComputePrior <- function(iiH, thetaAlltab, thetaAllstar, covartheta){
       priorBeta_amp(thetaAllstar["beta_v_amp"])*
       priorBeta_mid(thetaAllstar["beta_v_mid"])
   }
+  
   # Compute prior of current parameter set theta
   p_theta = priorInf(1/thetaAlltab["Inf"])*
             priorExp(1/thetaAlltab["Exp"])*
             priorVEx(1/thetaAlltab["Vex"])*
             priorMuV(1/thetaAlltab["MuV"])*
-            priorchi(thetaAlltab["chi"])*
-            priorepsilon(thetaAlltab["epsilon"])*
-            priorOmega(thetaAlltab["omega_d"])*
-          (dbeta(thetaAlltab[["chi"]],1,0.5))*
-          (dexp(thetaAlltab[["psi"]],thetaAlltab[["psi"]]))
+            priorOmega(thetaAlltab["omega_d"])
   
   # If vector control is included in the model - include prior density of proposed 
   #   strength of control measure

@@ -127,7 +127,7 @@ AdaptMCMCloop_withDENVimmunity <- function(sample.start.point=T, startdate=as.Da
       }
       
       # Calculate prior density for current and proposed theta set
-      prior.theta <- ComputePrior(iiH, c(thetatab_current,thetaAlltab_current[iiH,]), c(theta_star,thetaA_star), covartheta = cov_matrix_theta)
+      prior.theta <- ComputePrior(iiH, c(thetatab_current,thetaAlltab_current[iiH,]), c(theta_star,thetaA_star), covartheta = cov_matrix_thetaA)
       prior.star <- prior.theta$prior.star*prior.star
       prior.current <- prior.theta$prior*prior.current
     } # end loop over regions
