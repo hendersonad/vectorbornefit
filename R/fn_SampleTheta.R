@@ -33,9 +33,9 @@ SampleTheta<-function(theta_in, theta_init_in, covartheta, covartheta_init, glob
       #  theta_star[["t0"]]=max(0,theta_star[["t0"]]) 
       #}
       #
-      #if(sum(names(theta_star)=="chi")>0){ # check theta contains this vector
-      #  theta_star[["chi"]]=min(theta_star[["chi"]],2-theta_star[["chi"]]) # Ensure reporting between zero and 1
-      #}
+      if(sum(names(theta_star)=="chi")>0){ # check theta contains this vector
+        theta_star[["chi"]]=min(theta_star[["chi"]],2-theta_star[["chi"]]) # Ensure reporting between zero and 1
+      }
       
       
   ## Initial conditions

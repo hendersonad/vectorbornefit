@@ -11,7 +11,9 @@ ComputePrior <- function(iiH, thetaAlltab, thetaAllstar, covartheta){
                   priorExp(1/thetaAllstar["Exp"])*
                   priorVEx(1/thetaAllstar["Vex"])*
                   priorMuV(1/thetaAllstar["MuV"])*
-                  priorOmega(thetaAllstar["omega_d"])
+                  priorOmega(thetaAllstar["omega_d"])*
+                  priorPsi(thetaAllstar["psi"])*
+                  (log(1/thetaAllstar["chi"]))
   
 
   # If vector control is included in the model - include prior density of proposed 
@@ -31,7 +33,9 @@ ComputePrior <- function(iiH, thetaAlltab, thetaAllstar, covartheta){
             priorExp(1/thetaAlltab["Exp"])*
             priorVEx(1/thetaAlltab["Vex"])*
             priorMuV(1/thetaAlltab["MuV"])*
-            priorOmega(thetaAlltab["omega_d"])
+            priorOmega(thetaAlltab["omega_d"])*
+            priorPsi(thetaAlltab["psi"])*
+            (log(1/thetaAlltab["chi"]))
   
   # If vector control is included in the model - include prior density of proposed 
   #   strength of control measure
