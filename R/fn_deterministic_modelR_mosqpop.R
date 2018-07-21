@@ -23,7 +23,7 @@
 #theta_init=theta_init_star
 #locationI=locationtab[iiH]
 
-Deterministic_modelR_mosqpop<-function(agestructure=NULL,theta, theta_init, locationI, seroposdates, episeason, include.count=T){
+Deterministic_modelR_mosqpop<-function(theta, theta_init, locationI, seroposdates, episeason, include.count=T){
   # These values tell how to match states of compartment with data points
   sim.vals <- seq(0,max(time.vals)-min(time.vals),7) + 7 
   time.vals.sim <-    seq(0,max(sim.vals),dt)
@@ -34,14 +34,12 @@ Deterministic_modelR_mosqpop<-function(agestructure=NULL,theta, theta_init, loca
       sm_init=theta_init[["sm_init"]],em_init=theta_init[["em_init"]],im_init=theta_init[["im_init"]])
     
     # Output simulation data
-    theta["beta_base"]=0.9
     output <- simulate_deterministic_mosqPop(theta, init1, time.vals.sim)
     #plot(output$sm_init,type='l',ylim=c(0,max(output$sm_init*1.1)))
     #plot(output$em_init,type='l',ylim=c(0,max(output$em_init*1.1)))
     #plot(output$im_init,type='l',ylim=c(0,max(output$im_init*1.1)))
     #plot(output$sm_init + output$em_init + output$im_init,type='l')
     #plot(time.vals.sim,output$c_init,type='l')
-    par(new=T)
     #plot(time.vals, time.interventions, axes=F, xlab="", ylab="")
     
     # Match compartment states at sim.vals time
@@ -94,7 +92,7 @@ Deterministic_modelR_mosqpop<-function(agestructure=NULL,theta, theta_init, loca
       sm_initA=theta_init[["sm_initA"]],em_initA=theta_init[["em_initA"]],im_initA=theta_init[["im_initA"]])
     
     # Output simulation data
-    output <- simulate_deterministic(theta, init1, time.vals.sim)
+    output <- simulate_deterministic_mosqPop(theta, init1, time.vals.sim)
     
     # Match compartment states at sim.vals time
     S_trajC <- output[match(time.vals.sim,output$time),"s_initC"]

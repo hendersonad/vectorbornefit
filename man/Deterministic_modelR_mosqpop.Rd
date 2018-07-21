@@ -4,12 +4,10 @@
 \alias{Deterministic_modelR_mosqpop}
 \title{Deterministic SEIR-SEI function with no age structure}
 \usage{
-Deterministic_modelR_mosqpop(agestructure = NULL, theta, theta_init,
-  locationI, seroposdates, episeason, include.count = T)
+Deterministic_modelR_mosqpop(theta, theta_init, locationI, seroposdates,
+  episeason, include.count = T)
 }
 \arguments{
-\item{agestructure}{Binary indicator variable if model is age structured (1) or not (0) between children and adults. Defaults to NULL in which case no sampling happens}
-
 \item{theta}{Vector of parameters for model}
 
 \item{theta_init}{Vector of initial conditions for model}
@@ -21,6 +19,8 @@ Deterministic_modelR_mosqpop(agestructure = NULL, theta, theta_init,
 \item{episeason}{Vector with start and end point of epidemic case data}
 
 \item{include.count}{True or False - whether to include count data in likelihood. Defaults to True}
+
+\item{agestructure}{Binary indicator variable if model is age structured (1) or not (0) between children and adults. Defaults to NULL in which case no sampling happens}
 }
 \description{
 This function solves an SEIR-SEI vector borne disease model.
