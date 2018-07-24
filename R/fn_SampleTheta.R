@@ -7,7 +7,7 @@
 #' @param covartheta_init Covariance matrix for initial conditions. Must be same width as length of theta_init_in
 #' @param global Binary indicator variable if sampling global (1) or local (0) parameters. Defaults to NULL in which case no sampling happens
 #' @export
- 
+
 SampleTheta<-function(theta_in, theta_init_in, covartheta, covartheta_init, global=NULL){
   ## Parameters
     # sample new parameters from nearby using multivariate normal distribution: 
@@ -15,7 +15,10 @@ SampleTheta<-function(theta_in, theta_init_in, covartheta, covartheta_init, glob
       mean_vector_theta0 = mean_vector_theta
       theta_star = as.numeric(exp(rmvnorm(1,log(mean_vector_theta0), covartheta)))
       names(theta_star)=names(theta_in)
-      
+      if(global==0){
+      #theta_star[["chi"]] <- rtruncnorm(1,a=0,b=1,mean=mean_vector_theta0[["chi"]],sd=covartheta['chi','chi'])
+      theta_star[["chi"]] <- runif(1,0,1)
+      }
       #if(sum(names(theta_star)=="rep")>0){ # check theta contains this vector
       #  theta_star[["rep"]]=min(theta_star[["rep"]],2-theta_star[["rep"]]) # Ensure reporting between zero and 1
       #}
@@ -33,10 +36,9 @@ SampleTheta<-function(theta_in, theta_init_in, covartheta, covartheta_init, glob
       #  theta_star[["t0"]]=max(0,theta_star[["t0"]]) 
       #}
       #
-      if(sum(names(theta_star)=="chi")>0){ # check theta contains this vector
-        theta_star[["chi"]]=min(theta_star[["chi"]],2-theta_star[["chi"]]) # Ensure reporting between zero and 1
-      }
-      
+      #if(sum(names(theta_star)=="chi")>0){ # check theta contains this vector
+      #  theta_star[["chi"]]=min(theta_star[["chi"]],2-theta_star[["chi"]]) # Ensure reporting between zero and 1
+      #}
       
   ## Initial conditions
   theta_init_star = theta_init_in

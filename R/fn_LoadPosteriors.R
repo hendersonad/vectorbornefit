@@ -17,12 +17,6 @@ c_trace_tab0=NULL
 s_trace_tab0=NULL
 r_trace_tab0=NULL
 x_trace_tab0=NULL
-s_trace_tab0_C=NULL
-s_trace_tab0_A=NULL
-r_trace_tab0_C=NULL
-r_trace_tab0_A=NULL
-x_trace_tab0_C=NULL
-x_trace_tab0_A=NULL
 
 for(iiM in 1:m.tot){
   load(paste("posterior_outputZ","/outputR_",iiM,"_",run.name,".RData",sep=""))
@@ -43,14 +37,6 @@ for(iiM in 1:m.tot){
   r_trace_tab0 = rbind(r_trace_tab0,r_trace_tab[picks,iiH,])
   x_trace_tab0 = rbind(x_trace_tab0,x_trace_tab[picks,iiH,])
   
-  if(agestructure==1){
-    s_trace_tab0_C=rbind(s_trace_tab0_C,s_trace_tabC[picks,iiH,])
-    s_trace_tab0_A=rbind(s_trace_tab0_A,s_trace_tabC[picks,iiH,])
-    r_trace_tab0_C=rbind(r_trace_tab0_C,r_trace_tabC[picks,iiH,])
-    r_trace_tab0_A=rbind(r_trace_tab0_A,r_trace_tabA[picks,iiH,])
-    x_trace_tab0_C=rbind(x_trace_tab0_C,x_trace_tabC[picks,iiH,])
-    x_trace_tab0_A=rbind(x_trace_tab0_A,x_trace_tabA[picks,iiH,])
-  }
 }
 
 picks=c(1:length(thetatabA[,1]))
@@ -60,12 +46,6 @@ c_trace_tab=c_trace_tab0
 s_trace_tab=s_trace_tab0
 r_trace_tab=r_trace_tab0
 x_trace_tab=x_trace_tab0
-s_trace_tabC=s_trace_tab0_C
-s_trace_tabA=s_trace_tab0_A
-r_trace_tabC=r_trace_tab0_C
-r_trace_tabA=r_trace_tab0_A
-x_trace_tabC=x_trace_tab0_C
-x_trace_tabA=x_trace_tab0_A
 
 return(list(picks=picks,
          thetatab=thetatab,
@@ -74,12 +54,6 @@ return(list(picks=picks,
          s_trace_tab=s_trace_tab,
          r_trace_tab=r_trace_tab,
          x_trace_tab=x_trace_tab,
-         s_trace_tabC=s_trace_tabC,
-         s_trace_tabA=s_trace_tabA,
-         r_trace_tabC=r_trace_tabC,
-         r_trace_tabA=r_trace_tabA,
-         x_trace_tabC=x_trace_tabC,
-         x_trace_tabA=x_trace_tabA,
          sim_liktab=sim_liktab,
          accepttab=accepttab
          ))

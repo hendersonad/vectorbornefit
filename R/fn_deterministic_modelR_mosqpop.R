@@ -28,7 +28,6 @@ Deterministic_modelR_mosqpop<-function(theta, theta_init, locationI, seroposdate
   sim.vals <- seq(0,max(time.vals)-min(time.vals),7) + 7 
   time.vals.sim <-    seq(0,max(sim.vals),dt)
   
-  if(agestructure==0){
     init1=c(
       s_init=theta_init[["s_init"]],e_init=theta_init[["i1_init"]],i_init=theta_init[["i1_init"]],r_init=theta_init[["r_init"]],c_init=0,
       sm_init=theta_init[["sm_init"]],em_init=theta_init[["em_init"]],im_init=theta_init[["im_init"]])
@@ -84,62 +83,11 @@ Deterministic_modelR_mosqpop<-function(theta, theta_init, locationI, seroposdate
     output1=list(C_trace=casecount,
                  S_trace=S_traj,R_trace=R_traj,X_trace=X_traj,
                  lik=likelihood)
-  }else{
-    init1=c(
-      s_initC=theta_init[["s_initC"]],e_initC=theta_init[["i1_initC"]],i_initC=theta_init[["i1_initC"]],r_initC=theta_init[["r_initC"]],c_initC=0,
-      sm_initC=theta_init[["sm_initC"]],em_initC=theta_init[["em_initC"]],im_initC=theta_init[["im_initC"]],
-      s_initA=theta_init[["s_initA"]],e_initA=theta_init[["i1_initA"]],i_initA=theta_init[["i1_initA"]],r_initA=theta_init[["r_initA"]],c_initA=0,
-      sm_initA=theta_init[["sm_initA"]],em_initA=theta_init[["em_initA"]],im_initA=theta_init[["im_initA"]])
-    
-    # Output simulation data
-    output <- simulate_deterministic_mosqPop(theta, init1, time.vals.sim)
-    
-    # Match compartment states at sim.vals time
-    S_trajC <- output[match(time.vals.sim,output$time),"s_initC"]
-    S_trajA <- output[match(time.vals.sim,output$time),"s_initA"]
-    X_trajC <- output[match(time.vals.sim,output$time),"sm_initC"]
-    X_trajA <- output[match(time.vals.sim,output$time),"sm_initA"]
-    R_trajC <- output[match(time.vals.sim,output$time),"r_initC"]
-    R_trajA <- output[match(time.vals.sim,output$time),"r_initA"]
-    cases1 <- output[match(time.vals.sim,output$time),"c_initC"]
-    cases2 <- output[match(time.vals.sim,output$time),"c_initA"]
-    casecountC <- cases1-c(0,cases1[1:(length(time.vals.sim)-1)])
-    casecountA <- cases2-c(0,cases2[1:(length(time.vals.sim)-1)])
-    casecount <- casecountC + casecountA
-    #casecount[casecount<0] <- 0
-    
-    # Calculate seropositivity at pre-specified dates and corresponding likelihood
-    i=1; seroPC=NULL;seroPA=NULL; binom.lik=NULL
-    for(date in seroposdates){
-      if(date <= max(date.vals)  & date >= min(date.vals)){
-        seroPC[i] <- R_trajC[date.vals<date+3.5 & date.vals>date-3.5]/theta[["npopC"]]
-        seroPA[i] <- R_trajA[date.vals<date+3.5 & date.vals>date-3.5]/theta[["npopA"]]
-        binom.lik[i] <- (dbinom(nLUM[i], size=nPOP[i], prob=seroPC[i], log = T) +
-                           dbinom(nLUM[(length(nLUM)/2)+1], size=nPOP[(length(nLUM)/2)+1], prob=seroPA[i], log = T))
-        i <- i+1
-      }
-    }
-    
-    # Calculate the likelihood 
-    if(include.count==T){
-      likelihood <- sum(binom.lik) + sum(log(dnbinom(y.vals,
-                                                     mu=theta[["rep"]]*(casecount),
-                                                     size=1/theta[["repvol"]])))
-    }else{
-      likelihood <- sum(binom.lik)
-    }
-    
-    likelihood=max(-1e10, likelihood)
-    if(is.null(likelihood)){likelihood=-1e10}
-    if(is.nan(likelihood)){likelihood=-1e10}
-    if(is.na(likelihood)){likelihood=-1e10}
-    if(length(likelihood)==0){likelihood=-1e10}
-    if(likelihood == -Inf){likelihood=-1e10}
-    
     # Return results
-   return(list(C_trace=casecount,C_traceC=casecountC,C_traceA=casecountA,
-                   S_traceC=S_trajC,S_traceA=S_trajA,R_traceC=R_trajC,R_traceA=R_trajA,
-                   X_traceC=X_trajC,X_traceA=X_trajA,
+   return(list(C_trace=casecount,
+                   S_trace=S_traj,
+                   R_trace=R_traj,
+                   X_trace=X_traj,
                    lik=likelihood))
-  }
-}  
+}
+  
