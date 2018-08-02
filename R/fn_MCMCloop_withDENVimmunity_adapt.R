@@ -133,8 +133,8 @@ AdaptMCMCloop_withDENVimmunity <- function(sample.start.point=T, startdate=as.Da
     } # end loop over regions
     
     # Calculate probability function - MH algorithm
-    q_theta_given_theta_star = 1
-    q_theta_star_given_theta = 1
+    q_theta_given_theta_star = as.numeric(log(thetaAllstar[iiH,'chi']) + log(thetaAllstar[iiH,'psi']))
+    q_theta_star_given_theta = as.numeric(log(thetaAlltab_current[1, 'chi']) + log(thetaAlltab_current[1, 'psi']))
     
     if(m == 1){
       prior.star = 1 

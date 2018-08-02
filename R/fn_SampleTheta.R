@@ -15,10 +15,7 @@ SampleTheta<-function(theta_in, theta_init_in, covartheta, covartheta_init, glob
       mean_vector_theta0 = mean_vector_theta
       theta_star = as.numeric(exp(rmvnorm(1,log(mean_vector_theta0), covartheta)))
       names(theta_star)=names(theta_in)
-      if(global==0){
-      #theta_star[["chi"]] <- rtruncnorm(1,a=0,b=1,mean=mean_vector_theta0[["chi"]],sd=covartheta['chi','chi'])
-      theta_star[["chi"]] <- runif(1,0,1)
-      }
+      
       #if(sum(names(theta_star)=="rep")>0){ # check theta contains this vector
       #  theta_star[["rep"]]=min(theta_star[["rep"]],2-theta_star[["rep"]]) # Ensure reporting between zero and 1
       #}
