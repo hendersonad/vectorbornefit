@@ -41,6 +41,7 @@ simulate_deterministic_noage_DENVimm <- function(theta, init.state, time.vals.si
       alpha_v <- 0
       alpha_h <- 0
       gamma <- 0
+      rho <- 0
     }else{
       beta_h1 <- theta[['beta_h']] * seasonal_f(time, date0=theta[["shift_date"]],amp=theta[["beta_v_amp"]],mid=theta[["beta_v_mid"]]) * decline_f(time,date0=theta[["shift_date"]],mask=theta[['beta_mask']],base=theta[['beta_base']],grad=theta[['beta_grad']],mid=theta[['beta_mid']]) 
       beta_v1 <- theta[['beta_v']] * beta_h1 
@@ -48,6 +49,7 @@ simulate_deterministic_noage_DENVimm <- function(theta, init.state, time.vals.si
       alpha_v <-  theta[["Vex"]]
       alpha_h <-  theta[["Exp"]]
       gamma <-    theta[["Inf"]]
+      rho <-      1/theta[["rho"]]
     }
 
     ## extract initial states from theta_init
@@ -70,10 +72,10 @@ simulate_deterministic_noage_DENVimm <- function(theta, init.state, time.vals.si
     Ipos = extinct(I,1) # Need at least one infective
     
     # Human population
-    dS  =  - S*(beta_h1*IM)*Ipos - chi*Sd*(beta_d*Id/Nsize) + chi*(2*omega_d*T2d)
+    dS  =  - S*(beta_h1*IM)*Ipos - chi*Sd*(beta_d*Id/Nsize) + chi*(2*omega_d*T2d) 
     dE  =  S*(beta_h1*IM)*Ipos - alpha_h*E  
     dI  = alpha_h*E  - gamma*I + (psi*Ct)
-    dR  = gamma*I
+    dR  = gamma*I - rho*R
     dC  = alpha_h*E 
     
     # Denv infection and immunity
