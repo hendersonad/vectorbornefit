@@ -61,6 +61,10 @@ Deterministic_modelR_final_DENVimmmunity <- function(theta, theta_init, location
     I_traj <- output[match(time.vals.sim,output$time),"i_init"]
     cases1 <- output[match(time.vals.sim,output$time),"c_init"]
     casesD <- output[match(time.vals.sim,output$time),"cd_init"]
+    SD <- output[match(time.vals.sim,output$time),"sd_init"]
+    ED <- output[match(time.vals.sim,output$time),"ed_init"]
+    ID <- output[match(time.vals.sim,output$time),"id_init"]
+    RD <- output[match(time.vals.sim,output$time),"rd_init"]
     casecount <- cases1-c(0,cases1[1:(length(time.vals.sim)-1)])
     casecountD <- casesD-c(0,casesD[1:(length(time.vals.sim)-1)])
     casecount[casecount<0] <- 0
@@ -89,9 +93,14 @@ Deterministic_modelR_final_DENVimmmunity <- function(theta, theta_init, location
         i <- i+1
       }
     
-      likelihood <- sum(binom.lik) + sum(log(dnbinom(y.vals,
-                                                      mu=theta[["rep"]]*(casecount),
-                                                     size=1/theta[["repvol"]])))
+    ln.denv <- length(denv.timeseries)
+    ln.full <- length(y.vals)
+      likelihood <- sum(binom.lik) + sum(log(dnbinom(y.vals[ln.denv:ln.full],
+                                                      mu=theta[["rep"]]*(casecount[ln.denv:ln.full]),
+                                                     size=1/theta[["repvol"]]))) +
+                                    sum(log(dnbinom(round(denv.timeseries*theta[["iota"]]),
+                                                      mu=theta[["rep"]]*(casecount[1:ln.denv]),
+                                                      size=1/theta[["repvol"]])))
     likelihood=max(-1e10, likelihood)
       if(is.null(likelihood)){likelihood=-1e10}
       if(is.nan(likelihood)){likelihood=-1e10}

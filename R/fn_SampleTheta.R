@@ -16,9 +16,12 @@ SampleTheta<-function(theta_in, theta_init_in, covartheta, covartheta_init, glob
       theta_star = as.numeric(exp(rmvnorm(1,log(mean_vector_theta0), covartheta)))
       names(theta_star)=names(theta_in)
       
-      #if(sum(names(theta_star)=="rep")>0){ # check theta contains this vector
-      #  theta_star[["rep"]]=min(theta_star[["rep"]],2-theta_star[["rep"]]) # Ensure reporting between zero and 1
-      #}
+      if(sum(names(theta_star)=="rep")>0){ # check theta contains this vector
+        theta_star[["rep"]]=min(theta_star[["rep"]],2-theta_star[["rep"]]) # Ensure reporting between zero and 1
+      }
+      if(sum(names(theta_star)=="iota")>0){ # check theta contains this vector
+        theta_star[["iota"]]=min(theta_star[["iota"]],2-theta_star[["iota"]]) # Ensure reporting between zero and 1
+      }
       #
       #if(sum(names(theta_star)=="beta_v_amp")>0){
       #  theta_star[["beta_v_amp"]]=min(theta_star[["beta_v_amp"]],2-theta_star[["beta_v_amp"]]) # Ensure amplitude between zero and 1

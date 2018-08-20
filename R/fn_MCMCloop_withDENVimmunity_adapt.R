@@ -94,7 +94,7 @@ AdaptMCMCloop_withDENVimmunity <- function(sample.start.point=T, startdate=as.Da
         list2env(data, globalenv())
         thetaA_star[["model_st"]] <- startdate
       }
-      
+        
       # Run model simulation
       output1 = Deterministic_modelR_final_DENVimmmunity(theta=c(theta_star,thetaA_star,theta_denv), theta_init_star, locationI=locationtab[iiH], seroposdates=seroposdates, episeason=episeason, include.count=include.count)
       sim_marg_lik_star=sim_marg_lik_star + output1$lik 
@@ -212,6 +212,8 @@ AdaptMCMCloop_withDENVimmunity <- function(sample.start.point=T, startdate=as.Da
       print(c(m, accept_rate, sim_liktab_current, thetaAlltab_current[1,'chi'],
             thetaAlltab_current[1,'omega_d'],
             thetaAlltab_current[1,'epsilon'],
+            thetaAlltab_current[1,'iota'],
+            thetaAlltab_current[1,'rep'],
             thetaAlltab_current[1,'psi']))
     }  
     
