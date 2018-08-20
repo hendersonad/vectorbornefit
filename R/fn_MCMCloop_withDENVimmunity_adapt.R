@@ -94,7 +94,7 @@ AdaptMCMCloop_withDENVimmunity <- function(sample.start.point=T, startdate=as.Da
         list2env(data, globalenv())
         thetaA_star[["model_st"]] <- startdate
       }
-        
+      
       # Run model simulation
       output1 = Deterministic_modelR_final_DENVimmmunity(theta=c(theta_star,thetaA_star,theta_denv), theta_init_star, locationI=locationtab[iiH], seroposdates=seroposdates, episeason=episeason, include.count=include.count)
       sim_marg_lik_star=sim_marg_lik_star + output1$lik 
@@ -133,9 +133,13 @@ AdaptMCMCloop_withDENVimmunity <- function(sample.start.point=T, startdate=as.Da
     } # end loop over regions
     
     # Calculate probability function - MH algorithm
+    if(cov_matrix_thetaA["chi","chi"]>0){
     q_theta_given_theta_star = as.numeric(log(thetaAllstar[iiH,'chi']))
     q_theta_star_given_theta = as.numeric(log(thetaAlltab_current[1, 'chi']))
-    
+    }else{
+      q_theta_given_theta_star = 1 
+      q_theta_star_given_theta = 1
+    }
     if(m == 1){
       prior.star = 1 
     }
