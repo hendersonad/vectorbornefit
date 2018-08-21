@@ -10,6 +10,7 @@
 #' @keywords deterministic 
 #' @export
 # theta=c(theta_star,thetaA_star,theta_denv); theta_init =theta_init_star; locationI=locationtab[iiH];
+# theta=c(thetaA_star,theta_denv); theta_init =theta_init_star; locationI=locationtab[iiH];
 # theta=c(thetaMed,theta_star,thetaA_star,theta_denv); theta_init =theta_init_star; locationI=locationtab[iiH];
 
 Deterministic_modelR_final_DENVimmmunity <- function(theta, theta_init, locationI, seroposdates, episeason, include.count=T){
@@ -97,10 +98,10 @@ Deterministic_modelR_final_DENVimmmunity <- function(theta, theta_init, location
     ln.full <- length(y.vals)
       likelihood <- sum(binom.lik) + sum(log(dnbinom(y.vals[ln.denv:ln.full],
                                                       mu=theta[["rep"]]*(casecount[ln.denv:ln.full]),
-                                                     size=1/theta[["repvol"]]))) +
-                                    sum(log(dnbinom(round(denv.timeseries*theta[["iota"]]),
-                                                      mu=theta[["rep"]]*(casecount[1:ln.denv]),
-                                                      size=1/theta[["repvol"]])))
+                                                     size=1/theta[["repvol"]]))) #+
+                                    #sum(log(dnbinom(round(denv.timeseries*theta[["iota"]]),
+                                    #                  mu=theta[["rep"]]*(casecount[1:ln.denv]),
+                                    #                  size=1/theta[["repvol"]])))
     likelihood=max(-1e10, likelihood)
       if(is.null(likelihood)){likelihood=-1e10}
       if(is.nan(likelihood)){likelihood=-1e10}
