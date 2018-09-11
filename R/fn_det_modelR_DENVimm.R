@@ -96,8 +96,8 @@ Deterministic_modelR_final_DENVimmmunity <- function(theta, theta_init, location
     
     ln.denv <- length(denv.timeseries)
     ln.full <- length(y.vals)
-      likelihood <- sum(binom.lik) + sum(log(dnbinom(y.vals[ln.denv:ln.full],
-                                                      mu=theta[["rep"]]*(casecount[ln.denv:ln.full]),
+      likelihood <- sum(binom.lik) + sum(log(dnbinom(y.vals,
+                                                      mu=theta[["rep"]]*(casecount),
                                                      size=1/theta[["repvol"]]))) #+
                                     #sum(log(dnbinom(round(denv.timeseries*theta[["iota"]]),
                                     #                  mu=theta[["rep"]]*(casecount[1:ln.denv]),

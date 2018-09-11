@@ -214,9 +214,10 @@ AdaptMCMCloop_withDENVimmunity <- function(sample.start.point=T, startdate=as.Da
     
     if(m %% 1000==0){
       print(c(m, accept_rate, sim_liktab_current, thetaAlltab_current[1,'chi'],
+            thetaAlltab_current[1,'beta_h'],
             thetaAlltab_current[1,'omega_d'],
             thetaAlltab_current[1,'epsilon'],
-            thetaAlltab_current[1,'iota'],
+            thetaAlltab_current[1,'rho'],
             thetaAlltab_current[1,'rep'],
             thetaAlltab_current[1,'psi']))
     }  
