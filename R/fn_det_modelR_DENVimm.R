@@ -49,9 +49,18 @@ Deterministic_modelR_final_DENVimmmunity <- function(theta, theta_init, location
     
     # Output simulation data
     #init1[["e_init"]]=1;init1[["i_init"]]=0
-    #theta[["psi"]] <- 0.001
-    #theta[["chi"]] <- 0.5
-    #theta[["beta_h"]] <- 0.08
+    #theta[["psi"]] <- 3e-5
+    #theta[["chi"]] <- 0.9
+    #theta[["omega_d"]] <- 180
+    #theta[["beta_h"]] <- 0.12
+    ##
+    #theta[["beta_h"]] <- 8.228741e-02
+    #theta[["chi"]] <- 2.123436e-01
+    #theta[["iota"]] <- 2.164142e-02
+    #theta[["epsilon"]] <- 9.625896e-02
+    #theta[["rho"]] <- 237.0512
+    #theta[["rep"]] <- 0.01805841
+    #theta[["psi"]] <- 3.536956e-5
     
     output <- simulate_deterministic_noage_DENVimm(theta, init1, time.vals.sim)
     
@@ -76,7 +85,7 @@ Deterministic_modelR_final_DENVimmmunity <- function(theta, theta_init, location
       #par(new=T)
       #plot(date.vals[1:length(casecount)],R_traj/theta[["npop"]],type='l',col=4,yaxt='n',xaxt='n',ylim=c(0,1))
       #axis(side=4)
-      #
+      
     # Calculate seropositivity at pre-specified dates and corresponding likelihood
     i=1; seroP=NULL; binom.lik=NULL
     sero.years <- format(as.Date(seroposdates, format="%d/%m/%Y"),"%Y")
@@ -96,12 +105,23 @@ Deterministic_modelR_final_DENVimmmunity <- function(theta, theta_init, location
     
     ln.denv <- length(denv.timeseries)
     ln.full <- length(y.vals)
-      likelihood <- sum(binom.lik) + sum(log(dnbinom(y.vals,
-                                                      mu=theta[["rep"]]*(casecount),
-                                                     size=1/theta[["repvol"]]))) #+
-                                    #sum(log(dnbinom(round(denv.timeseries*theta[["iota"]]),
-                                    #                  mu=theta[["rep"]]*(casecount[1:ln.denv]),
-                                    #                  size=1/theta[["repvol"]])))
+    #first.zikv <- min(which(y.vals>0))
+    theta[["iota"]] <- max(theta[["iota"]],1e-10)
+    
+    likelihood <- sum(binom.lik) + sum(log(dnbinom(y.vals[ln.denv:ln.full],
+                                                    mu=theta[["rep"]]*(casecount[ln.denv:ln.full]),
+                                                   size=1/theta[["repvol"]]))) +
+                                   sum(log(dnbinom(round(denv.timeseries),
+                                                    mu=(1/theta[["iota"]])*theta[["rep"]]*(casecount[1:ln.denv]),
+                                                    size=1/theta[["repvol"]])))
+    
+    #plot((1/theta[["iota"]])*theta[["rep"]]*(casecount[1:ln.denv]),type='l')
+    #  lines(denv.timeseries, col=2)
+    #plot(theta[["rep"]]*(casecount), type='l')
+    #  lines(y.vals, col=2)
+    #log(dnbinom(y.vals[ln.denv:ln.full],mu=theta[["rep"]]*(casecount[ln.denv:ln.full]),size=1/theta[["repvol"]]))
+    #sum(log(dnbinom(y.vals[ln.denv:ln.full],mu=theta[["rep"]]*(casecount[ln.denv:ln.full]),size=1/theta[["repvol"]])))
+    
     likelihood=max(-1e10, likelihood)
       if(is.null(likelihood)){likelihood=-1e10}
       if(is.nan(likelihood)){likelihood=-1e10}
