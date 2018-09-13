@@ -72,7 +72,7 @@ for(iiH in itertab){
   theta_initAll[iiH,"sm_init"]=1-theta_initAll[iiH,"em_init"]-theta_initAll[iiH,"im_init"]
   
   theta_initAll[iiH,"ed_init"]=0; theta_initAll[iiH,"id_init"]=thetainit_denv[["i1_init"]]; theta_initAll[iiH,"t1d_init"]=0; theta_initAll[iiH,"t2d_init"]=0
-  theta_initAll[iiH,"sd_init"]=popsizeTot-theta_initAll[iiH,"id_init"]-theta_initAll[iiH,"ed_init"]-theta_initAll[iiH,"t1d_init"]-theta_initAll[iiH,"t2d_init"]
+  theta_initAll[iiH,"sd_init"]=(popsizeTot*(1-0.331))-theta_initAll[iiH,"id_init"]-theta_initAll[iiH,"ed_init"]-theta_initAll[iiH,"t1d_init"]-theta_initAll[iiH,"t2d_init"]
   }
 
 ## Covariance matrices 

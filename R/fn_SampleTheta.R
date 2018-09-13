@@ -56,7 +56,7 @@ SampleTheta<-function(theta_in, theta_init_in, covartheta, covartheta_init, glob
   theta_init_star["sm_init"]=1-theta_init_star["em_init"]-theta_init_star["im_init"]
   
   theta_init_star["ed_init"]=0; theta_init_star["id_init"]=thetainit_denv[["i1_init"]]; theta_init_star["t1d_init"]=0; theta_init_star["t1d_init"]=0
-  theta_init_star["sd_init"]=popsizeTot-theta_init_star["id_init"]-theta_init_star["ed_init"]-theta_init_star["t1d_init"]-theta_init_star["t2d_init"]
+  theta_init_star["sd_init"]=(popsizeTot*(1-0.331))-theta_init_star["id_init"]-theta_init_star["ed_init"]-theta_init_star["t1d_init"]-theta_init_star["t2d_init"]
   
   return(list(thetaS=theta_star,theta_initS=theta_init_star))
 }
