@@ -46,18 +46,21 @@ Deterministic_modelR_final_DENVimmmunityPartial <- function(theta, theta_init, l
     
     # set initial conditions
     init1=c(
-      s_init=theta_init[["s_init"]],e_init=theta_init[["i1_init"]],i_init=theta_init[["i1_init"]],r_init=theta_init[["r_init"]],
+      #s_init=theta_init[["s_init"]],e_init=theta_init[["i1_init"]],i_init=theta_init[["i1_init"]],r_init=theta_init[["r_init"]],
+      s_init=theta_init[["s_init"]],e_init=0,i_init=0,r_init=theta_init[["r_init"]],
       s2_init=theta_init[["s2_init"]],e2_init=theta_init[["e2_init"]],i2_init=theta_init[["i1_2_init"]],r2_init=theta_init[["r2_init"]],c_init=0,
-      sd_init=theta_init[["sd_init"]],ed_init=theta_init[["ed_init"]],id_init=theta_init[["id_init"]],t1d_init=theta_init[["t1d_init"]],t2d_init=theta_init[["t2d_init"]],cd_init=0,
-      sm_init=theta_init[["sm_init"]],em_init=theta_init[["em_init"]],im_init=theta_init[["im_init"]])
+      #sm_init=theta_init[["sm_init"]],em_init=theta_init[["em_init"]],im_init=theta_init[["im_init"]])
+      sm_init=1,em_init=0,im_init=0,
+      "D3_init"=0,"FP_init"=0)
     
     # Output simulation data
     #init1[["e_init"]]=1;init1[["i_init"]]=0
     #theta[["psi"]] <- 0.001
     #theta[["chi"]] <- 0.5
-    #theta[["beta_h"]] <- 0.08
-    #theta[["chi"]] <- 1
     #theta[["beta_v_amp"]] <- 0.1
+    #theta[["beta_h"]] <- 0.08
+    #theta[["chi"]] <- 0.3
+    #theta[["psi"]]=3e-5
     
     output <- simulate_deterministic_noage_DENVimm_partial(theta, init1, time.vals.sim)
     
@@ -67,28 +70,30 @@ Deterministic_modelR_final_DENVimmmunityPartial <- function(theta, theta_init, l
     R_traj <- output[match(time.vals.sim,output$time),"r_init"]
     I_traj <- output[match(time.vals.sim,output$time),"i_init"]
     cases1 <- output[match(time.vals.sim,output$time),"c_init"]
-    casesD <- output[match(time.vals.sim,output$time),"cd_init"]
-    SD <- output[match(time.vals.sim,output$time),"sd_init"]
-    ED <- output[match(time.vals.sim,output$time),"ed_init"]
-    ID <- output[match(time.vals.sim,output$time),"id_init"]
     S2 <- output[match(time.vals.sim,output$time),"s2_init"]
     E2 <- output[match(time.vals.sim,output$time),"e2_init"]
     I2 <- output[match(time.vals.sim,output$time),"i2_init"]
     R2 <- output[match(time.vals.sim,output$time),"r2_init"]
+    D3 <- output[match(time.vals.sim,output$time),"D3_init"]
+    FP <- output[match(time.vals.sim,output$time),"FP_init"]
     casecount <- cases1-c(0,cases1[1:(length(time.vals.sim)-1)])
-    casecountD <- casesD-c(0,casesD[1:(length(time.vals.sim)-1)])
     casecount[casecount<0] <- 0
-      #plot(date.vals[1:length(casecount)],casecountD,type='l')
-      #lines(date.vals[1:length(casecount)],casecount,type='l',col=2)
+      #plot(date.vals[1:length(casecount)],casecount,type='l',col=2)
+    
+    #plot(FP,type='l')  
+    #plot(D3,type='l')  
+    #plot(S2, type='l')
+    #plot(S_traj, type='l')
+    #plot(S_traj+S2, type='l')
+    #plot(R_traj, type='l')
+    #plot(I_traj, type='l')
+    #plot(E2, type='l')
+    #plot(I2, type='l')
+    #plot(R2, type='l')
+      
+      #lines(date.vals[1:length(casecount)],casecountD,type='l')
       ##
       #plot(date.vals[1:length(casecount)],casecount,type='l',col=2)
-    #plot(S2)
-    #plot(S_traj)
-    #plot(S_traj+S2)
-    #plot(SD)
-    #plot(E2)
-    #plot(I2)
-    #plot(R2)
       #par(new=T)
       #plot(date.vals[1:length(casecount)],R_traj/theta[["npop"]],type='l',col=4,yaxt='n',xaxt='n',ylim=c(0,1))
       #axis(side=4)
@@ -126,7 +131,7 @@ Deterministic_modelR_final_DENVimmmunityPartial <- function(theta, theta_init, l
       if(likelihood == -Inf){likelihood=-1e10}
     
     # Return results
-    output1=list(C_trace=casecount,CD_trace=casecountD,I_trace=I_traj,
+    output1=list(C_trace=casecount,I_trace=I_traj,
                  S_trace=S_traj,R_trace=R_traj,X_trace=X_traj,
                  lik=likelihood, newDates=date.vals)
 }  

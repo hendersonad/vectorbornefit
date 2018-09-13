@@ -13,33 +13,12 @@ simulate_deterministic_noage_DENVimm_partial <- function(theta, init.state, time
     ## extract parameters from theta
     Nsize <-   theta[["npop"]]
     chi <-    theta[["chi"]]
-    omega_d <- 1/theta[['omega_d']]
-    
-    # No of ZIKA FP introductions
-    if(time<=(18*7)){
-      Ct <- Ctreg(time) #no of zika infections
-    }else{
-      Ct=0  
-    }
     psi <- theta[["psi"]]
     
     # No DENV outbreak until denv_start parameter reached in time.vals
-    if(time<theta[["denv_start"]]){ 
-      beta_d <- 0
-      alpha_d <- 0 
-      gamma_d <- 0
-    }else{
-      beta_d <- theta[['beta_d']]
-      alpha_d <- theta[['alpha_d']]
-      gamma_d <- theta[['gamma_d']]
-    }
-    
-    # No DENV outbreak until denv_start parameter reached in time.vals
     if(time<theta[["denv_end"]]){ 
-      move_s <- 0
       chi <- theta[["chi"]]
     }else{
-      move_s <- 0
       chi <- 0
     }
     
@@ -72,48 +51,42 @@ simulate_deterministic_noage_DENVimm_partial <- function(theta, init.state, time
     I2 <- state[["i2_init"]]
     R2 <- state[["r2_init"]]
     C <- state[["c_init"]] 
-    Sd <- state[["sd_init"]]
-    Ed <- state[["ed_init"]]
-    Id <- state[["id_init"]]
-    T1d <- state[["t1d_init"]]
-    T2d <- state[["t2d_init"]]
-    Cd <- state[["cd_init"]]
     SM <- state[["sm_init"]]
     EM <- state[["em_init"]]
     IM <- state[["im_init"]]
-    
+    D3 <- state[["D3_init"]]
+    FP <- state[["FP_init"]]
+      
     ## extinction if not at least 1 infected
     Ipos = extinct(I,1) # Need at least one infective
     
     # Human population
-    dS  =  - S*(beta_h1*IM)*Ipos -Sd*(beta_d*Id/Nsize) + move_s*S2
+    dS  = - S*(beta_h1*IM)*Ipos - (D3*(1/7))
     dE  =  S*(beta_h1*IM)*Ipos - alpha_h*E
-    dI  = alpha_h*E  - gamma*I + (psi*Ct)
+    dI  = alpha_h*E  - gamma*I + (psi*FP)
     dR  = gamma*I - rho*R
     
     # Human population - that has had DENV
-    dS2  = Sd*(beta_d*Id/Nsize) - S2*((1-chi)*beta_h1*IM)*Ipos - move_s*S2
+    dS2  = (D3*(1/7)) #- S2*((1-chi)*beta_h1*IM)*Ipos 
     dE2  = S2*((1-chi)*beta_h1*IM)*Ipos - alpha_h*E2
     dI2  = alpha_h*E2  - gamma*I2
     dR2  = gamma*I2 - rho*R2
     
     dC  = alpha_h*(E+E2) 
     
-    # Denv infection and immunity
-    dSd = -Sd*(beta_d*Id/Nsize)
-    dEd = Sd*(beta_d*Id/Nsize) - alpha_d*Ed 
-    dId = alpha_d*Ed - gamma_d*Id  
-    dT1d = gamma_d*Id - 2*omega_d*T1d
-    dT2d = 2*omega_d*T1d - 2*omega_d*T2d
-    dCd = alpha_d*Ed
-    
     # Mosquito population
     dSM = delta_v - SM*(beta_v1*(I+I2)/Nsize)*Ipos - delta_v*SM   
     dEM = SM*(beta_v1*(I+I2)/Nsize)*Ipos - (delta_v+alpha_v)*EM  
     dIM = alpha_v*EM-delta_v*IM
     
-    return(list(c(dS,dE,dI,dR,dS2,dE2,dI2,dR2,dC,dSd,dEd,dId,dT1d,dT2d,dCd,dSM,dEM,dIM)))
+    # underlying infections
+    dD3 = D3reg(time) - D3
+    dFP = Ctreg(time) - FP
+    
+    return(list(c(dS,dE,dI,dR,dS2,dE2,dI2,dR2,dC,dSM,dEM,dIM,dD3,dFP)))
   }
+  #init.state=c(init1,"D3_init"=D3reg(1),"FP_init"=Ctreg(1))
+  #time.vals.sim=time.vals
   traj <- as.data.frame(ode(init.state, time.vals.sim, SIR_ode, theta, method = "ode45"))
   return(traj)
 }
