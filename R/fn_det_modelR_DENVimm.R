@@ -49,18 +49,20 @@ Deterministic_modelR_final_DENVimmmunity <- function(theta, theta_init, location
     
     # Output simulation data
     #init1[["e_init"]]=1;init1[["i_init"]]=0
-    #theta[["psi"]] <- 3e-5
-    #theta[["chi"]] <- 0.9
-    #theta[["omega_d"]] <- 180
-    #theta[["beta_h"]] <- 0.12
     ##
+    #theta[["rep"]] <- 0.01805841
+    #theta[["psi"]] <- 3.536956e-5
     #theta[["beta_h"]] <- 8.228741e-02
     #theta[["chi"]] <- 2.123436e-01
     #theta[["iota"]] <- 2.164142e-02
     #theta[["epsilon"]] <- 9.625896e-02
     #theta[["rho"]] <- 237.0512
-    #theta[["rep"]] <- 0.01805841
-    #theta[["psi"]] <- 3.536956e-5
+    ###
+    #theta[["psi"]] <- 5e-5
+    #theta[["chi"]] <- 0.8
+    #theta[["omega_d"]] <- 210
+    #theta[["beta_h"]] <- 0.14
+    #theta[["iota"]] <- 0.3
     
     output <- simulate_deterministic_noage_DENVimm(theta, init1, time.vals.sim)
     
@@ -105,18 +107,17 @@ Deterministic_modelR_final_DENVimmmunity <- function(theta, theta_init, location
     
     ln.denv <- length(denv.timeseries)
     ln.full <- length(y.vals)
-    #first.zikv <- min(which(y.vals>0))
+    first.zikv <- min(which(y.vals>0))
     theta[["iota"]] <- max(theta[["iota"]],1e-10)
     
-    likelihood <- sum(binom.lik) + sum(log(dnbinom(y.vals[ln.denv:ln.full],
-                                                    mu=theta[["rep"]]*(casecount[ln.denv:ln.full]),
+    likelihood <- sum(binom.lik) + sum(log(dnbinom(y.vals[first.zikv:ln.full],
+                                                    mu=theta[["rep"]]*(casecount[first.zikv:ln.full]),
                                                    size=1/theta[["repvol"]]))) +
                                    sum(log(dnbinom(round(denv.timeseries),
                                                     mu=(1/theta[["iota"]])*theta[["rep"]]*(casecount[1:ln.denv]),
                                                     size=1/theta[["repvol"]])))
-    
     #plot((1/theta[["iota"]])*theta[["rep"]]*(casecount[1:ln.denv]),type='l')
-    #  lines(denv.timeseries, col=2)
+    #  lines(denv.timeseries, col=4)
     #plot(theta[["rep"]]*(casecount), type='l')
     #  lines(y.vals, col=2)
     #log(dnbinom(y.vals[ln.denv:ln.full],mu=theta[["rep"]]*(casecount[ln.denv:ln.full]),size=1/theta[["repvol"]]))
