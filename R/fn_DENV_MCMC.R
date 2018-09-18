@@ -70,22 +70,22 @@ Run_simulation<-function(dt, theta, theta_init,time.vals){
 DENV_mcmc <- function(y.vals, time.vals, MCMC.runs){
 # Set initial conditions
 popsize <- 342000
-theta <- c(beta=0.27, # tranmission rate
-           gamma=1/7, # mean duration of infectiousness
-           alpha=1/5.9, # mean incubation period
-           rep=0.03, # proportion of cases reported
-           repvol=0.1 
+theta <- c(beta=0.25, # tranmission rate
+           gamma=1/9, # mean duration of infectiousness
+           alpha=1/2.5, # mean incubation period
+           rep=0.1, # proportion of cases reported
+           repvol=1
 )
 
 # Set initial conditions
 initial_inf <- 50 # initial number of infected people at start date (Estimated in MCMC loop)
-theta_init <- c(s_init=NA,e_init=0,i1_init=initial_inf,r_init=0)
-theta_init[["s_init"]] <- popsize-theta_init[["i1_init"]]
+theta_init <- c(s_init=NA,e_init=0,i1_init=initial_inf,r_init=0.331*popsize)
+theta_init[["s_init"]] <- popsize-theta_init[["i1_init"]]-theta_init[["r_init"]]
 
 ## Setup covatiance matrices and results storage
 # cov matrix theta (global)
 nparam=length(theta) 
-npc=c(1,1,1,1,1)
+npc=c(1,1,1,0,0)
 cov_matrix_thetaAll = diag(npc)
   colnames(cov_matrix_thetaAll)=names(theta)
   rownames(cov_matrix_thetaAll)=names(theta)
@@ -114,7 +114,7 @@ c_trace_tab=array(NA, dim=c(MCMC.runs+1,locnn,max.length))
 var.prior <- 0.2
 priorGamma<-function(x){dgamma(x,shape=5/(var.prior), scale=var.prior)} # Prior - infectious period
 priorAlpha<-function(x){dgamma(x,shape=5.9/(var.prior), scale=var.prior)} # Prior - extrinsic incubation period
-
+#m=1
 for (m in 1:MCMC.runs){
     # Scale COV matrices for resampling using error term epsilon
     if(m==1){
@@ -152,10 +152,19 @@ for (m in 1:MCMC.runs){
       thetaI_star=theta_init_cand
       
       # Run model simulation
+      #thetaA_star[["beta"]] <- 0.25
+      #thetaA_star[["gamma"]] <- 1/9
+      #thetaA_star[["alpha"]] <- 1/2.5
       output1 <- Run_simulation(dt=7,thetaA_star,thetaI_star,time.vals)
         casecount <- output1$C1_trace
-        likelihood <- sum(log(dnbinom(y.vals,mu=thetaA_star[["rep"]]*(casecount),size=1/thetaA_star[["repvol"]])))
+        #likelihood <- sum(log(dnbinom(y.vals,mu=thetaA_star[["rep"]]*(casecount),size=1/thetaA_star[["repvol"]])))
+        likelihood <- sum(log(dnbinom(round(DENVinfections), mu=casecount, size=thetaA_star[["repvol"]])))
         sim_marg_lik_star=likelihood
+      
+      #plot(casecount,col=2)
+      #points(DENVinfections,col=4)
+      #sum(casecount)
+      #thetaA_star[["beta"]]/thetaA_star[["gamma"]]
       
       #Store vales
       thetaAllstar[iiH,]=thetaA_star

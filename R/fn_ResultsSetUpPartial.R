@@ -5,7 +5,7 @@
 #' @param parameter_est_file Name of csv file with parameters to be estimated included
 #' @export
 
-results_set_up <- function(iiH, parameter_est_file){
+results_set_upPartial <- function(iiH, parameter_est_file){
   # Set up vectors for storing their values during MCMC loop
   thetaAll=data.frame(rep(NA,locnn))
   for (i in 1:(length(thetaR_IC_local$param)-1)){
@@ -14,6 +14,7 @@ results_set_up <- function(iiH, parameter_est_file){
   names(thetaAll) <- thetaR_IC_local$param
 
   compartments=c('s_init','e_init','i1_init','r_init',
+                 's2_init','e2_init','i1_2_init','r2_init',
                  'sd_init','ed_init','id_init','t1d_init','t2d_init',
                  'sm_init','em_init','im_init')   
   
@@ -72,7 +73,13 @@ for(iiH in itertab){
   theta_initAll[iiH,"sm_init"]=1-theta_initAll[iiH,"em_init"]-theta_initAll[iiH,"im_init"]
   
   theta_initAll[iiH,"ed_init"]=0; theta_initAll[iiH,"id_init"]=thetainit_denv[["i1_init"]]; theta_initAll[iiH,"t1d_init"]=0; theta_initAll[iiH,"t2d_init"]=0
-  theta_initAll[iiH,"sd_init"]=(popsizeTot*(1-0.331))-theta_initAll[iiH,"id_init"]-theta_initAll[iiH,"ed_init"]-theta_initAll[iiH,"t1d_init"]-theta_initAll[iiH,"t2d_init"]
+  theta_initAll[iiH,"sd_init"]=popsizeTot-theta_initAll[iiH,"id_init"]-theta_initAll[iiH,"ed_init"]-theta_initAll[iiH,"t1d_init"]-theta_initAll[iiH,"t2d_init"]
+  
+  theta_initAll[iiH,"s2_init"]=0
+  theta_initAll[iiH,"e2_init"]=0
+  theta_initAll[iiH,"i1_2_init"]=0
+  theta_initAll[iiH,"r2_init"]=0
+  
   }
 
 ## Covariance matrices 
