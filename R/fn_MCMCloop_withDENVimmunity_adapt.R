@@ -128,14 +128,16 @@ AdaptMCMCloop_withDENVimmunity <- function(sample.start.point=T, startdate=as.Da
       
       # Calculate prior density for current and proposed theta set
       prior.theta <- ComputePrior(iiH, c(thetatab_current,thetaAlltab_current[iiH,]), c(theta_star,thetaA_star), covartheta = cov_matrix_thetaA)
-      prior.star <- prior.theta$prior.star*prior.star
-      prior.current <- prior.theta$prior*prior.current
+      prior.star <- log(prior.theta$prior.star*prior.star)
+      prior.current <- log(prior.theta$prior*prior.current)
     } # end loop over regions
     
     # Calculate probability function - MH algorithm
     if(cov_matrix_thetaA["chi","chi"]>0){
-    q_theta_given_theta_star = as.numeric(log(thetaAllstar[iiH,'chi']))
-    q_theta_star_given_theta = as.numeric(log(thetaAlltab_current[1, 'chi']))
+    q_theta_given_theta_star = as.numeric(log(thetaAllstar[iiH,'chi'])) + as.numeric(log(thetaAllstar[iiH,'psi'])) + as.numeric(log(thetaAllstar[iiH,'iota'])) + as.numeric(log(thetaAllstar[iiH,'rep']))
+    q_theta_star_given_theta = as.numeric(log(thetaAlltab_current[1, 'chi'])) + as.numeric(log(thetaAlltab_current[1, 'psi'])) + as.numeric(log(thetaAlltab_current[1, 'iota'])) + as.numeric(log(thetaAlltab_current[1, 'rep'])) 
+    #q_theta_given_theta_star = 1
+    #q_theta_star_given_theta = 1
     }else{
       q_theta_given_theta_star = 1 
       q_theta_star_given_theta = 1
@@ -144,7 +146,7 @@ AdaptMCMCloop_withDENVimmunity <- function(sample.start.point=T, startdate=as.Da
       prior.star = 1 
     }
     
-    val = exp((sim_marg_lik_star-sim_liktab_current))*(prior.star/prior.current)*(q_theta_given_theta_star/q_theta_star_given_theta) 
+    val = exp((sim_marg_lik_star-sim_liktab_current) + (prior.star - prior.current) + (q_theta_given_theta_star - q_theta_star_given_theta)) 
     
     if(is.na(val)){
       output_prob=0}else if(is.nan(val)){
