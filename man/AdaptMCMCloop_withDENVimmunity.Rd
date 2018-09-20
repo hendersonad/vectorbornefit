@@ -5,7 +5,7 @@
 \title{MCMC function for fitting Zika model using MH algorithm}
 \usage{
 AdaptMCMCloop_withDENVimmunity(sample.start.point = T,
-  startdate = as.Date("2013-10-28"), adapt.shape.start = MCMC.runs/10)
+  startdate = as.Date("2013-10-28"), adapt.shape.start = MCMC.runs)
 }
 \arguments{
 \item{startdate}{Original start date in the data series}
