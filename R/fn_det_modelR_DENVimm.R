@@ -10,6 +10,7 @@
 #' @keywords deterministic 
 #' @export
 # theta=c(theta_star,thetaA_star,theta_denv); theta_init =theta_init_star; locationI=locationtab[iiH];
+# theta=c(init.theta,theta.bar,theta_denv); theta_init =init.state; locationI=locationtab[iiH];
 # theta=c(thetaA_star,theta_denv); theta_init =theta_init_star; locationI=locationtab[iiH];
 # theta=c(thetaMed,theta_star,thetaA_star,theta_denv); theta_init =theta_init_star; locationI=locationtab[iiH];
 
@@ -112,10 +113,10 @@ Deterministic_modelR_final_DENVimmmunity <- function(theta, theta_init, location
     
     likelihood <- sum(binom.lik) + sum(log(dnbinom(y.vals[first.zikv:ln.full],
                                                     mu=theta[["rep"]]*(casecount[first.zikv:ln.full]),
-                                                   size=1/theta[["repvol"]]))) +
-                                   sum(log(dnbinom(round(denv.timeseries),
-                                                    mu=(1/theta[["iota"]])*theta[["rep"]]*(casecount[1:ln.denv]),
-                                                    size=1/theta[["repvol"]])))
+                                                   size=1/theta[["repvol"]]))) #+
+                                   #sum(log(dnbinom(round(denv.timeseries),
+                                   #                 mu=(1/theta[["iota"]])*theta[["rep"]]*(casecount[1:ln.denv]),
+                                   #                 size=1/theta[["repvol"]])))
     #plot((1/theta[["iota"]])*theta[["rep"]]*(casecount[1:ln.denv]),type='l')
     #  lines(denv.timeseries, col=4)
     #plot(theta[["rep"]]*(casecount), type='l')
