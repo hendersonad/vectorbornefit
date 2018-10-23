@@ -13,7 +13,9 @@
 likelihood_fn <- function(amp, mid, time.vals=time.vals, beta=beta, data=data){
   j=1; sincurve=NULL
   for(i in time.vals){
-    sincurve[j] <- beta*(1 + amp *sin(((i/365.25) - mid)*2*pi))
+    date0=0
+    #sincurve[j] <- beta*(1 + amp *sin(((i/365.25) - mid)*2*pi))
+    sincurve[j] <- beta*(1 + amp * sin(((i - date0)/365 + mid) * 2 * pi))
     j=j+1
   }
   lik <- sum(log(dnorm(sincurve, mean=data, sd=sd(data, na.rm=T))), na.rm = T)
