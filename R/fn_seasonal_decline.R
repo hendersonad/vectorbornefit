@@ -31,7 +31,7 @@ seasonal_f <- function(time, date0=0, amp=0, mid=pi*(3/4)){
 #  (1 - mask*base/(1+exp(-10*grad*((time+date0)/365-mid))))  
 #}
 decline_f <- function(time,mid,width,base){
-  1-(4*a)*exp(-(x-x0)/k)/(1+exp(-(x-x0)/k))^2
+  1 - (4*base)*exp(-(time-mid)/width)/(1+exp(-(time-mid)/width))^2
 }
 
 #' Reporting cases function
