@@ -13,9 +13,7 @@
 likelihood_fn <- function(amp, mid, time.vals=time.vals, beta=beta, data=data){
   j=1; sincurve=NULL
   for(i in time.vals){
-    date0=0
-    #sincurve[j] <- beta*(1 + amp *sin(((i/365.25) - mid)*2*pi))
-    sincurve[j] <- beta*(1 + amp * sin(((i - date0)/365 + mid) * 2 * pi))
+    sincurve[j] <- beta*(1 + amp * sin(((i/365.25) - mid)*2*pi))
     j=j+1
   }
   lik <- sum(log(dnorm(sincurve, mean=data, sd=sd(data, na.rm=T))), na.rm = T)
@@ -41,7 +39,7 @@ weather.fit <- function(data, iter, tuning){
   delta <- tuning
   
   #init
-  amp.cur <- 0.3
+  amp.cur <- 0.5
   mid.cur <- 0.5
   
   # init priors
@@ -105,6 +103,7 @@ weather.fit <- function(data, iter, tuning){
     
     # repeat for MID
     mid.prop <- rnorm(1, mean=mid.cur, sd=epsilon0.mid)
+    mid.prop=min(mid.prop, 2-mid.prop)
     if(mid.prop>0){
       #likelihoods
       lik.prop.mid <- likelihood_fn(amp=amp.cur, mid=mid.prop, time.vals=time.vals, beta=beta, data=data)

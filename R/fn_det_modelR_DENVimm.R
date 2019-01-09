@@ -15,28 +15,32 @@
 # theta=c(thetaMed,theta_star,thetaA_star,theta_denv); theta_init =theta_init_star; locationI=locationtab[iiH];
 
 Deterministic_modelR_final_DENVimmmunity <- function(theta, theta_init, locationI, seroposdates, episeason, include.count=T){
-    model.start.date <- as.Date(theta[["model_st"]],origin="1970-01-01") 
-    # DENV epidemic has fixed start date
-    denv.intro <- as.Date("2013-11-01") 
-    
-    # Set indicator on when DENV epidemic begins in context of Zika timeline
-    if(model.start.date>=denv.intro){
-      theta[["denv_start"]] <- 0
-        if(model.start.date<min(date.vals)){
-          theta[["zika_start"]] <- 0
-        }else{
-          theta[["zika_start"]] <- time.vals[date.vals<model.start.date+3.5 & date.vals>model.start.date-3.5]
-        }
-    }else{
+if(!is.na(theta[['epsilon']])){
+  epsilon <- theta[['epsilon']]}else{
+  epsilon <- 0}
+  
+model.start.date <- as.Date(theta[["model_st"]],origin="1970-01-01") 
+# DENV epidemic has fixed start date
+denv.intro <- as.Date("2013-10-27") 
+
+# Set indicator on when DENV epidemic begins in context of Zika timeline
+if(model.start.date>=denv.intro){
+  theta[["denv_start"]] <- 0
+    if(model.start.date<min(date.vals)){
       theta[["zika_start"]] <- 0
-      data <- load.data.multistart(add.nulls = 0, startdate=model.start.date, virusTab[iiH], dataTab[iiH], serology.excel, init.conditions.excel)
-        list2env(data,globalenv())
-        if(denv.intro<min(date.vals)){
-          theta[["denv_start"]] <- 0
-        }else{
-          theta[["denv_start"]] <- time.vals[date.vals<=denv.intro+3.5 & date.vals>=denv.intro-3.5]
-        }
+    }else{
+      theta[["zika_start"]] <- time.vals[date.vals<model.start.date+3.5 & date.vals>model.start.date-3.5]
     }
+}else{
+  theta[["zika_start"]] <- 0
+  data <- load.data.multistart(add.nulls = 0, startdate=model.start.date, virusTab[iiH], dataTab[iiH], serology.excel, init.conditions.excel)
+    list2env(data,globalenv())
+    if(denv.intro<min(date.vals)){
+      theta[["denv_start"]] <- 0
+    }else{
+      theta[["denv_start"]] <- time.vals[date.vals<=denv.intro+3.5 & date.vals>=denv.intro-3.5]
+    }
+}
     
     # These values tell how to match states of compartment with data points
     sim.vals <- seq(0,max(time.vals)-min(time.vals),7) + 7 
@@ -61,10 +65,21 @@ Deterministic_modelR_final_DENVimmmunity <- function(theta, theta_init, location
     ###
     #theta[["psi"]] <- 5e-5
     #theta[["chi"]] <- 0.8
-    #theta[["omega_d"]] <- 210
     #theta[["beta_h"]] <- 0.14
-    #theta[["iota"]] <- 0.3
-    
+#for(i in 1:1){    
+#    theta[["beta_h"]] <- 0.095
+#    theta[["omega_d"]] <- 90
+#    theta[["beta_mask"]] <- 1
+#    theta[["beta_end"]] <- 0.8
+#    theta[["chi"]] <- 0.24
+#    theta[["psi"]] <- 9.E-05
+#    theta[["Vex"]] <- 1/15
+#    theta[["Exp"]] <- 1/6.1
+#    theta[["MuV"]] <- 1/8.1
+#    theta[["Inf"]] <- 1/5
+#    theta[["beta_v_amp"]] <- 0.05
+#    theta[["rho"]] <- 400
+#    init1[["i_init"]] <- 0
     output <- simulate_deterministic_noage_DENVimm(theta, init1, time.vals.sim)
     
     # Match compartment states at sim.vals time
@@ -78,51 +93,47 @@ Deterministic_modelR_final_DENVimmmunity <- function(theta, theta_init, location
     ED <- output[match(time.vals.sim,output$time),"ed_init"]
     ID <- output[match(time.vals.sim,output$time),"id_init"]
     RD <- output[match(time.vals.sim,output$time),"rd_init"]
-    casecount <- cases1-c(0,cases1[1:(length(time.vals.sim)-1)])
     casecountD <- casesD-c(0,casesD[1:(length(time.vals.sim)-1)])
+    casecount <- cases1-c(0,cases1[1:(length(time.vals.sim)-1)])
     casecount[casecount<0] <- 0
       #plot(date.vals[1:length(casecount)],casecountD,type='l')
-      #lines(date.vals[1:length(casecount)],casecount,type='l',col=2)
-      ##
-      #plot(date.vals[1:length(casecount)],casecount,type='l',col=2)
+      #plot(date.vals[1:length(casecount)],ReportC(cases = casecount,rep = theta['rep'], repvol = theta['repvol']),type='l', col=4)
+      #points(date.vals,y.vals,type='l',col=2)
+      ####
+      #plot(date.vals[1 :length(casecount)],casecount,type='l',col=2)
       #par(new=T)
       #plot(date.vals[1:length(casecount)],R_traj/theta[["npop"]],type='l',col=4,yaxt='n',xaxt='n',ylim=c(0,1))
       #axis(side=4)
-      
+    
     # Calculate seropositivity at pre-specified dates and corresponding likelihood
     i=1; seroP=NULL; binom.lik=NULL
     sero.years <- format(as.Date(seroposdates, format="%d/%m/%Y"),"%Y")
     sero.y <- substr(sero.years,3,4)
     lum.y <- c("13","15","17")
+    if(include.sero.likelihood==T){
     for(date in seroposdates){
       if(date < min(date.vals)){ # if seroprevalence date is before Zika timeline { seroprevalence = Luminex data + epislon}
-        seroP[i] <- theta[['epsilon']]
+        seroP[i] <- epsilon
         binom.lik[i] <- (dbinom(nLUM[lum.y==sero.y[i]], size=nPOP[lum.y==sero.y[i]], prob=seroP[i], log = T))
       }else{ # else { seroprevalence = model predicted recovered as a proportion of pop + epsilon }
           seroP[i] <-  (min(R_traj[date.vals<date+3.5 & date.vals>date-3.5])/theta[["npop"]]) + 
-                        (1 - min(R_traj[date.vals<date+3.5 & date.vals>date-3.5])/theta[["npop"]])*theta[['epsilon']]
+                        (1 - min(R_traj[date.vals<date+3.5 & date.vals>date-3.5])/theta[["npop"]])*epsilon
           binom.lik[i] <- (dbinom(nLUM[lum.y==sero.y[i]], size=nPOP[lum.y==sero.y[i]], prob=seroP[i], log = T))
           }
         i <- i+1
       }
-    
+    }else{
+      binom.lik=0
+    }
+    date=seroposdates[1]
     ln.denv <- length(denv.timeseries)
     ln.full <- length(y.vals)
     first.zikv <- min(which(y.vals>0))
-    theta[["iota"]] <- max(theta[["iota"]],1e-10)
+    #theta[["iota"]] <- max(theta[["iota"]],1e-10)
     
-    likelihood <- sum(binom.lik) + sum(log(dnbinom(y.vals[first.zikv:ln.full],
-                                                    mu=theta[["rep"]]*(casecount[first.zikv:ln.full]),
-                                                   size=1/theta[["repvol"]]))) +
-                                   sum(log(dnbinom(round(denv.timeseries),
-                                                    mu=(1/theta[["iota"]])*theta[["rep"]]*(casecount[1:ln.denv]),
-                                                    size=1/theta[["repvol"]])))
-    #plot((1/theta[["iota"]])*theta[["rep"]]*(casecount[1:ln.denv]),type='l')
-    #  lines(denv.timeseries, col=4)
-    #plot(theta[["rep"]]*(casecount), type='l')
-    #  lines(y.vals, col=2)
-    #log(dnbinom(y.vals[ln.denv:ln.full],mu=theta[["rep"]]*(casecount[ln.denv:ln.full]),size=1/theta[["repvol"]]))
-    #sum(log(dnbinom(y.vals[ln.denv:ln.full],mu=theta[["rep"]]*(casecount[ln.denv:ln.full]),size=1/theta[["repvol"]])))
+    likelihood <- sum(binom.lik) + sum(log(dnbinom(y.vals,#[first.zikv:ln.full],
+                                                    mu=theta[["rep"]]*(casecount),#[first.zikv:ln.full]),
+                                                   size=1/theta[["repvol"]]))) 
     
     likelihood=max(-1e10, likelihood)
       if(is.null(likelihood)){likelihood=-1e10}

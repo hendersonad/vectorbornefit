@@ -11,6 +11,7 @@ ComputePrior <- function(iiH, thetaAlltab, thetaAllstar, covartheta){
                   priorExp(1/thetaAllstar["Exp"])*
                   priorVEx(1/thetaAllstar["Vex"])*
                   priorMuV(1/thetaAllstar["MuV"])*
+                  priorRec0(thetaAllstar["rec0"])*
                   priorOmega(thetaAllstar["omega_d"])*
                   priorPsi(thetaAllstar["psi"])*
                   priorChi(thetaAllstar["chi"])
@@ -32,6 +33,7 @@ ComputePrior <- function(iiH, thetaAlltab, thetaAllstar, covartheta){
             priorExp(1/thetaAlltab["Exp"])*
             priorVEx(1/thetaAlltab["Vex"])*
             priorMuV(1/thetaAlltab["MuV"])*
+            priorRec0(thetaAlltab["rec0"])*
             priorOmega(thetaAlltab["omega_d"])*
             priorPsi(thetaAlltab["psi"])*
             priorChi(thetaAlltab["chi"])
@@ -49,7 +51,7 @@ ComputePrior <- function(iiH, thetaAlltab, thetaAllstar, covartheta){
   }
   # formatting and replace NAs with 0 
   names(p_theta_star)=NULL;names(p_theta)=NULL
-  if(is.na(p_theta_star)==T){p_theta_star=0}
-  if(is.na(p_theta)==T){p_theta=0}
+  if(is.na(p_theta_star)==T){p_theta_star=1}
+  if(is.na(p_theta)==T){p_theta=1}
   return(list(prior.star=p_theta_star,prior=p_theta))
 }  

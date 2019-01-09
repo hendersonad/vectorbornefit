@@ -4,14 +4,15 @@
 \alias{load.posteriors}
 \title{load.posteriors}
 \usage{
-load.posteriors(agestructure, iiH, mcmc.burn)
+load.posteriors(load.run.name, file.path = "posterior_outputZ", iiH,
+  mcmc.burn)
 }
 \arguments{
-\item{agestructure}{Binary indicator variable if model is age structured (1) or not (0) between children and adults. Defaults to NULL in which case no sampling happens}
-
 \item{iiH}{Locationtab index}
 
 \item{mcmc.burn}{Between 0 and 1. Proportion of iterations to discard.}
+
+\item{agestructure}{Binary indicator variable if model is age structured (1) or not (0) between children and adults. Defaults to NULL in which case no sampling happens}
 }
 \description{
 Load and combine posterior chains following MCMC run

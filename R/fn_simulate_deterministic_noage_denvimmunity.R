@@ -5,24 +5,30 @@
 #' @param init.state List of initial values
 #' @param time.vals.sim List of time values to simulate over
 #' @export
-#theta=theta; init.state=init1; time.vals.sim=time.vals
+#theta=theta; init.state=init1; time.vals.sim=time.vals; state=init.state
 
 simulate_deterministic_noage_DENVimm <- function(theta, init.state, time.vals.sim) {
   #time=1;state=init1;
   SIR_ode <- function(time, state, theta) {
     ## extract parameters from theta
     Nsize <-   theta[["npop"]]
-    chi <-    theta[["chi"]]
-    omega_d <- 1/theta[['omega_d']]
+    if(!is.na(theta[['omega_d']])){
+      omega_d <- 1/theta[['omega_d']]}else{
+      omega_d <- 0}
+    if(!is.na(theta[['chi']])){
+      chi <- theta[['chi']]}else{
+      chi <- 0}
+    if(!is.na(theta[['psi']])){
+      psi <- theta[['psi']]}else{
+      psi <- 0}
     
     # No of ZIKA FP introductions
     if(time<=(18*7)){
-      Ct <- Ctreg(time) #no of zika infections
-    }else{
-      Ct=0  
-    }
-    psi <- theta[["psi"]]
-    
+      Ct <- Ctreg(time)}else{ #no of zika infections
+      Ct=0}
+    #psi <- 2e-4
+    #plot(psi*sapply(time.vals.sim, function(x){Ctreg(x)}), type='l')
+    #sum(sapply(time.vals.sim, function(x){Ctreg(x)}))
     # No DENV outbreak until denv_start parameter reached in time.vals
     if(time<theta[["denv_start"]]){ 
       beta_d <- 0
@@ -33,7 +39,7 @@ simulate_deterministic_noage_DENVimm <- function(theta, init.state, time.vals.si
       alpha_d <- theta[['alpha_d']]
       gamma_d <- theta[['gamma_d']]
     }
-    # OR no ZIKV outbreak until zikv_start reached in time.vals
+    # And no ZIKV outbreak until zikv_start reached in time.vals
     if(time<theta[["zika_start"]]){ 
       beta_h1 <- 0
       beta_v1 <- 0
@@ -43,13 +49,17 @@ simulate_deterministic_noage_DENVimm <- function(theta, init.state, time.vals.si
       gamma <- 0
       rho <- 0
     }else{
-      beta_h1 <- theta[['beta_h']] * seasonal_f(time, date0=theta[["shift_date"]],amp=theta[["beta_v_amp"]],mid=theta[["beta_v_mid"]]) * decline_f(time,date0=theta[["shift_date"]],mask=theta[['beta_mask']],base=theta[['beta_base']],grad=theta[['beta_grad']],mid=theta[['beta_mid']]) 
+      beta_h1 <- theta[['beta_h']] * 
+                  seasonal_f(time, date0=theta[["shift_date"]],amp=theta[["beta_v_amp"]],mid=theta[["beta_v_mid"]]) * 
+                  decline_f(time, mid=theta[["beta_mid"]], width=theta[["beta_grad"]], base=theta[["beta_base"]])
       beta_v1 <- theta[['beta_v']] * beta_h1 
       delta_v  <- theta[["MuV"]] 
       alpha_v <-  theta[["Vex"]]
       alpha_h <-  theta[["Exp"]]
       gamma <-    theta[["Inf"]]
-      rho <-      1/theta[["rho"]]
+      if(!is.na(theta[['rho']])){
+        rho <- 1/theta[['rho']]}else{
+        rho <- 0}    
     }
 
     ## extract initial states from theta_init

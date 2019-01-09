@@ -9,9 +9,9 @@
 # iiM=1
 # mcmc.burn=0.2
 
-load.posteriors <- function(agestructure, iiH, mcmc.burn){
-m.tot=length(list.files(path = paste("posterior_output","Z",sep="")))
+load.posteriors <- function(load.run.name, file.path="posterior_outputZ", iiH, mcmc.burn){
 thetatabA=NULL
+m.tot=length(list.files(path = paste0(file.path,"/"), pattern=paste0("*",load.run.name)))
 theta_inittabA=NULL
 c_trace_tab0=NULL
 s_trace_tab0=NULL
@@ -19,7 +19,7 @@ r_trace_tab0=NULL
 x_trace_tab0=NULL
 
 for(iiM in 1:m.tot){
-  load(paste("posterior_outputZ","/outputR_",iiM,"_",run.name,".RData",sep=""))
+  load(paste0(file.path,"/outputR_",iiM,"_",load.run.name,".RData",sep=""))
   
   thetatab=cbind(data.frame(thetatab),data.frame(thetaAlltab[,iiH,]))
   theta_inittab=data.frame(theta_initAlltab[,iiH,])

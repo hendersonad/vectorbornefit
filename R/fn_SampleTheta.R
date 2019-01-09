@@ -8,6 +8,7 @@
 #' @param global Binary indicator variable if sampling global (1) or local (0) parameters. Defaults to NULL in which case no sampling happens
 #' @export
 
+#theta_in=thetaAlltab_current[iiH,]; theta_init_in=theta_initAlltab_current[iiH,]; covartheta=0*cov_matrix_thetaA; covartheta_init=0*cov_matrix_theta_init; global=0
 SampleTheta<-function(theta_in, theta_init_in, covartheta, covartheta_init, global=NULL){
   ## Parameters
     # sample new parameters from nearby using multivariate normal distribution: 
@@ -22,10 +23,15 @@ SampleTheta<-function(theta_in, theta_init_in, covartheta, covartheta_init, glob
       if(sum(names(theta_star)=="iota")>0){ # check theta contains this vector
         theta_star[["iota"]]=min(theta_star[["iota"]],2-theta_star[["iota"]]) # Ensure reporting between zero and 1
       }
-      #
-      #if(sum(names(theta_star)=="beta_v_amp")>0){
-      #  theta_star[["beta_v_amp"]]=min(theta_star[["beta_v_amp"]],2-theta_star[["beta_v_amp"]]) # Ensure amplitude between zero and 1
-      #}
+      if(sum(names(theta_star)=="epsilon")>0){ # check theta contains this vector
+        theta_star[["epsilon"]]=min(theta_star[["epsilon"]],2-theta_star[["epsilon"]]) # Ensure reporting between zero and 1
+      }
+      if(sum(names(theta_star)=="inf0")>0){ # check theta contains this vector
+        theta_star[["inf0"]]=max(0,min(theta_star[["inf0"]],1000)) # Ensure initial infectious < total pop
+      }
+      if(sum(names(theta_star)=="beta_base")>0){
+        theta_star[["beta_base"]]=min(theta_star[["beta_base"]],2-theta_star[["beta_base"]]) # Ensure amplitude between zero and 1
+      }
       #
       #if(sum(names(theta_star)=="beta_h_2")>0){
       #  theta_star[["beta_h_2"]]=min(theta_star[["beta_h_2"]],2-theta_star[["beta_h_2"]]) # Ensure beta is between zero and 1
@@ -42,20 +48,22 @@ SampleTheta<-function(theta_in, theta_init_in, covartheta, covartheta_init, glob
       
   ## Initial conditions
   theta_init_star = theta_init_in
-    
-  initial_inf=as.numeric(theta_star['inf0'])
-  init_vec=as.numeric(theta_star['vec0']/2)
   
   popsizeTot=theta_init_star["s_init"]+theta_init_star["e_init"]+theta_init_star["i1_init"]+theta_init_star["r_init"]
-
-  theta_init_star["r_init"]=0
+    
+  initial_inf=as.numeric(theta_star['inf0'])/2
+  init_vec=as.numeric(theta_star['vec0']/2)
+  #init_rec=popsizeTot*(rbinom(1, size = nPOP[1], prob=nLUM[1]/nPOP[1])/nPOP[1])
+  init_rec=popsizeTot*as.numeric(theta_star['rec0'])
+  
+  theta_init_star["r_init"]=init_rec
   theta_init_star["e_init"]=initial_inf; theta_init_star["i1_init"]=initial_inf
   theta_init_star["em_init"]=init_vec; theta_init_star["im_init"]=init_vec
   
   theta_init_star["s_init"]=popsizeTot-theta_init_star["i1_init"]-theta_init_star["e_init"]-theta_init_star["r_init"]
   theta_init_star["sm_init"]=1-theta_init_star["em_init"]-theta_init_star["im_init"]
   
-  theta_init_star["ed_init"]=0; theta_init_star["id_init"]=thetainit_denv[["i1_init"]]; theta_init_star["t1d_init"]=0; theta_init_star["t1d_init"]=0
+  theta_init_star["ed_init"]=0; theta_init_star["id_init"]=thetainit_denv[["i1_init"]]; theta_init_star["t1d_init"]=0; theta_init_star["t2d_init"]=0
   theta_init_star["sd_init"]=(popsizeTot*(1-0.331))-theta_init_star["id_init"]-theta_init_star["ed_init"]-theta_init_star["t1d_init"]-theta_init_star["t2d_init"]
   
   return(list(thetaS=theta_star,theta_initS=theta_init_star))

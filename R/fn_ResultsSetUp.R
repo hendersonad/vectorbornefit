@@ -39,7 +39,7 @@ for(iiH in itertab){
   popsize=theta["npop"]
   popsizeC=theta["npopC"]
   popsizeA=theta["npopA"]
-  popsizeTot=popsize#(popsizeC+popsizeA); names(popsizeTot)='npop'
+  popsizeTot=popsize #(popsizeC+popsizeA); names(popsizeTot)='npop'
   popsizeC=round(popsize* popsizeC/popsizeTot); popsizeA=round(popsize* popsizeA/popsizeTot)
   
   ## Local parameters
@@ -61,12 +61,15 @@ for(iiH in itertab){
   }
   
   ## Initial compartment conditions
-  initial_inf=as.numeric(thetaAll[iiH,'inf0'])
+  initial_inf=as.numeric(thetaAll[iiH,'inf0'])/2
   init_vec=as.numeric(thetaAll[iiH,'vec0']/2)
+  init_rec=as.numeric(thetaAll[iiH,'rec0'])*popsizeTot
   
-  theta_initAll[iiH,"r_init"]=0
-  theta_initAll[iiH,"e_init"]=initial_inf; theta_initAll[iiH,"i1_init"]=initial_inf
-  theta_initAll[iiH,"em_init"]=init_vec; theta_initAll[iiH,"im_init"]=init_vec
+  theta_initAll[iiH,"r_init"]=init_rec
+  theta_initAll[iiH,"e_init"]=initial_inf 
+  theta_initAll[iiH,"i1_init"]=initial_inf
+  theta_initAll[iiH,"em_init"]=init_vec
+  theta_initAll[iiH,"im_init"]=init_vec
   
   theta_initAll[iiH,"s_init"]=popsizeTot-theta_initAll[iiH,"i1_init"]-theta_initAll[iiH,"e_init"]-theta_initAll[iiH,"r_init"]
   theta_initAll[iiH,"sm_init"]=1-theta_initAll[iiH,"em_init"]-theta_initAll[iiH,"im_init"]

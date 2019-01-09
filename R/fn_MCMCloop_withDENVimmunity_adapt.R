@@ -60,7 +60,7 @@ AdaptMCMCloop_withDENVimmunity <- function(sample.start.point=T, startdate=as.Da
     sTraceStar=0*s_trace_tab_current
     rTraceStar=0*r_trace_tab_current
     xTraceStar=0*x_trace_tab_current
-    for(kk in itertab){ 
+    for(kk in 1){ #itertab){ 
       iiH=kk
       #iiH=1
       data <- load.data.multistart(add.nulls = 0, startdate, virusTab[iiH], dataTab[iiH], serology.excel, init.conditions.excel)
@@ -97,7 +97,7 @@ AdaptMCMCloop_withDENVimmunity <- function(sample.start.point=T, startdate=as.Da
       
       # Run model simulation
       output1 = Deterministic_modelR_final_DENVimmmunity(theta=c(theta_star,thetaA_star,theta_denv), theta_init_star, locationI=locationtab[iiH], seroposdates=seroposdates, episeason=episeason, include.count=include.count)
-      sim_marg_lik_star=sim_marg_lik_star + output1$lik 
+      (sim_marg_lik_star=sim_marg_lik_star + output1$lik )
       
       # drop model_st parameter
       thetaA_star <- thetaA_star[names(thetaA_star)!="model_st"]
@@ -134,8 +134,8 @@ AdaptMCMCloop_withDENVimmunity <- function(sample.start.point=T, startdate=as.Da
     
     # Calculate probability function - MH algorithm
     if(cov_matrix_thetaA["chi","chi"]>0){
-    q_theta_given_theta_star = as.numeric(log(thetaAllstar[iiH,'chi'])) + as.numeric(log(thetaAllstar[iiH,'psi'])) + as.numeric(log(thetaAllstar[iiH,'iota'])) + as.numeric(log(thetaAllstar[iiH,'rep']))
-    q_theta_star_given_theta = as.numeric(log(thetaAlltab_current[1, 'chi'])) + as.numeric(log(thetaAlltab_current[1, 'psi'])) + as.numeric(log(thetaAlltab_current[1, 'iota'])) + as.numeric(log(thetaAlltab_current[1, 'rep'])) 
+    q_theta_given_theta_star = as.numeric(log(thetaAllstar[iiH,'chi'])) #+ as.numeric(log(thetaAllstar[iiH,'psi'])) + as.numeric(log(thetaAllstar[iiH,'iota'])) + as.numeric(log(thetaAllstar[iiH,'rep']))
+    q_theta_star_given_theta = as.numeric(log(thetaAlltab_current[1, 'chi'])) #+ as.numeric(log(thetaAlltab_current[1, 'psi'])) + as.numeric(log(thetaAlltab_current[1, 'iota'])) + as.numeric(log(thetaAlltab_current[1, 'rep'])) 
     }else{
       q_theta_given_theta_star = 1 
       q_theta_star_given_theta = 1
@@ -214,15 +214,15 @@ AdaptMCMCloop_withDENVimmunity <- function(sample.start.point=T, startdate=as.Da
     #}
     
     if(m %% 1000==0){
-      print(c(m, accept_rate, sim_liktab_current, thetaAlltab_current[1,'chi'],
-            thetaAlltab_current[1,'beta_h'],
-            thetaAlltab_current[1,'iota'],
-            thetaAlltab_current[1,'epsilon'],
-            thetaAlltab_current[1,'rho'],
-            thetaAlltab_current[1,'rep'],
-            thetaAlltab_current[1,'psi']))
+      print(c(m, 
+              accept_rate, 
+              sim_liktab_current,
+              thetaAlltab_current[1,'beta_h'],
+              thetaAlltab_current[1,'beta_v_amp'],
+              thetaAlltab_current[1,'psi'],
+              thetaAlltab_current[1,'chi']))
     }  
-  
+  #if(m %% 100==0){print(c(m, thetaAlltab_current[1,'inf0']))}
   } # End MCMC loop
   
   return(list(sim_liktab=sim_liktab,
