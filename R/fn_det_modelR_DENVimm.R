@@ -67,11 +67,8 @@ if(model.start.date>=denv.intro){
     #theta[["chi"]] <- 0.8
     #theta[["beta_h"]] <- 0.14
 #for(i in 1:1){    
-#    theta[["beta_h"]] <- 0.095
 #    theta[["omega_d"]] <- 90
-#    theta[["beta_mask"]] <- 1
 #    theta[["beta_end"]] <- 0.8
-#    theta[["chi"]] <- 0.24
 #    theta[["psi"]] <- 9.E-05
 #    theta[["Vex"]] <- 1/15
 #    theta[["Exp"]] <- 1/6.1
@@ -80,6 +77,18 @@ if(model.start.date>=denv.intro){
 #    theta[["beta_v_amp"]] <- 0.05
 #    theta[["rho"]] <- 400
 #    init1[["i_init"]] <- 0
+#for(ii in 1:100){
+#    theta[["beta_h"]] <- sample(beta_h_ALL,1)
+#    theta[["beta_grad"]] <- sample(beta_grad_ALL,1)
+#    theta[["beta_mid"]] <- sample(beta_mid_ALL,1)
+#    theta[["beta_base"]] <- sample(beta_base_ALL,1)
+    #theta[["beta_h"]] <- 0.12
+    #theta[["beta_grad"]] <- 30 #  28.4023564
+    #theta[["beta_mid"]] <- 210 # 213.6171048
+    #theta[["beta_base"]] <- 0.65 # 0.6938841
+    #theta[["chi"]] <- 0
+    #theta[["psi"]] <- 5e-5
+    #theta[["beta_h"]] <- 0.04
     output <- simulate_deterministic_noage_DENVimm(theta, init1, time.vals.sim)
     
     # Match compartment states at sim.vals time
@@ -96,9 +105,10 @@ if(model.start.date>=denv.intro){
     casecountD <- casesD-c(0,casesD[1:(length(time.vals.sim)-1)])
     casecount <- cases1-c(0,cases1[1:(length(time.vals.sim)-1)])
     casecount[casecount<0] <- 0
-      #plot(date.vals[1:length(casecount)],casecountD,type='l')
       #plot(date.vals[1:length(casecount)],ReportC(cases = casecount,rep = theta['rep'], repvol = theta['repvol']),type='l', col=4)
       #points(date.vals,y.vals,type='l',col=2)
+      #par(new=T)
+      #plot(date.vals[1 :length(casecount)],casecount,type='l',col=2)
       ####
       #plot(date.vals[1 :length(casecount)],casecount,type='l',col=2)
       #par(new=T)
@@ -134,7 +144,6 @@ if(model.start.date>=denv.intro){
     likelihood <- sum(binom.lik) + sum(log(dnbinom(y.vals,#[first.zikv:ln.full],
                                                     mu=theta[["rep"]]*(casecount),#[first.zikv:ln.full]),
                                                    size=1/theta[["repvol"]]))) 
-    
     likelihood=max(-1e10, likelihood)
       if(is.null(likelihood)){likelihood=-1e10}
       if(is.nan(likelihood)){likelihood=-1e10}

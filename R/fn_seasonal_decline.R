@@ -11,7 +11,7 @@
 #' seasonal_f(date0=0, amp=theta[["beta_v_amp"]], mid=theta[["beta_v_mid"]])
 
 seasonal_f <- function(time, date0=0, amp=0, mid=pi*(3/4)){
-  (1 + amp *sin(((time-date0)/365 - mid)*2*pi))
+  (1 + amp *sin(((time/365.25) - mid)*2*pi))
 }
 
 #' Flexible decline function transmission rate function
