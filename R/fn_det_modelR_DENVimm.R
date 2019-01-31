@@ -50,47 +50,22 @@ if(model.start.date>=denv.intro){
     init1=c(
       s_init=theta_init[["s_init"]],e_init=theta_init[["i1_init"]],i_init=theta_init[["i1_init"]],r_init=theta_init[["r_init"]],c_init=0,
       sd_init=theta_init[["sd_init"]],ed_init=theta_init[["ed_init"]],id_init=theta_init[["id_init"]],t1d_init=theta_init[["t1d_init"]],t2d_init=theta_init[["t2d_init"]],cd_init=0,
-      sm_init=theta_init[["sm_init"]],em_init=theta_init[["em_init"]],im_init=theta_init[["im_init"]])
+      sm_init=theta_init[["sm_init"]],em_init=theta_init[["em_init"]],im_init=theta_init[["im_init"]],
+      fps_init=theta_init[["fpS_init"]],fpi_init=theta_init[["fpI_init"]])
     
     # Output simulation data
-    #init1[["e_init"]]=1;init1[["i_init"]]=0
-    ##
-    #theta[["rep"]] <- 0.01805841
-    #theta[["psi"]] <- 3.536956e-5
-    #theta[["beta_h"]] <- 8.228741e-02
-    #theta[["chi"]] <- 2.123436e-01
-    #theta[["iota"]] <- 2.164142e-02
-    #theta[["epsilon"]] <- 9.625896e-02
-    #theta[["rho"]] <- 237.0512
-    ###
-    #theta[["psi"]] <- 5e-5
-    #theta[["chi"]] <- 0.8
-    #theta[["beta_h"]] <- 0.14
-#for(i in 1:1){    
-#    theta[["omega_d"]] <- 90
-#    theta[["beta_end"]] <- 0.8
-#    theta[["psi"]] <- 9.E-05
-#    theta[["Vex"]] <- 1/15
-#    theta[["Exp"]] <- 1/6.1
-#    theta[["MuV"]] <- 1/8.1
-#    theta[["Inf"]] <- 1/5
-#    theta[["beta_v_amp"]] <- 0.05
-#    theta[["rho"]] <- 400
-#    init1[["i_init"]] <- 0
-#for(ii in 1:100){
-#    theta[["beta_h"]] <- sample(beta_h_ALL,1)
-#    theta[["beta_grad"]] <- sample(beta_grad_ALL,1)
-#    theta[["beta_mid"]] <- sample(beta_mid_ALL,1)
-#    theta[["beta_base"]] <- sample(beta_base_ALL,1)
-    #theta[["beta_h"]] <- 0.12
-    #theta[["beta_grad"]] <- 30 #  28.4023564
-    #theta[["beta_mid"]] <- 210 # 213.6171048
-    #theta[["beta_base"]] <- 0.65 # 0.6938841
+    #theta[["beta_grad"]] <- beta_grad
+    #theta[["beta_mid"]] <- beta_mid
+    #theta[["beta_base"]] <- beta_base
     #theta[["chi"]] <- 0
-    #theta[["psi"]] <- 5e-5
-    #theta[["beta_h"]] <- 0.04
+    #theta[["omega_d"]] <- 90
+    #theta[["rho"]] <- 400
+    #theta[["beta_h"]] <- 0.2
+    #theta[["offset"]] <- 0
+    #theta[["psi"]] <- 2e-4
+    #theta[["Exp"]] <- 0.1639344
+    #theta[["Inf"]] <- 0.2
     output <- simulate_deterministic_noage_DENVimm(theta, init1, time.vals.sim)
-    
     # Match compartment states at sim.vals time
     S_traj <- output[match(time.vals.sim,output$time),"s_init"]
     X_traj <- output[match(time.vals.sim,output$time),"sm_init"]
@@ -107,13 +82,12 @@ if(model.start.date>=denv.intro){
     casecount[casecount<0] <- 0
       #plot(date.vals[1:length(casecount)],ReportC(cases = casecount,rep = theta['rep'], repvol = theta['repvol']),type='l', col=4)
       #points(date.vals,y.vals,type='l',col=2)
-      #par(new=T)
-      #plot(date.vals[1 :length(casecount)],casecount,type='l',col=2)
       ####
       #plot(date.vals[1 :length(casecount)],casecount,type='l',col=2)
       #par(new=T)
       #plot(date.vals[1:length(casecount)],R_traj/theta[["npop"]],type='l',col=4,yaxt='n',xaxt='n',ylim=c(0,1))
       #axis(side=4)
+    
     
     # Calculate seropositivity at pre-specified dates and corresponding likelihood
     i=1; seroP=NULL; binom.lik=NULL

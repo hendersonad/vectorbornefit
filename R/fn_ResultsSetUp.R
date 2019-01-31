@@ -15,7 +15,8 @@ results_set_up <- function(iiH, parameter_est_file){
 
   compartments=c('s_init','e_init','i1_init','r_init',
                  'sd_init','ed_init','id_init','t1d_init','t2d_init',
-                 'sm_init','em_init','im_init')   
+                 'sm_init','em_init','im_init',
+                 'fpS_init','fpI_init')   
   
   theta_initAll=data.frame(rep(NA,locnn))
   for (i in 1:(length(compartments)-1)){
@@ -61,6 +62,8 @@ for(iiH in itertab){
   }
   
   ## Initial compartment conditions
+  theta_initAll[iiH,"fpS_init"]=239800; theta_initAll[iiH,"fpI_init"]=200;
+    
   initial_inf=as.numeric(thetaAll[iiH,'inf0'])/2
   init_vec=as.numeric(thetaAll[iiH,'vec0']/2)
   init_rec=as.numeric(thetaAll[iiH,'rec0'])*popsizeTot

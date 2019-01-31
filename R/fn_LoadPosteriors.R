@@ -6,9 +6,8 @@
 #' @param mcmc.burn Between 0 and 1. Proportion of iterations to discard.
 ##' @export 
 ##' 
-# iiM=1
 # mcmc.burn=0.2
-
+#load.run.name=run.name; file.path="posterior_outputZ"; iiH; mcmc.burn=mcmc.burn
 load.posteriors <- function(load.run.name, file.path="posterior_outputZ", iiH, mcmc.burn){
 thetatabA=NULL
 m.tot=length(list.files(path = paste0(file.path,"/"), pattern=paste0("*",load.run.name)))
@@ -18,6 +17,7 @@ s_trace_tab0=NULL
 r_trace_tab0=NULL
 x_trace_tab0=NULL
 
+# iiM=1
 for(iiM in 1:m.tot){
   load(paste0(file.path,"/outputR_",iiM,"_",load.run.name,".RData",sep=""))
   
