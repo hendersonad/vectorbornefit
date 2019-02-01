@@ -53,6 +53,19 @@ if(model.start.date>=denv.intro){
       sm_init=theta_init[["sm_init"]],em_init=theta_init[["em_init"]],im_init=theta_init[["im_init"]],
       fps_init=theta_init[["fpS_init"]],fpi_init=theta_init[["fpI_init"]])
     
+    if(!is.na(theta[['rho']])){
+      rho <- 1/theta[['rho']]}else{
+        theta[["rho"]] <- 0}    
+    if(!is.na(theta[['omega_d']])){
+      omega_d <- 1/theta[['omega_d']]}else{
+        theta[["omega_d"]] <- 0}
+    if(!is.na(theta[['chi']])){
+      chi <- theta[['chi']]}else{
+        theta[["chi"]] <- 0}
+    if(!is.na(theta[['psi']])){
+      psi <- theta[['psi']]}else{
+        theta[["psi"]] <- 0}
+    
     # Output simulation data
     #theta[["beta_grad"]] <- beta_grad
     #theta[["beta_mid"]] <- beta_mid
@@ -65,7 +78,16 @@ if(model.start.date>=denv.intro){
     #theta[["psi"]] <- 2e-4
     #theta[["Exp"]] <- 0.1639344
     #theta[["Inf"]] <- 0.2
-    output <- simulate_deterministic_noage_DENVimm(theta, init1, time.vals.sim)
+    temptime <- c(7,14,21,28,35,42)
+    output <- simulate_deterministic_noage_DENVimm(theta, init1, temptime)
+    output
+    
+    library('microbenchmark')
+    microbenchmark(
+      simulate_deterministic_noage_DENVimm(theta, init1, time.vals.sim),
+      temp_ode(theta, init1, time.vals.sim),times = 50
+    )
+    
     # Match compartment states at sim.vals time
     S_traj <- output[match(time.vals.sim,output$time),"s_init"]
     X_traj <- output[match(time.vals.sim,output$time),"sm_init"]

@@ -6,56 +6,29 @@
 #' @param time.vals.sim List of time values to simulate over
 #' @export
 #theta=theta; init.state=init1; time.vals.sim=time.vals; state=init.state
-#time=250;state=init1;
+#time=7;state=init1;
 
 simulate_deterministic_noage_DENVimm <- function(theta, init.state, time.vals.sim) {
   SIR_ode <- function(time, state, theta) {
     ## extract parameters from theta
     Nsize <-   theta[["npop"]]
-    if(!is.na(theta[['omega_d']])){
-      omega_d <- 1/theta[['omega_d']]}else{
-      omega_d <- 0}
-    if(!is.na(theta[['chi']])){
-      chi <- theta[['chi']]}else{
-      chi <- 0}
-    if(!is.na(theta[['psi']])){
-      psi <- theta[['psi']]}else{
-      psi <- 0}
-    
-    ## Extract parameters related to French Polynesia outbreak
-      fpbeta <- theta[["fp_beta"]]
-      fpgamma <- theta[["fp_gamma"]]
-      ## extract initial states from theta_init
-      fpS <- state[["fps_init"]]
-      fpI <- state[["fpi_init"]]
+    rho <- theta[['rho']]
+    omega_d <- theta[['omega_d']]
+    chi <- theta[['chi']]
+    psi <- theta[['psi']]
       
-    # No of ZIKA FP introductions
-    #if(time<=(18*7)){
-    #  Ct <- Ctreg(time, theta[["offset"]])#}else{ #no of zika infections
-     # Ct=0}
-    #psi <- 2e-4
-    #plot(psi*sapply(time.vals.sim, function(x){Ctreg(x)}), type='l')
-    #sum(sapply(time.vals.sim, function(x){Ctreg(x)}))
+    ## Extract parameters related to French Polynesia outbreak
+    fpbeta <- theta[["fp_beta"]]
+    fpgamma <- theta[["fp_gamma"]]
+    ## extract initial states from theta_init
+    fpS <- state[["fps_init"]]
+    fpI <- state[["fpi_init"]]
+      
     # No DENV outbreak until denv_start parameter reached in time.vals
-    if(time<theta[["denv_start"]]){ 
-      beta_d <- 0
-      alpha_d <- 0 
-      gamma_d <- 0
-    }else{
       beta_d <- theta[['beta_d']]
       alpha_d <- theta[['alpha_d']]
       gamma_d <- theta[['gamma_d']]
-    }
     # And no ZIKV outbreak until zikv_start reached in time.vals
-    if(time<theta[["zika_start"]]){ 
-      beta_h1 <- 0
-      beta_v1 <- 0
-      delta_v <- 0
-      alpha_v <- 0
-      alpha_h <- 0
-      gamma <- 0
-      rho <- 0
-    }else{
       beta_h1 <- theta[['beta_h']] * 
                   seasonal_f(time, date0=theta[["shift_date"]],amp=theta[["beta_v_amp"]],mid=theta[["beta_v_mid"]]) * 
                   decline_f(time, mid=theta[["beta_mid"]], width=theta[["beta_grad"]], base=theta[["beta_base"]])
@@ -64,10 +37,6 @@ simulate_deterministic_noage_DENVimm <- function(theta, init.state, time.vals.si
       alpha_v <-  theta[["Vex"]]
       alpha_h <-  theta[["Exp"]]
       gamma <-    theta[["Inf"]]
-      if(!is.na(theta[['rho']])){
-        rho <- 1/theta[['rho']]}else{
-        rho <- 0}    
-    }
 
     ## extract initial states from theta_init
     S <- state[["s_init"]]
@@ -90,23 +59,24 @@ simulate_deterministic_noage_DENVimm <- function(theta, init.state, time.vals.si
     Idpos = extinct(Id,1) # Need at least one infective
     
     # French Polynesia Zika outbreak 
-    dfpS  =  - fpS*(fpbeta*(fpI/(240000)))
-    dfpI  = fpS*(fpbeta*(fpI/(240000))) - fpgamma*fpI
+    dfpS  = 0*( - fpS*(fpbeta*(fpI/(240000))))
+    dfpI  = 0*(fpS*(fpbeta*(fpI/(240000))) - fpgamma*fpI)
+    Ifp = 1#1-decline_f(time, mid = 70, width = 20, base = 25)
     
     # Human population
     dS  =  - S*(beta_h1*IM)*Ipos - chi*Sd*(beta_d*Id/Nsize) + chi*(2*omega_d*T2d) 
     dE  =  S*(beta_h1*IM)*Ipos - alpha_h*E  
-    dI  = alpha_h*E  - gamma*I + (psi*fpI)
+    dI  = alpha_h*E  - gamma*I + Ifp
     dR  = gamma*I - rho*R
     dC  = alpha_h*E 
     
     # Denv infection and immunity
-    dSd = -Sd*(beta_d*Id/Nsize)*Idpos
-    dEd = Sd*(beta_d*Id/Nsize)*Idpos - alpha_d*Ed 
-    dId = alpha_d*Ed - gamma_d*Id  
-    dT1d = gamma_d*Id - 2*omega_d*T1d
-    dT2d = 2*omega_d*T1d - 2*omega_d*T2d
-    dCd = alpha_d*Ed
+    dSd = -0*(Sd*(beta_d*Id/Nsize)*Idpos)
+    dEd = 0*(Sd*(beta_d*Id/Nsize)*Idpos - alpha_d*Ed )
+    dId = 0*(alpha_d*Ed - gamma_d*Id  )
+    dT1d = 0*(gamma_d*Id - 2*omega_d*T1d)
+    dT2d = 0*(2*omega_d*T1d - 2*omega_d*T2d)
+    dCd = 0*(alpha_d*Ed)
     
     # Mosquito population
     dSM = delta_v - SM*(beta_v1*I/Nsize)*Ipos - delta_v*SM   

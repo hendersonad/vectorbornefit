@@ -8,7 +8,7 @@
 #theta=theta; init.state=init1; time.vals.sim=time.vals; state=init.state
 #time=250;state=init1;
 
-simulate_deterministic_noage_DENVimm <- function(theta, init.state, time.vals.sim) {
+DEPRECATED_simulate_deterministic_noage_DENVimm <- function(theta, init.state, time.vals.sim) {
   SIR_ode <- function(time, state, theta) {
     ## extract parameters from theta
     Nsize <-   theta[["npop"]]
@@ -22,9 +22,16 @@ simulate_deterministic_noage_DENVimm <- function(theta, init.state, time.vals.si
       psi <- theta[['psi']]}else{
       psi <- 0}
     
+    ## Extract parameters related to French Polynesia outbreak
+      fpbeta <- theta[["fp_beta"]]
+      fpgamma <- theta[["fp_gamma"]]
+      ## extract initial states from theta_init
+      fpS <- state[["fps_init"]]
+      fpI <- state[["fpi_init"]]
+      
     # No of ZIKA FP introductions
     #if(time<=(18*7)){
-      Ct <- Ctreg(time, theta[["offset"]])#}else{ #no of zika infections
+    #  Ct <- Ctreg(time, theta[["offset"]])#}else{ #no of zika infections
      # Ct=0}
     #psi <- 2e-4
     #plot(psi*sapply(time.vals.sim, function(x){Ctreg(x)}), type='l')
@@ -82,10 +89,14 @@ simulate_deterministic_noage_DENVimm <- function(theta, init.state, time.vals.si
     Ipos = extinct(I,1) # Need at least one infective
     Idpos = extinct(Id,1) # Need at least one infective
     
+    # French Polynesia Zika outbreak 
+    dfpS  =  - fpS*(fpbeta*(fpI/(240000)))
+    dfpI  = fpS*(fpbeta*(fpI/(240000))) - fpgamma*fpI
+    
     # Human population
     dS  =  - S*(beta_h1*IM)*Ipos - chi*Sd*(beta_d*Id/Nsize) + chi*(2*omega_d*T2d) 
     dE  =  S*(beta_h1*IM)*Ipos - alpha_h*E  
-    dI  = alpha_h*E  - gamma*I + (psi*Ct)
+    dI  = alpha_h*E  - gamma*I + (psi*fpI)
     dR  = gamma*I - rho*R
     dC  = alpha_h*E 
     
@@ -102,7 +113,7 @@ simulate_deterministic_noage_DENVimm <- function(theta, init.state, time.vals.si
     dEM = SM*(beta_v1*I/Nsize)*Ipos - (delta_v+alpha_v)*EM  
     dIM = alpha_v*EM-delta_v*IM
     
-    return(list(c(dS,dE,dI,dR,dC,dSd,dEd,dId,dT1d,dT2d,dCd,dSM,dEM,dIM)))
+    return(list(c(dS,dE,dI,dR,dC,dSd,dEd,dId,dT1d,dT2d,dCd,dSM,dEM,dIM,dfpS,dfpI)))
   }
   traj <- as.data.frame(ode(init.state, time.vals.sim, SIR_ode, theta, method = "ode45"))
   return(traj)
