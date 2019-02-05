@@ -15,7 +15,6 @@ simulate_deterministic_noage_DENVimm <- function(theta, init.state, time.vals.si
     rho <- theta[['rho']]
     omega_d <- theta[['omega_d']]
     chi <- theta[['chi']]
-    psi <- theta[['psi']]
       
     ## Extract parameters related to French Polynesia outbreak
     fpbeta <- theta[["fp_beta"]]
@@ -61,7 +60,7 @@ simulate_deterministic_noage_DENVimm <- function(theta, init.state, time.vals.si
     # French Polynesia Zika outbreak 
     dfpS  = 0*( - fpS*(fpbeta*(fpI/(240000))))
     dfpI  = 0*(fpS*(fpbeta*(fpI/(240000))) - fpgamma*fpI)
-    Ifp = 1#1-decline_f(time, mid = 70, width = 20, base = 25)
+    Ifp = 1-decline_f(time, mid = 70, width = 20, base = 5)
     
     # Human population
     dS  =  - S*(beta_h1*IM)*Ipos - chi*Sd*(beta_d*Id/Nsize) + chi*(2*omega_d*T2d) 
@@ -71,12 +70,12 @@ simulate_deterministic_noage_DENVimm <- function(theta, init.state, time.vals.si
     dC  = alpha_h*E 
     
     # Denv infection and immunity
-    dSd = -0*(Sd*(beta_d*Id/Nsize)*Idpos)
-    dEd = 0*(Sd*(beta_d*Id/Nsize)*Idpos - alpha_d*Ed )
-    dId = 0*(alpha_d*Ed - gamma_d*Id  )
-    dT1d = 0*(gamma_d*Id - 2*omega_d*T1d)
-    dT2d = 0*(2*omega_d*T1d - 2*omega_d*T2d)
-    dCd = 0*(alpha_d*Ed)
+    dSd = -Sd*(beta_d*Id/Nsize)*Idpos
+    dEd = Sd*(beta_d*Id/Nsize)*Idpos - alpha_d*Ed 
+    dId = alpha_d*Ed - gamma_d*Id  
+    dT1d = gamma_d*Id - 2*omega_d*T1d
+    dT2d = 2*omega_d*T1d - 2*omega_d*T2d
+    dCd = alpha_d*Ed
     
     # Mosquito population
     dSM = delta_v - SM*(beta_v1*I/Nsize)*Ipos - delta_v*SM   
