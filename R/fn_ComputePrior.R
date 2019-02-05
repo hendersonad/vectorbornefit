@@ -19,7 +19,7 @@ ComputePrior <- function(iiH, thetaAlltab, thetaAllstar, covartheta){
   # If vector control is included in the model - include prior density of proposed 
   #   strength of control measure
   if(vector.control==T){
-    p_theta_star <- p_theta_star*priorBeta_grad(thetaAllstar["beta_grad"])
+    p_theta_star <- p_theta_star*prior_control(c(thetaAllstar["beta_base"], thetaAllstar["beta_mid"]))
   }
   # If seasonal transmission is estimated, include in prior
   if(seasonal.transmission==T){
@@ -41,7 +41,7 @@ ComputePrior <- function(iiH, thetaAlltab, thetaAllstar, covartheta){
   # If vector control is included in the model - include prior density of proposed 
   #   strength of control measure
   if(vector.control==T){
-    p_theta <- p_theta*priorBeta_grad(thetaAlltab["beta_grad"])
+    p_theta <- p_theta*prior_control(c(thetaAlltab["beta_base"], thetaAlltab["beta_mid"]))
   }
   # If seasonal transmission is estimated, include in prior
   if(seasonal.transmission==T){
