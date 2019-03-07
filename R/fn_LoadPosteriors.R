@@ -6,7 +6,6 @@
 #' @param mcmc.burn Between 0 and 1. Proportion of iterations to discard.
 ##' @export 
 ##' 
-# mcmc.burn=0.2
 #load.run.name=run.name; file.path="posterior_outputZ"; iiH; mcmc.burn=mcmc.burn
 load.posteriors <- function(load.run.name, file.path="posterior_outputZ", iiH, mcmc.burn){
 thetatabA=NULL
@@ -16,6 +15,7 @@ c_trace_tab0=NULL
 s_trace_tab0=NULL
 r_trace_tab0=NULL
 x_trace_tab0=NULL
+sim_liktab0=NULL
 
 # iiM=1
 for(iiM in 1:m.tot){
@@ -36,6 +36,7 @@ for(iiM in 1:m.tot){
   s_trace_tab0 = rbind(s_trace_tab0,s_trace_tab[picks,iiH,])
   r_trace_tab0 = rbind(r_trace_tab0,r_trace_tab[picks,iiH,])
   x_trace_tab0 = rbind(x_trace_tab0,x_trace_tab[picks,iiH,])
+  sim_liktab0  = cbind(sim_liktab0,sim_liktab[picks])
   
 }
 
@@ -46,6 +47,7 @@ c_trace_tab=c_trace_tab0
 s_trace_tab=s_trace_tab0
 r_trace_tab=r_trace_tab0
 x_trace_tab=x_trace_tab0
+sim_liktab=sim_liktab0
 
 return(list(picks=picks,
          thetatab=thetatab,

@@ -58,10 +58,12 @@ simulate_deterministic_noage_DENVimm <- function(theta, init.state, time.vals.si
     Idpos = extinct(Id,1) # Need at least one infective
     
     # French Polynesia Zika outbreak 
-    dfpS  = 0*( - fpS*(fpbeta*(fpI/(240000))))
-    dfpI  = 0*(fpS*(fpbeta*(fpI/(240000))) - fpgamma*fpI)
-    Ifp = 1-decline_f(time, mid = 70, width = 20, base = 5)
-    
+    dfpS  = 0
+    dfpI  = 0
+    #Ifp = 1-decline_f(time, mid = 70, width = 20, base = 5)
+    Ifp      = 1-decline_f(time, mid = theta[["model_start_point"]], width = 0.5, base = 2)
+    initDenv = 1-decline_f(time, mid = theta[["denv_start_point"]], width = 0.1, base = 160)
+  
     # Human population
     dS  =  - S*(beta_h1*IM)*Ipos - chi*Sd*(beta_d*Id/Nsize) + chi*(2*omega_d*T2d) 
     dE  =  S*(beta_h1*IM)*Ipos - alpha_h*E  
@@ -72,7 +74,7 @@ simulate_deterministic_noage_DENVimm <- function(theta, init.state, time.vals.si
     # Denv infection and immunity
     dSd = -Sd*(beta_d*Id/Nsize)*Idpos
     dEd = Sd*(beta_d*Id/Nsize)*Idpos - alpha_d*Ed 
-    dId = alpha_d*Ed - gamma_d*Id  
+    dId = alpha_d*Ed - gamma_d*Id + initDenv 
     dT1d = gamma_d*Id - 2*omega_d*T1d
     dT2d = 2*omega_d*T1d - 2*omega_d*T2d
     dCd = alpha_d*Ed
