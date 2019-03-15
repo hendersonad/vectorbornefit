@@ -9,6 +9,7 @@
 #' @export
 
 #theta_in=thetaAlltab_current[iiH,]; theta_init_in=theta_initAlltab_current[iiH,]; covartheta=0*cov_matrix_thetaA; covartheta_init=0*cov_matrix_theta_init; global=0
+#theta_in=thetaAlltab_current[iiH,]; theta_init_in=theta_initAlltab_current[iiH,]; covartheta=cov_matrix_thetaA; covartheta_init=cov_matrix_theta_init; global=0
 SampleTheta<-function(theta_in, theta_init_in, covartheta, covartheta_init, global=NULL){
   ## Parameters
     # sample new parameters from nearby using multivariate normal distribution: 
@@ -31,6 +32,9 @@ SampleTheta<-function(theta_in, theta_init_in, covartheta, covartheta_init, glob
       }
       if(sum(names(theta_star)=="beta_base")>0){
         theta_star[["beta_base"]]=min(theta_star[["beta_base"]],2-theta_star[["beta_base"]]) # Ensure amplitude between zero and 1
+      }
+      if(sum(names(theta_star)=="intro_width")>0){
+        theta_star[["intro_width"]]=max(0, min(theta_star[["intro_width"]],700)) 
       }
       #
       #if(sum(names(theta_star)=="beta_h_2")>0){
