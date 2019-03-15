@@ -6,7 +6,7 @@
 #' @param time.vals.sim List of time values to simulate over
 #' @export
 #theta=theta; init.state=init1; time.vals.sim=time_vals; state=init.state
-#time=7;state=init1;
+#time=350;state=init1;
 
 simulate_deterministic_noage_DENVimm <- function(theta, init.state, time.vals.sim) {
   SIR_ode <- function(time, state, theta) {

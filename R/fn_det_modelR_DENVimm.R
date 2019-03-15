@@ -19,28 +19,6 @@ if(!is.na(theta[['epsilon']])){
   epsilon <- theta[['epsilon']]}else{
   epsilon <- 0}
   
-model.start.date <- as.Date(theta[["model_st"]],origin="1970-01-01") 
-# DENV epidemic has fixed start date
-denv.intro <- as.Date("2013-10-27") 
-
-# Set indicator on when DENV epidemic begins in context of Zika timeline
-if(model.start.date>=denv.intro){
-  theta[["denv_start"]] <- 0
-    if(model.start.date<min(date.vals)){
-      theta[["zika_start"]] <- 0
-    }else{
-      theta[["zika_start"]] <- time.vals[date.vals<model.start.date+3.5 & date.vals>model.start.date-3.5]
-    }
-}else{
-  theta[["zika_start"]] <- 0
-  data <- load.data.multistart(add.nulls = 0, startdate=model.start.date, virusTab[iiH], dataTab[iiH], serology.excel, init.conditions.excel)
-    list2env(data,globalenv())
-    if(denv.intro<min(date.vals)){
-      theta[["denv_start"]] <- 0
-    }else{
-      theta[["denv_start"]] <- time.vals[date.vals<=denv.intro+3.5 & date.vals>=denv.intro-3.5]
-    }
-}
     theta[["denv_start_point"]] <- as.Date("2013-10-27")-startdate
     theta[["zika_start_point"]] <- theta[["intro_width"]]
 
@@ -109,7 +87,6 @@ if(model.start.date>=denv.intro){
       #plot(date.vals[1:length(casecount)],R_traj/theta[["npop"]],type='l',col=4,yaxt='n',xaxt='n',ylim=c(0,1))
       #axis(side=4)
     
-    
     # Calculate seropositivity at pre-specified dates and corresponding likelihood
     i=1; seroP=NULL; binom.lik=NULL
     sero.years <- format(as.Date(seroposdates, format="%d/%m/%Y"),"%Y")
@@ -136,8 +113,8 @@ if(model.start.date>=denv.intro){
     first.zikv <- min(which(y.vals>0))
     #theta[["iota"]] <- max(theta[["iota"]],1e-10)
     
-    likelihood <- sum(binom.lik) + sum(log(dnbinom(y.vals,#[first.zikv:ln.full],
-                                                    mu=theta[["rep"]]*(casecount),#[first.zikv:ln.full]),
+    likelihood <- sum(binom.lik) + sum(log(dnbinom(y.vals,
+                                                    mu=theta[["rep"]]*(casecount),
                                                    size=1/theta[["repvol"]]))) 
     likelihood=max(-1e10, likelihood)
       if(is.null(likelihood)){likelihood=-1e10}
