@@ -11,11 +11,9 @@ ComputePrior <- function(iiH, thetaAlltab, thetaAllstar, covartheta){
                   priorExp(1/thetaAllstar["Exp"])*
                   priorVEx(1/thetaAllstar["Vex"])*
                   priorMuV(1/thetaAllstar["MuV"])*
-                  priorRec0(thetaAllstar["rec0"])*
-                  priorOmega(thetaAllstar["omega_d"])*
-                  priorPsi(thetaAllstar["psi"])*
                   priorChi(thetaAllstar["chi"])*
                   priorBeta(thetaAllstar["beta_h"])*
+                  priorInitInf(thetaAllstar["intro_base"])*
                   priorIntro(thetaAllstar["intro_width"])
 
   # If vector control is included in the model - include prior density of proposed 
@@ -35,11 +33,9 @@ ComputePrior <- function(iiH, thetaAlltab, thetaAllstar, covartheta){
             priorExp(1/thetaAlltab["Exp"])*
             priorVEx(1/thetaAlltab["Vex"])*
             priorMuV(1/thetaAlltab["MuV"])*
-            priorRec0(thetaAlltab["rec0"])*
-            priorOmega(thetaAlltab["omega_d"])*
-            priorPsi(thetaAlltab["psi"])*
             priorChi(thetaAlltab["chi"])*
-            priorBeta(thetaAlltab["beta_h"])
+            priorBeta(thetaAlltab["beta_h"])*
+            priorInitInf(thetaAlltab["intro_base"])*
             priorIntro(thetaAlltab["intro_width"])
   
   # If vector control is included in the model - include prior density of proposed 
