@@ -20,7 +20,7 @@ if(!is.na(theta[['epsilon']])){
   epsilon <- 0}
   
     theta[["denv_start_point"]] <- as.Date("2013-10-27")-startdate
-    theta[["zika_start_point"]] <- theta[["intro_width"]]
+    theta[["zika_start_point"]] <- theta[["intro_mid"]]
 
     # These values tell how to match states of compartment with data points
     sim.vals <- seq(0,max(time.vals)-min(time.vals),7) + 7 
