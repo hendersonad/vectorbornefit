@@ -5,8 +5,9 @@
 #' @param init.state List of initial values
 #' @param time.vals.sim List of time values to simulate over
 #' @export
-#theta=theta; init.state=init1; time.vals.sim=time_vals; state=init.state
-#time=350;state=init1;
+#theta=theta; init.state=init1; time.vals.sim=time.vals; state=init.state
+#theta=thetaMax; init.state=thetaInitMax; time.vals.sim; state=init.state
+#time=time.vals[1];
 
 simulate_deterministic_noage_DENVimm <- function(theta, init.state, time.vals.sim) {
   SIR_ode <- function(time, state, theta) {
@@ -21,9 +22,9 @@ simulate_deterministic_noage_DENVimm <- function(theta, init.state, time.vals.si
       alpha_d <- theta[['alpha_d']]
       gamma_d <- theta[['gamma_d']]
     # And no ZIKV outbreak until zikv_start reached in time.vals
-      beta_h1 <- theta[['beta_h']] * 
+      beta_h1 <- theta[['beta_h']] *
                   seasonal_f(time, date0=theta[["shift_date"]],amp=theta[["beta_v_amp"]],mid=theta[["beta_v_mid"]]) * 
-                  decline_f(time, mid=theta[["beta_mid"]], width=theta[["beta_grad"]], base=theta[["beta_base"]])
+                  control_f(time, base=theta[["beta_base"]], grad=0.25, mid=theta[["beta_mid"]], mid2=theta[["beta_mid"]]+14, width=theta[["beta_grad"]])      
       beta_v1 <- theta[['beta_v']] * beta_h1 
       delta_v  <- theta[["MuV"]] 
       alpha_v <-  theta[["Vex"]]
@@ -51,8 +52,8 @@ simulate_deterministic_noage_DENVimm <- function(theta, init.state, time.vals.si
     Idpos = extinct(Id,1) # Need at least one infective
     
     # French Polynesia Zika outbreak 
-    Ifp      = 1-decline_f(time, mid = theta[["zika_start_point"]], width = theta[["intro_width"]], base = theta[["intro_base"]]) 
-    initDenv = 1-decline_f(time, mid = theta[["denv_start_point"]], width = 0.1, base = 160) ## fixed so that approx ~160 introduction happen on 2013-10-27
+    Ifp      = 1-intro_f(time, mid = theta[["zika_start_point"]], width = theta[["intro_width"]], base = theta[["intro_base"]]) 
+    initDenv = 1-intro_f(time, mid = theta[["denv_start_point"]], width = 0.1, base = 160) ## fixed so that approx ~160 introduction happen on 2013-10-27
   
     # Human population
     dS  =  - S*(beta_h1*IM)*Ipos - chi*Sd*(beta_d*Id/Nsize) + chi*(2*omega_d*T2d) 

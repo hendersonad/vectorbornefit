@@ -10,6 +10,7 @@
 #' @keywords deterministic 
 #' @export
 # theta=c(theta_star,thetaA_star,theta_denv); theta_init =theta_init_star; locationI=locationtab[iiH];
+# theta=c(theta_star,thetaA_star,theta_denv); theta_init =theta_init_star; locationI=locationtab[iiH];
 # theta=c(init.theta,theta.bar,theta_denv); theta_init =init.state; locationI=locationtab[iiH];
 # theta=c(thetaA_star,theta_denv); theta_init =theta_init_star; locationI=locationtab[iiH];
 # theta=c(thetaMed,theta_star,thetaA_star,theta_denv); theta_init =theta_init_star; locationI=locationtab[iiH];
@@ -41,14 +42,10 @@ if(!is.na(theta[['epsilon']])){
     if(!is.na(theta[['chi']])){
       theta[["chi"]] <- theta[['chi']]}else{
         theta[["chi"]] <- 0}
-    if(!is.na(theta[['psi']])){
-      theta[["psi"]] <- theta[['psi']]}else{
-        theta[["psi"]] <- 0}
     
     # Output simulation data
     #theta[["beta_grad"]] <- beta_grad
-    #theta[["beta_mid"]] <- beta_mid
-    #theta[["beta_base"]] <- beta_base
+    #theta[["beta_mid"]] <- 433
     #theta[["chi"]] <- 0
     #theta[["omega_d"]] <- 90
     #theta[["rho"]] <- 400
@@ -57,13 +54,11 @@ if(!is.na(theta[['epsilon']])){
     #theta[["psi"]] <- 2e-4
     #theta[["Exp"]] <- 0.1639344
     #theta[["Inf"]] <- 0.2
+    #theta[["intro_base"]] <- 200
+    #theta[["intro_width"]] <- 0.25
+    #theta[["beta_base"]] <- 0.25
+    #theta[["beta_h"]] <- 0.12
     output <- simulate_deterministic_noage_DENVimm(theta, init1, time.vals.sim)
-    
-    #library('microbenchmark')
-    #microbenchmark(
-    #  simulate_deterministic_noage_DENVimm(theta, init1, time.vals.sim),
-    #  temp_ode(theta, init1, time.vals.sim),times = 50
-    #)
     
     # Match compartment states at sim.vals time
     S_traj <- output[match(time.vals.sim,output$time),"s_init"]
@@ -81,8 +76,11 @@ if(!is.na(theta[['epsilon']])){
     casecount[casecount<0] <- 0
       #plot(date.vals[1:length(casecount)],ReportC(cases = casecount,rep = theta['rep'], repvol = theta['repvol']),type='l', col=4)
       #points(date.vals,y.vals,type='l',col=2)
-      ####
+      #####
       #plot(date.vals[1 :length(casecount)],casecount,type='l',col=2)
+      #abline(v=startdate+290)
+      #par(new=T)
+      #plot(date.vals, sapply(time.vals, function(xx){control_f(xx, base=theta[["beta_base"]], grad=0.25, mid=theta[["beta_mid"]], mid2=theta[["beta_mid"]]+30, width=theta[["beta_grad"]])}), type='l', ylab="", yaxt="n", ylim=c(0,1))
       #par(new=T)
       #plot(date.vals[1:length(casecount)],R_traj/theta[["npop"]],type='l',col=4,yaxt='n',xaxt='n',ylim=c(0,1))
       #axis(side=4)

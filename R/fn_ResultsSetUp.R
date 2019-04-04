@@ -4,7 +4,7 @@
 #' @param iiH PLace in locationtab of location being processed
 #' @param parameter_est_file Name of csv file with parameters to be estimated included
 #' @export
-
+#parameter_est_file <-  "parameters_est_denvlike"
 results_set_up <- function(iiH, parameter_est_file){
   # Set up vectors for storing their values during MCMC loop
   thetaAll=data.frame(rep(NA,locnn))

@@ -27,11 +27,31 @@ seasonal_f <- function(time, date0=0, amp=0, mid=pi*(3/4)){
 #' @export
 #' @examples 
 
-#decline_f <- function(time,date0=0,mask=0,base=1,grad=0.5,mid=0){
-#  (1 - mask*base/(1+exp(-10*grad*((time+date0)/365-mid))))  
-#}
-decline_f <- function(time,mid,width,base){
-  1 - (4*base)*exp(-(time-mid)/width)/(1+exp(-(time-mid)/width))^2
+intro_f <- function(time,mid,width,base){
+  xx <- 1 - (4*base)*exp(-(time-mid)/width)/(1+exp(-(time-mid)/width))^2
+  if(is.nan(xx)){xx <- 1}
+  xx
+}
+
+#' Flexible decline function transmission rate function
+#' 
+#' Sigmoid function to allow drop in transmission rate
+#' @param time t in time.vals of calc
+#' @param date0 reference index value for start of transmission. Defaults to 0
+#' @param mask Strength of reduction in transmission rate. Defaults to 0 (i.e. no effect)
+#' @param base Height of starting point of function. Defaults to 1
+#' @param grad Strength of decline in transmission once begun. Defaults to 0.5
+#' @param mid Point at which decline can begin. Defaults to 0
+#' @keywords Sigmoid Decline
+#' @export
+#' @examples 
+#' 
+control_f <- function(time,mask=0,base=1,grad=.1,mid=0, mid2=1, width=30){
+  c1 <- 1 - (4*base)*exp(-(time-mid)/width)/(1+exp(-(time-mid)/width))^2
+  c1 <- c1*(time<mid)
+  c2 <- 1-(base)*(1-1/(1+exp(-grad*(time-mid2))))
+  c2 <- c2*(time>=mid)
+  c1+c2
 }
 
 #' Reporting cases function
