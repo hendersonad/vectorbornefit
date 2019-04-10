@@ -8,14 +8,13 @@
 #' @param b_vary Defaults to 1
 #' @export
 
-calculate_r0_adam <- function(th_in,sus_c=1,sus_a=1,sm_c=1,sm_a=1,b_vary=1){
-  
+calculate_r0_adam <- function(th_in,sus_c=1,sus_a=1,sm_c=1,sm_a=1,b_vary=1,control=1){
   # Rate humans get infected -- FORMULATION WITH ONE MOSQUITO POP AND DIFFERENT BITING RATES
   b_hv =  b_vary * th_in$beta_h
   b_hh = 0
   
   # Rate vectors get infected
-  b_vh = b_hv * th_in$beta_v
+  b_vh = b_hv * th_in$beta_v * control
   b_vv = 0
   
   rr_hh=rep(0,length(b_vary)); 
@@ -26,15 +25,18 @@ calculate_r0_adam <- function(th_in,sus_c=1,sus_a=1,sm_c=1,sm_a=1,b_vary=1){
   exp_h <- th_in$Exp
   inf_p <- th_in$Inf.
   
+  tau <- th_in$tau
+  m <- th_in$m
+  
   rr_hh=rep(0,length(b_vary)); 
   rr_vv = rr_hh;
-  rr_hv = (sus_c*b_hv/delta_v)*(exp_v/(exp_v+delta_v)) 
-  rr_vc = (sm_c*b_vh/inf_p)
+  rr_hv = (sus_c*tau*m*b_hv/delta_v)*(exp_v/(delta_v+exp_v))
+  rr_vc = (sm_c*tau*b_vh/inf_p)
   
   r0_hh=rep(0,length(b_vary)); 
   r0_vv = rr_hh;
-  r0_hv = (b_hv/delta_v)*(exp_v/(exp_v+delta_v)) 
-  r0_vc = (b_vh/inf_p)
+  r0_hv = (tau*m*b_hv/delta_v)*(exp_v/(delta_v+exp_v))
+  r0_vc = (tau*b_vh/inf_p)
   
   rr_post = NULL
   r0_post = NULL

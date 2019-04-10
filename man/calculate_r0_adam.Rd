@@ -5,7 +5,7 @@
 \title{calculate_r0}
 \usage{
 calculate_r0_adam(th_in, sus_c = 1, sus_a = 1, sm_c = 1, sm_a = 1,
-  b_vary = 1)
+  b_vary = 1, control = 1)
 }
 \arguments{
 \item{th_in}{Binary indicator variable if model is age structured (1) or not (0) between children and adults. Defaults to NULL in which case no sampling happens}

@@ -9,6 +9,7 @@
 #' @param init.values.file.name Name of csv file with initial parameter values
 #' @keywords import
 #' @export
+# add.nulls=0;  Virus=virusTab[iiH]; cases.file.name=dataTab[iiH]; serology.file.name=serology.excel; init.values.file.name=init.conditions.excel
 load.data.multistart <- function(add.nulls=0, startdate, Virus, cases.file.name, serology.file.name, init.values.file.name){
   ## Load case data. First column must be 'date'. Column with data must be under same name as in locationtab
   timeser <- read.csv(paste0("data_sets/",cases.file.name,".csv"), stringsAsFactors = F)  # Load ZIKA  data

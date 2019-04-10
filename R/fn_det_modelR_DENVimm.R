@@ -54,10 +54,12 @@ if(!is.na(theta[['epsilon']])){
     #theta[["psi"]] <- 2e-4
     #theta[["Exp"]] <- 0.1639344
     #theta[["Inf"]] <- 0.2
-    #theta[["intro_base"]] <- 200
-    #theta[["intro_width"]] <- 0.25
-    #theta[["beta_base"]] <- 0.25
-    #theta[["beta_h"]] <- 0.12
+    #theta[["intro_base"]] <- 500
+    #theta[["zika_start_point"]] <- 220
+    #theta[["beta_base"]] <- 0.1
+    #theta[["beta_mid"]] <- 450
+    #theta[["beta_grad"]] <- 20
+    #theta[["beta_h"]] <- 0.075
     output <- simulate_deterministic_noage_DENVimm(theta, init1, time.vals.sim)
     
     # Match compartment states at sim.vals time
@@ -76,9 +78,9 @@ if(!is.na(theta[['epsilon']])){
     casecount[casecount<0] <- 0
       #plot(date.vals[1:length(casecount)],ReportC(cases = casecount,rep = theta['rep'], repvol = theta['repvol']),type='l', col=4)
       #points(date.vals,y.vals,type='l',col=2)
-      #####
-      #plot(date.vals[1 :length(casecount)],casecount,type='l',col=2)
-      #abline(v=startdate+290)
+      #######
+      #plot(date.vals[1 :length(casecount)],casecount,type='l',col=4)
+      #abline(v=startdate+theta[["zika_start_point"]])
       #par(new=T)
       #plot(date.vals, sapply(time.vals, function(xx){control_f(xx, base=theta[["beta_base"]], grad=0.25, mid=theta[["beta_mid"]], mid2=theta[["beta_mid"]]+30, width=theta[["beta_grad"]])}), type='l', ylab="", yaxt="n", ylim=c(0,1))
       #par(new=T)
