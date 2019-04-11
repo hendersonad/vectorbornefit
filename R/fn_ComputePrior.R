@@ -13,6 +13,7 @@ ComputePrior <- function(iiH, thetaAlltab, thetaAllstar, covartheta){
                   priorMuV(1/thetaAllstar["MuV"])*
                   priorChi(thetaAllstar["chi"])*
                   priorBeta(thetaAllstar["beta_h"])*
+                  priorBetaV(thetaAllstar["beta_v"])*
                   priorInitInf(thetaAllstar["intro_base"])*
                   priorInitWidth(thetaAllstar["intro_width"])*
                   priorIntro(thetaAllstar["intro_mid"])
@@ -37,6 +38,7 @@ ComputePrior <- function(iiH, thetaAlltab, thetaAllstar, covartheta){
             priorMuV(1/thetaAlltab["MuV"])*
             priorChi(thetaAlltab["chi"])*
             priorBeta(thetaAlltab["beta_h"])*
+            priorBetaV(thetaAlltab["beta_v"])*
             priorInitInf(thetaAlltab["intro_base"])*
             priorInitWidth(thetaAlltab["intro_width"])*
             priorIntro(thetaAlltab["intro_mid"])

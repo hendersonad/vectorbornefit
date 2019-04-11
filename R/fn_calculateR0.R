@@ -14,7 +14,7 @@ calculate_r0_adam <- function(th_in,sus_c=1,sus_a=1,sm_c=1,sm_a=1,b_vary=1,contr
   b_hh = 0
   
   # Rate vectors get infected
-  b_vh = b_hv * th_in$beta_v * control
+  b_vh = th_in$beta_v * b_vary * control
   b_vv = 0
   
   rr_hh=rep(0,length(b_vary)); 
