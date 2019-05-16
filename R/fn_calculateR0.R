@@ -14,7 +14,7 @@ calculate_r0_adam <- function(th_in,sus_c=1,sus_a=1,sm_c=1,sm_a=1,b_vary=1,contr
   b_hh = 0
   
   # Rate vectors get infected
-  b_vh = th_in$beta_v * b_vary * control
+  b_vh = th_in$beta_v * b_hv
   b_vv = 0
   
   rr_hh=rep(0,length(b_vary)); 
@@ -30,13 +30,13 @@ calculate_r0_adam <- function(th_in,sus_c=1,sus_a=1,sm_c=1,sm_a=1,b_vary=1,contr
   
   rr_hh=rep(0,length(b_vary)); 
   rr_vv = rr_hh;
-  rr_hv = (sus_c*tau*m*b_hv/delta_v)*(exp_v/(delta_v+exp_v))
-  rr_vc = (sm_c*tau*b_vh/inf_p)
+  rr_hv = (sus_c*b_hv/delta_v)*(exp_v/(delta_v+exp_v))
+  rr_vc = (sm_c*b_vh/inf_p)
   
   r0_hh=rep(0,length(b_vary)); 
   r0_vv = rr_hh;
-  r0_hv = (tau*m*b_hv/delta_v)*(exp_v/(delta_v+exp_v))
-  r0_vc = (tau*b_vh/inf_p)
+  r0_hv = (b_hv/delta_v)*(exp_v/(delta_v+exp_v))
+  r0_vc = (b_vh/inf_p)
   
   rr_post = NULL
   r0_post = NULL

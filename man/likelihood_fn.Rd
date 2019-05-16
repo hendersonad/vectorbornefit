@@ -4,7 +4,8 @@
 \alias{likelihood_fn}
 \title{WeatherFit likelihood fn}
 \usage{
-likelihood_fn(amp, mid, time.vals = time.vals, beta = beta, data = data)
+likelihood_fn(amp, mid, time.vals = time.vals, beta = beta,
+  data = data)
 }
 \arguments{
 \item{amp}{amplitude of seasonal wave. Defaults to 0}

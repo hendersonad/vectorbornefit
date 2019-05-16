@@ -4,8 +4,8 @@
 \alias{control_f}
 \title{Flexible decline function transmission rate function}
 \usage{
-control_f(time, mask = 0, base = 1, grad = 0.1, mid = 0, mid2 = 1,
-  width = 30)
+control_f(time, mask = 0, base = 1, grad = 0.1, mid = 0,
+  mid2 = 1, width = 30)
 }
 \arguments{
 \item{time}{t in time.vals of calc}

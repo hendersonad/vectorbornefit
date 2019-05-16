@@ -4,17 +4,9 @@ library("devtools")
 library(roxygen2)
 
 setwd(paste0("/Users/",Sys.info()["user"],"/Documents/R"))
-#create("vectorbornefit")
-
 # create documentation
 setwd("./vectorbornefit")
 document()
-
 # install
 setwd("..")
 install("vectorbornefit")
-
-?Deterministic_modelR_final_DENVimmmunity
-?AdaptMCMCloop_withDENVimmunity
-# install_github('vectorbornefit','a-henderson91')  
-

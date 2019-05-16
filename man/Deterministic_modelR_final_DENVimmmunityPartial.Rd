@@ -4,8 +4,8 @@
 \alias{Deterministic_modelR_final_DENVimmmunityPartial}
 \title{Deterministic SEIR-SEI function with no age structure}
 \usage{
-Deterministic_modelR_final_DENVimmmunityPartial(theta, theta_init, locationI,
-  seroposdates, episeason, include.count = T)
+Deterministic_modelR_final_DENVimmmunityPartial(theta, theta_init,
+  locationI, seroposdates, episeason, include.count = T)
 }
 \arguments{
 \item{theta}{Vector of parameters for model}

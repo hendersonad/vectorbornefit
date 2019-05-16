@@ -22,9 +22,9 @@ simulate_deterministic_noage_DENVimm <- function(theta, init.state, time.vals.si
       alpha_d <- theta[['alpha_d']]
       gamma_d <- theta[['gamma_d']]
     # And no ZIKV outbreak until zikv_start reached in time.vals
-      beta_h1 <- theta[['beta_h']]*seasonal_f(time, date0=theta[["shift_date"]],amp=theta[["beta_v_amp"]],mid=theta[["beta_v_mid"]])
-      beta_v1 <- theta[['beta_v']]*seasonal_f(time, date0=theta[["shift_date"]],amp=theta[["beta_v_amp"]],mid=theta[["beta_v_mid"]])*
+      beta_h1 <- theta[['beta_h']]*seasonal_f(time, date0=theta[["shift_date"]],amp=theta[["beta_v_amp"]],mid=theta[["beta_v_mid"]])*
         control_f(time, base=theta[["beta_base"]], grad=theta[["beta_grad"]], mid=theta[["beta_mid"]], mid2=theta[["beta_mid"]]+theta[["beta_width"]], width=theta[["beta_width"]]) 
+      beta_v1 <- beta_h1*theta[['beta_v']]
       delta_v  <- theta[["MuV"]] 
       alpha_v <-  theta[["Vex"]]
       alpha_h <-  theta[["Exp"]]
@@ -33,8 +33,8 @@ simulate_deterministic_noage_DENVimm <- function(theta, init.state, time.vals.si
       m <-    theta[["m"]]
       
       # FOI
-      lambda_h <- tau*beta_h1*m
-      lambda_m <- tau*beta_v1
+      lambda_h <- beta_h1
+      lambda_m <- beta_v1
       
       ## extract initial states from theta_init
       S <- state[["s_init"]]
