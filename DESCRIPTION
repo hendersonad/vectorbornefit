@@ -1,8 +1,8 @@
 Package: vectorbornefit
-Title: What the Package Does (one line, title case)
+Title: MCMC fit SEIR model of  vetor borne transmission
 Version: 0.0.0.9000
-Authors@R: person("First", "Last", email = "first.last@example.com", role = c("aut", "cre"))
-Description: What the package does (one paragraph).
+Authors@R: person("Alasdair", "Henderson", email = "alasdair.henderson1@lshtm.ac.uk", role = c("aut", "cre"))
+Description: This is a package all about how my life got flipped turned upside down. And it has a bunch of functions to fit an SEIR model with climate and one off vector control effects, to timeseries and/or serological data. 
 Depends: R (>= 3.4.1)
 License: What license is it under?
 Encoding: UTF-8
